@@ -1,0 +1,180 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 25px 20px;
+}
+
+.left-header {
+  display: flex;
+  align-items: center;
+}
+
+.right-header {
+  display: flex;
+  align-items: center;
+}
+
+#divisione-smartphone {
+  margin-right: 5px;
+}
+
+select:focus,
+option:focus {
+  outline: none;
+}
+
+.right-header select {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: right;
+  border: none;
+  color: var(--arancione);
+  background-color: transparent;
+  padding: 5px;
+}
+
+.menu-icon {
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.active {
+  color: var(--testo) !important;
+  text-decoration: underline var(--secondary);
+  text-decoration-thickness: 5px;
+  text-underline-offset: 8px;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+.close-menu-icon {
+  float: right;
+  margin: 40px;
+  color: var(--testo);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+#overlay-menu-container {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: var(--sfondo);
+  text-align: center;
+  transition: all 0.8s ease;
+}
+
+#overlay-menu {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  list-style: none;
+  text-align: center;
+  opacity: 0;
+  transition: all 1s ease;
+}
+
+#overlay-menu li a {
+  display: inline-block;
+  margin: 8px 0px;
+  padding: 7px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  transition: all 0.4s ease;
+}
+
+#overlay-menu .logo {
+  width: 150px;
+  margin-bottom: 30px;
+}
+
+#overlay-menu li a:hover {
+  background-color: var(--secondary);
+  border-radius: 7px;
+}
+
+.nav {
+  display: none;
+}
+
+#divisione {
+  display: none;
+}
+
+/*
+===================================
+break points
+===================================
+*/
+
+@media (min-width: 576px) {
+  header {
+    padding: 25px 50px;
+  }
+}
+
+@media (min-width: 992px) {
+  header {
+    padding: 25px 100px;
+  }
+
+  #divisione {
+    display: flex;
+  }
+
+  #divisione-smartphone {
+    display: none;
+  }
+
+  .nav {
+    display: flex;
+  }
+
+  .nav ul {
+    list-style-type: none;
+    display: flex;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    padding-left: 25px;
+    color: var(--testo);
+    opacity: 0.8;
+    font-weight: 500;
+  }
+
+  .hide-hamb {
+    display: none;
+  }
+}
+
+@media (min-width: 1440px) {
+  header {
+    padding: 25px 100px;
+  }
+}
+
+@media (min-width: 576px) {
+  .left-header select {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: left;
+    border: none;
+    border-bottom: 5px solid orange;
+    padding: 10px 5px 4px 5px;
+    background-color: transparent;
+
+    margin-left: 40px;
+  }
+}
+
+@media (min-width: 992px) {
+}
+
+@media (min-width: 1440px) {
+}

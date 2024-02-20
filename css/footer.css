@@ -1,0 +1,122 @@
+.footer-grid {
+  display: grid;
+  padding: 30px 0px;
+  grid-template-rows: auto auto auto;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "alias-footer-logo"
+    "alias-footer-menu"
+    "alias-footer-contacts";
+}
+
+.footer-menu {
+  grid-area: alias-footer-menu;
+  margin-bottom: 30px;
+}
+
+.footer-logo {
+  grid-area: alias-footer-logo;
+  margin-bottom: 20px;
+}
+
+.footer-contacts {
+  grid-area: alias-footer-contacts;
+}
+
+.footer-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.3rem;
+  color: var(--bluscuro);
+}
+
+.footer-menu a {
+  color: var(--bluscuro);
+}
+
+.footer-menu ul {
+  list-style-type: none;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.footer-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-contacts {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.3rem;
+  color: var(--bluscuro);
+  text-align: center;
+}
+
+.contacts-icon {
+  margin-top: 25px;
+  font-size: 1.6rem;
+}
+
+.contact-icon {
+  padding: 0 5px;
+}
+
+.footer-contacts p {
+  margin-top: 25px;
+}
+
+/*
+===================================
+break points
+===================================
+*/
+
+@media (min-width: 576px) {
+  .footer-grid {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: "alias-footer-menu alias-footer-logo alias-footer-contacts";
+  }
+
+  .footer-menu {
+    margin-bottom: 0px;
+  }
+
+  .footer-logo {
+    margin-bottom: 0px;
+  }
+}
+
+@media (min-width: 576px) {
+  .footer-grid {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: "alias-footer-menu alias-footer-logo alias-footer-contacts";
+  }
+
+  .footer-menu {
+    margin-bottom: 0px;
+  }
+
+  .footer-logo {
+    margin-bottom: 0px;
+  }
+}
+
+@media (min-width: 992px) {
+}
+
+@media (min-width: 1440px) {
+  footer {
+    padding: 0px 200px;
+  }
+}

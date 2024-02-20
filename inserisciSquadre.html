@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inserisci Squadra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/inserisciSquadre.css" />
+  </head>
+  <body>
+    <div class="contenitore-dati-squadra">
+      <h1>Inserisci Squadra</h1>
+
+      <div class="dati-squadra">
+        <div class="sport-divisione-nomeSquadra">
+          <div class="dato">
+            <label>Sport</label>
+            <select id="sport">
+              <option value=""></option>
+            </select>
+          </div>
+          <div class="dato">
+            <label>Divisione</label>
+            <select id="divisione"></select>
+          </div>
+          <div class="dato">
+            <label>Nome Squadra</label>
+            <input type="text" id="NomeSquadra" />
+          </div>
+        </div>
+
+        <div class="membri">
+          <div class="allenatori">
+            <div class="dato">
+              <label>Allenatore 1</label>
+              <input type="text" id="Allenatore1" />
+            </div>
+            <div class="dato">
+              <label>Allenatore 2</label>
+              <input type="text" id="Allenatore2" />
+            </div>
+            <div class="dato">
+              <label>Allenatore 3</label>
+              <input type="text" id="Allenatore3" />
+            </div>
+          </div>
+
+          <div class="giocatori">
+            <div class="dato">
+              <label>Giocatore 1</label>
+              <input type="text" id="Giocatore1" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 2</label>
+              <input type="text" id="Giocatore2" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 3</label>
+              <input type="text" id="Giocatore3" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 4</label>
+              <input type="text" id="Giocatore4" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 5</label>
+              <input type="text" id="Giocatore5" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 6</label>
+              <input type="text" id="Giocatore6" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 7</label>
+              <input type="text" id="Giocatore7" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 8</label>
+              <input type="text" id="Giocatore8" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 9</label>
+              <input type="text" id="Giocatore9" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 10</label>
+              <input type="text" id="Giocatore10" />
+            </div>
+
+            <div class="dato">
+              <label>Giocatore 11</label>
+              <input type="text" id="Giocatore11" />
+            </div>
+
+            <div class="dato">
+              <label>Giocatore 12</label>
+              <input type="text" id="Giocatore12" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 13</label>
+              <input type="text" id="Giocatore13" />
+            </div>
+            <div class="dato">
+              <label>Giocatore 14</label>
+              <input type="text" id="Giocatore14" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="button" id="insBtn">Inserisci Squadra</button>
+    </div>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyB016Bj67OcUqsvrtPD21Yq4w2Uv5Apn5I",
+        authDomain: "cofta-mi.firebaseapp.com",
+        databaseURL:
+          "https://cofta-mi-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "cofta-mi",
+        storageBucket: "cofta-mi.appspot.com",
+        messagingSenderId: "99662203430",
+        appId: "1:99662203430:web:3cd23e844459925954b4e7",
+        measurementId: "G-QB8RJEV0RX",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+
+      import {
+        getDatabase,
+        ref,
+        get,
+        set,
+        child,
+        update,
+        remove,
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+      const db = getDatabase();
+
+      async function populateOptions() {
+        // Recupera gli sport
+        const sportRef = ref(db, "/");
+        const sportSnapshot = await get(sportRef);
+
+        if (sportSnapshot.exists()) {
+          const sports = Object.keys(sportSnapshot.val());
+
+          // Popola l'elemento con id "sport" con le opzioni degli sport
+          const sportSelect = document.getElementById("sport");
+          sports.forEach((sport) => {
+            const option = document.createElement("option");
+            option.text = sport;
+            sportSelect.add(option);
+          });
+
+          // Aggiungi un listener per gestire il cambiamento di sport
+          sportSelect.addEventListener("change", () => {
+            // Recupera le divisioni per lo sport selezionato
+            const selectedSport = sportSelect.value;
+            const divisionRef = ref(db, `/${selectedSport}`);
+            get(divisionRef).then((divisionSnapshot) => {
+              if (divisionSnapshot.exists()) {
+                const divisions = Object.keys(divisionSnapshot.val());
+
+                // Popola l'elemento con id "divisione" con le opzioni delle divisioni
+                const divisionSelect = document.getElementById("divisione");
+                divisionSelect.innerHTML = ""; // Pulisci le opzioni precedenti
+                divisions.forEach((division) => {
+                  const option = document.createElement("option");
+                  option.text = division;
+                  divisionSelect.add(option);
+                });
+              }
+            });
+          });
+        }
+      }
+
+      // Chiama la funzione quando la pagina si carica
+      window.addEventListener("load", populateOptions);
+
+      //FUNZIONE INSERISCI SQUADRA
+      async function inserisciSquadra() {
+        // Recupera i dati dalla pagina HTML
+        const nomeSquadra = document.getElementById("NomeSquadra").value;
+        const allenatori = [
+          document.getElementById("Allenatore1").value,
+          document.getElementById("Allenatore2").value,
+          document.getElementById("Allenatore3").value,
+        ].filter(Boolean); // Rimuove elementi vuoti
+        const giocatori = [
+          document.getElementById("Giocatore1").value,
+          document.getElementById("Giocatore2").value,
+          document.getElementById("Giocatore3").value,
+          document.getElementById("Giocatore4").value,
+          document.getElementById("Giocatore5").value,
+          document.getElementById("Giocatore6").value,
+          document.getElementById("Giocatore7").value,
+          document.getElementById("Giocatore8").value,
+          document.getElementById("Giocatore9").value,
+          document.getElementById("Giocatore10").value,
+          document.getElementById("Giocatore11").value,
+          document.getElementById("Giocatore12").value,
+          document.getElementById("Giocatore13").value,
+          document.getElementById("Giocatore14").value,
+        ].filter(Boolean); // Rimuove elementi vuoti
+
+        // Verifica che tutti i dati siano stati inseriti
+        if (!nomeSquadra || allenatori.length === 0 || giocatori.length === 0) {
+          alert("Compila tutti i campi richiesti.");
+          return;
+        }
+
+        // Recupera lo sport e la divisione selezionati
+        const selectedSport = document.getElementById("sport").value;
+        const selectedDivision = document.getElementById("divisione").value;
+
+        // Crea la struttura dati da inserire su Firebase
+        const squadraData = {
+          Allenatori: {},
+          Giocatori: {},
+          Girone: "", // Aggiunta della chiave "girone" con valore vuoto
+          Logo: "",
+        };
+
+        // Inserisci i nomi degli allenatori come chiavi
+        for (const allenatore of allenatori) {
+          squadraData.Allenatori[allenatore] = true; // devo per forza mettere qualcosa, se no il nodo Allenatori non viene creato
+        }
+
+        // Inserisci i nomi dei giocatori con inizializzazione gol e assist a 0
+        for (const giocatore of giocatori) {
+          squadraData.Giocatori[giocatore] = { gol: 0, assist: 0 };
+        }
+
+        // Riferimento al nodo della squadra in Firebase
+        const squadraRef = ref(
+          db,
+          `/${selectedSport}/${selectedDivision}/Squadre/${nomeSquadra}`
+        );
+
+        try {
+          // Inserisci i dati sulla squadra su Firebase
+          await set(squadraRef, squadraData);
+          alert("Squadra inserita con successo!");
+        } catch (error) {
+          console.error(
+            "Errore durante l'inserimento della squadra su Firebase:",
+            error
+          );
+          alert(
+            "Si è verificato un errore durante l'inserimento della squadra."
+          );
+        }
+      }
+
+      // Aggiungi un listener al bottone "insBtn" per eseguire la funzione
+      const insBtn = document.getElementById("insBtn");
+      insBtn.addEventListener("click", inserisciSquadra);
+    </script>
+  </body>
+</html>

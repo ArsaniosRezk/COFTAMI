@@ -1,0 +1,160 @@
+/*
+===================================
+ Shared CSS
+===================================
+*/
+
+:root {
+  --sfondo: #ffffff;
+  --primary: #e5ffbe;
+  --secondary: #cefe8e;
+  --blu: #144f8f;
+  --testo: #262f3e;
+  --nero: black;
+  --verdescuro: #4dbb54;
+  --arancione: orange;
+  --intTabella: #f4f4f4;
+  --tabella: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "montserrat", sans-serif;
+  color: var(--testo);
+  background-color: var(--sfondo);
+}
+
+header {
+  background-color: var(--sfondo);
+  color: var(--testo);
+}
+
+footer {
+  background-color: var(--sfondo);
+  color: var(--testo);
+}
+
+p {
+  font-size: 1rem;
+  padding: var(--nero);
+}
+
+a {
+  text-decoration: none;
+  font-size: 1rem;
+  color: var(--nero);
+  cursor: pointer;
+}
+
+.logo {
+  max-width: 150px;
+}
+
+/*
+===================================
+GRID
+===================================
+*/
+
+.grid {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+
+  grid-template-areas:
+    "alias-header"
+    "alias-main"
+    "alias-footer";
+}
+
+header {
+  grid-area: alias-header;
+  /* width: 100%; */
+}
+
+main {
+  grid-area: alias-main;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+footer {
+  grid-area: alias-footer;
+}
+
+/*
+===================================
+Shared section styles
+===================================
+*/
+
+main section {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+
+  width: 90%;
+  padding: 30px 15px;
+  margin: 10px 0;
+  border-radius: 20px;
+
+  background-color: var(--primary);
+  text-align: center;
+}
+
+section .section-title {
+  font-size: 1.8rem;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  font-family: "Bebas Neue", sans-serif;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 576px) {
+  main section {
+    padding: 30px;
+  }
+
+  section .section-title {
+    font-size: 2.3rem;
+    letter-spacing: 2px;
+  }
+}
+
+@media (min-width: 992px) {
+  main section {
+    padding: 40px;
+  }
+
+  section .section-title {
+    font-size: 4rem;
+  }
+}
+
+@media (min-width: 1440px) {
+}
+
+/*
+===================================
+break points
+===================================
+*/
+
+@media (min-width: 576px) {
+}
+
+@media (min-width: 992px) {
+}
+
+@media (min-width: 1440px) {
+}
