@@ -80,7 +80,7 @@ class MyFooter extends HTMLElement {
         </div>
         <div class="footer-contacts">
           <h4>Contatti</h4>
-          <p>Per maggiori info manda una <br />mail a: <b>cofta-mi@cofta.it</b></p>
+          <p>Per maggiori info manda una <br />mail a: <b>info@coftamilano.com</b></p>
           <div class="contacts-icon">
             <i class="fa-brands fa-youtube contact-icon"></i>
             <i class="fa-brands fa-instagram contact-icon"></i>
