@@ -5,7 +5,7 @@ class MyHeader extends HTMLElement {
     this.innerHTML = `
     <header>
       <div class="left-header">
-        <a href="/"><img src="immagini/Cofta.png" class="logo" /></a>
+        <a href="/"><img src="https://placehold.co/600x400" class="logo" /></a>
 
         <select id="divisione"></select>
       </div>
@@ -32,7 +32,7 @@ class MyHeader extends HTMLElement {
         <di v id="overlay-menu-container">
           <i class="fa-solid fa-xmark close-menu-icon" onclick="closeMenu()"></i>
           <ul id="overlay-menu">
-            <a href="/"><img src="immagini/Cofta.png" class="logo hide-logo" /></a>
+            <a href="/"><img src="https://placehold.co/600x400" class="logo hide-logo" /></a>
             <li>
               <a href="/">Home</a>
             </li>
@@ -76,7 +76,7 @@ class MyFooter extends HTMLElement {
           </ul>
         </div>
         <div class="footer-logo">
-          <a href="/"><img src="immagini/Cofta.png" class="logo" /></a>
+          <a href="/"><img src="https://placehold.co/600x400" class="logo" /></a>
         </div>
         <div class="footer-contacts">
           <h4>Contatti</h4>
