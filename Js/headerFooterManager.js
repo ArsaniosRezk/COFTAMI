@@ -5,7 +5,9 @@ class MyHeader extends HTMLElement {
     this.innerHTML = `
     <header>
       <div class="left-header">
-        <a href="/"><img src="immagini/LOGO_COFTA_SITO.svg" width="150px" class="logo" /></a>
+        <a href="/"
+          ><img src="immagini/LOGO_COFTA_SITO.svg" width="150px" class="logo"
+        /></a>
 
         <select id="divisione"></select>
       </div>
@@ -29,10 +31,15 @@ class MyHeader extends HTMLElement {
           </ul>
         </nav>
         <i class="fa-solid fa-bars menu-icon hide-hamb" onclick="openMenu()"></i>
-        <di v id="overlay-menu-container">
+        <div id="overlay-menu-container">
           <i class="fa-solid fa-xmark close-menu-icon" onclick="closeMenu()"></i>
           <ul id="overlay-menu">
-            <a href="/"><img src="immagini/LOGO_COFTA_SITO.svg" width="150px" class="logo hide-logo" /></a>
+            <a href="/"
+              ><img
+                src="immagini/LOGO_COFTA_SITO.svg"
+                width="150px"
+                class="logo hide-logo"
+            /></a>
             <li>
               <a href="/">Home</a>
             </li>
@@ -46,7 +53,7 @@ class MyHeader extends HTMLElement {
               <a href="/regolamento.html">Regolamento</a>
             </li>
           </ul>
-         </div>
+        </div>
       </div>
     </header>
     `;
