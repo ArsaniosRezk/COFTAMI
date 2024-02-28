@@ -430,3 +430,9 @@ th {
 
 @media (min-width: 1440px) {
 }
+
+.form {
+  color: purple;
+  text-decoration: underline;
+  font-weight: bold;
+}
