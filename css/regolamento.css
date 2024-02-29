@@ -79,3 +79,9 @@ break points
 
 @media (min-width: 1440px) {
 }
+
+.form {
+  color: darkblue;
+
+  font-weight: bold;
+}
