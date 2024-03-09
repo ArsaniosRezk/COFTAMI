@@ -40,7 +40,6 @@ const divisioneSelectSmartphone = document.getElementById(
   "divisione-smartphone"
 );
 let selectedDivisione = "Superiori";
-let gironi = null;
 
 // Funzioni che partono al caricamento della pagina
 document.addEventListener("DOMContentLoaded", () => {
@@ -66,34 +65,9 @@ divisioneSelectSmartphone.addEventListener("change", async () => {
 // Chiamata alla funzione principale con gestione della sequenza
 async function sequenzaEsecuzione() {
   recuperaProssimaGiornata();
+
   visualizzaSquadreHome();
-  await recuperaGironi();
-  calcolaClassificaGironi();
-}
-
-// Funzione per ottenere i gironi
-async function recuperaGironi() {
-  try {
-    const gironiRef = ref(db, `Calcio/${selectedDivisione}/Gironi`);
-    const gironiSnapshot = await get(gironiRef);
-
-    if (gironiSnapshot.exists()) {
-      gironi = gironiSnapshot.val();
-    } else {
-      console.log(
-        `Nessun girone trovato per la divisione ${selectedDivisione} in Firebase`
-      );
-    }
-  } catch (error) {
-    console.error("Errore durante il recupero dei gironi da Firebase:", error);
-  }
-}
-
-// Funzione per calcolare classifiche dei gironi
-function calcolaClassificaGironi() {
-  Object.keys(gironi).forEach((girone) => {
-    calcolaClassificaGirone(girone, `Girone ${girone}`);
-  });
+  calcolaClassificaGirone();
 }
 
 /*
@@ -103,11 +77,11 @@ CLASSIFICA GIRONI
 */
 
 // Funzione per calcolare classifica di un girone
-async function calcolaClassificaGirone(girone, caption) {
-  const containerId = `classifica-girone-${girone}`;
+async function calcolaClassificaGirone() {
+  const containerId = `classifica`;
 
   const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
-  const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite/${girone}`);
+  const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite`);
 
   try {
     const squadreSnapshot = await get(squadreRef);
@@ -121,19 +95,17 @@ async function calcolaClassificaGirone(girone, caption) {
       // Inizializza i punteggi per ogni squadra nel girone
       Object.keys(squadre).forEach((squadraKey) => {
         const squadra = squadre[squadraKey];
-        if (squadra.Girone === girone) {
-          punteggi[squadraKey] = {
-            partiteGiocate: 0,
-            partiteVinte: 0,
-            partitePareggiate: 0,
-            partitePerse: 0,
-            golFatti: 0,
-            golSubiti: 0,
-            differenzaReti: 0,
-            punti: 0,
-            scontriDiretti: {},
-          };
-        }
+        punteggi[squadraKey] = {
+          partiteGiocate: 0,
+          partiteVinte: 0,
+          partitePareggiate: 0,
+          partitePerse: 0,
+          golFatti: 0,
+          golSubiti: 0,
+          differenzaReti: 0,
+          punti: 0,
+          scontriDiretti: {},
+        };
       });
 
       // Itera sulle partite e aggiorna i punteggi
@@ -197,15 +169,15 @@ async function calcolaClassificaGirone(girone, caption) {
       });
 
       // Rappresenta la classifica
-      rappresentaClassificaGironi(containerId, classificaArray, caption);
+      rappresentaClassificaGironi(containerId, classificaArray);
     } else {
       console.log(
-        `Nessuna partita o squadra trovata per il girone ${girone} in Firebase`
+        `Nessuna partita o squadra trovata per il girone  in Firebase`
       );
     }
   } catch (error) {
     console.error(
-      `Errore nel recupero delle partite o squadre per il girone ${girone} da Firebase:`,
+      `Errore nel recupero delle partite o squadre per il girone  da Firebase:`,
       error
     );
   }
@@ -269,19 +241,11 @@ function aggiornaPunteggi(punteggi, squadra, golFatti, golSubiti, avversario) {
 }
 
 // Funzione per rappresentare la classifica gironi
-function rappresentaClassificaGironi(
-  containerId,
-  classificaArray,
-  captionText
-) {
+function rappresentaClassificaGironi(containerId, classificaArray) {
   const classificaDiv = document.getElementById(containerId);
   classificaDiv.innerHTML = "";
   const table = document.createElement("table");
   table.classList.add("custom-table");
-
-  // Aggiungi il caption alla tabella
-  const caption = table.createCaption();
-  caption.textContent = captionText;
 
   const thead = document.createElement("thead");
 
@@ -306,9 +270,12 @@ function rappresentaClassificaGironi(
   classificaArray.forEach(([squadra, dati], index) => {
     const tr = document.createElement("tr");
 
+    // Modifica il nome della squadra sostituendo "-" con "."
+    const squadraPuntata = squadra.replace(/-/g, ".");
+
     const colonneDati = [
       index + 1,
-      squadra,
+      squadraPuntata,
       dati.partiteGiocate,
       dati.partiteVinte,
       dati.partitePareggiate,
@@ -353,6 +320,7 @@ async function visualizzaSquadreHome() {
     squadreSnapshot.forEach((squadra) => {
       const squadraData = squadra.val();
       const nomeSquadra = squadra.key;
+      const nomeSquadraPuntato = nomeSquadra.replace(/-/g, ".");
       const logoSquadra = squadraData.Logo;
 
       // Creazione del div per la squadra
@@ -369,7 +337,7 @@ async function visualizzaSquadreHome() {
 
       // Creazione dell'elemento span
       const spanElemento = document.createElement("span");
-      spanElemento.textContent = nomeSquadra;
+      spanElemento.textContent = nomeSquadraPuntato;
 
       // Aggiunta degli elementi al DOM
       nomeTeamDiv.appendChild(spanElemento);
@@ -400,4 +368,132 @@ PROSSIMA GIORNATA
 ===================================
 */
 
-async function recuperaProssimaGiornata() {}
+async function recuperaProssimaGiornata() {
+  const calendarioRef = ref(db, `Calcio/${selectedDivisione}/Calendario`);
+  const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
+  const prossimaGiornataDiv = document.getElementById("prossima-giornata");
+
+  const [calendarioSnapshot, squadreSnapshot] = await Promise.all([
+    get(calendarioRef),
+    get(squadreRef),
+  ]);
+
+  // Dichiarazione di prossimaData all'inizio della funzione
+  let prossimaData;
+
+  // Verifica che il nodo Calendario contenga dati
+  if (calendarioSnapshot.exists()) {
+    // Trova la chiave (data) più vicina alla data attuale
+    const today = new Date();
+    const dateKeys = Object.keys(calendarioSnapshot.val());
+
+    // Ordina le date e le stampa sulla console
+    const dateKeysSorted = dateKeys.sort((a, b) => {
+      const [dayA, monthA, yearA] = a.split("-").map(Number);
+      const [dayB, monthB, yearB] = b.split("-").map(Number);
+
+      return (
+        new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB)
+      );
+    });
+
+    prossimaData = dateKeysSorted.find((data) => new Date(data) > today);
+
+    if (prossimaData) {
+      const prossimaGiornataDiv = document.getElementById("prossima-giornata");
+
+      // Rimuove eventuali contenuti precedenti nel div
+      prossimaGiornataDiv.innerHTML = "";
+
+      const giornataDiv = document.createElement("div");
+      giornataDiv.classList.add("giornata");
+
+      const dataElement = document.createElement("p");
+      dataElement.classList.add("data-giornata");
+      dataElement.textContent = prossimaData;
+
+      giornataDiv.appendChild(dataElement);
+
+      const partiteDiv = document.createElement("div");
+      partiteDiv.classList.add("partite");
+
+      // Recupera le partite della giornata più vicina
+      const partiteSnapshot = calendarioSnapshot.child(prossimaData);
+      partiteSnapshot.forEach((partitaSnapshot) => {
+        const partitaString = partitaSnapshot.key;
+
+        const [squadraCasa, squadraOspite] = partitaString.split(":");
+        const squadraCasaPuntato = squadraCasa.replace(/-/g, ".");
+        const squadraOspitePuntato = squadraOspite.replace(/-/g, ".");
+
+        const partitaDiv = document.createElement("div");
+        partitaDiv.classList.add("partita");
+
+        // ... (resto del codice per creare le squadre e visualizzare la partita)
+
+        const squadraCasaDiv = document.createElement("div");
+        squadraCasaDiv.classList.add("squadraCasa");
+
+        // Recupera il logo della squadra casa dal nodo Squadre
+        const logoCasaContainer = document.createElement("div");
+        logoCasaContainer.classList.add("container-logo");
+        const logoCasaElement = document.createElement("img");
+        const logoCasaUrl = squadreSnapshot
+          .child(squadraCasa)
+          .child("Logo")
+          .val();
+        logoCasaElement.src = logoCasaUrl;
+
+        const squadraCasaElement = document.createElement("p");
+        squadraCasaElement.textContent = squadraCasaPuntato;
+        squadraCasaElement.classList.add("nome-squadra");
+
+        logoCasaContainer.appendChild(logoCasaElement);
+        squadraCasaDiv.appendChild(logoCasaContainer);
+        squadraCasaDiv.appendChild(squadraCasaElement);
+
+        const risultatoDiv = document.createElement("div");
+        risultatoDiv.classList.add("risultato");
+
+        // Controlla se il value è vuoto o contiene qualcosa
+        const risultatoValue = partitaSnapshot.val();
+        risultatoDiv.textContent = risultatoValue ? risultatoValue : "VS";
+
+        const squadraOspiteDiv = document.createElement("div");
+        squadraOspiteDiv.classList.add("squadraOspite");
+
+        // Recupera il logo della squadra ospite dal nodo Squadre
+        const logoOspiteContainer = document.createElement("div");
+        logoOspiteContainer.classList.add("container-logo");
+        const logoOspiteElement = document.createElement("img");
+        const logoOspiteUrl = squadreSnapshot
+          .child(squadraOspite)
+          .child("Logo")
+          .val();
+        logoOspiteElement.src = logoOspiteUrl;
+
+        const squadraOspiteElement = document.createElement("p");
+        squadraOspiteElement.textContent = squadraOspitePuntato;
+        squadraOspiteElement.classList.add("nome-squadra");
+
+        logoOspiteContainer.appendChild(logoOspiteElement);
+        squadraOspiteDiv.appendChild(squadraOspiteElement);
+        squadraOspiteDiv.appendChild(logoOspiteContainer);
+
+        partitaDiv.appendChild(squadraCasaDiv);
+        partitaDiv.appendChild(risultatoDiv);
+        partitaDiv.appendChild(squadraOspiteDiv);
+
+        partiteDiv.appendChild(partitaDiv);
+      });
+
+      giornataDiv.appendChild(partiteDiv);
+      prossimaGiornataDiv.appendChild(giornataDiv);
+    } else {
+      console.log("Non ci sono giornate future nel calendario.");
+      prossimaGiornataDiv.innerHTML = `<p>Attualmente non sono previste partite per la divisione ${selectedDivisione}</p>`;
+    }
+  } else {
+    console.log("Il nodo Calendario non contiene dati");
+  }
+}

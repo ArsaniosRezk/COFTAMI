@@ -9,11 +9,17 @@ class MyHeader extends HTMLElement {
           ><img src="immagini/LOGO_COFTA_SITO.svg" width="150px" class="logo"
         /></a>
 
-        <select id="divisione"></select>
+        <select id="divisione">
+          <option value="Superiori">Superiori</option>
+          <option value="Giovani">Giovani</option>
+        </select>
       </div>
 
       <div class="right-header">
-        <select id="divisione-smartphone"></select>
+        <select id="divisione-smartphone">
+          <option value="Superiori">Superiori</option>
+          <option value="Giovani">Giovani</option>
+        </select>
         <nav class="nav">
           <ul>
             <li>
@@ -24,6 +30,9 @@ class MyHeader extends HTMLElement {
             </li>
             <li>
               <a class="nav-link" href="/squadre.html">Squadre</a>
+            </li>
+            <li>
+              <a class="nav-link" href="/calendario.html">Calendario</a>
             </li>
             <li>
               <a class="nav-link" href="/regolamento.html">Regolamento</a>
@@ -48,6 +57,9 @@ class MyHeader extends HTMLElement {
             </li>
             <li>
               <a href="/squadre.html">Squadre</a>
+            </li>
+            <li>
+              <a href="/calendario.html">Calendario</a>
             </li>
             <li>
               <a href="/regolamento.html">Regolamento</a>
@@ -140,61 +152,3 @@ const firebaseConfig = {
   appId: "1:99662203430:web:3cd23e844459925954b4e7",
   measurementId: "G-QB8RJEV0RX",
 };
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-import {
-  getDatabase,
-  ref,
-  get,
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-const db = getDatabase();
-
-const divisioneSelect = document.getElementById("divisione");
-const divisioneSelectSmartphone = document.getElementById(
-  "divisione-smartphone"
-);
-
-populateDivisioneSelect();
-
-// Funzione per popolare l'elemento select con le divisioni da Firebase
-async function populateDivisioneSelect() {
-  try {
-    const divisioniRef = ref(db, "Calcio");
-
-    // Recupera i dati delle divisioni
-    const snapshot = await get(divisioniRef);
-
-    // Se esistono dati, popola l'elemento select
-    if (snapshot.exists()) {
-      const divisioni = snapshot.val();
-
-      // Rimuovi eventuali opzioni precedenti
-      divisioneSelect.innerHTML = "";
-      divisioneSelectSmartphone.innerHTML = "";
-
-      // Aggiungi le divisioni dal database
-      Object.keys(divisioni).forEach((divisione) => {
-        const option = document.createElement("option");
-        option.value = divisione;
-        option.textContent = divisione;
-        divisioneSelect.appendChild(option);
-      });
-
-      // Aggiungi le divisioni dal database
-      Object.keys(divisioni).forEach((divisione) => {
-        const option = document.createElement("option");
-        option.value = divisione;
-        option.textContent = divisione;
-        divisioneSelectSmartphone.appendChild(option);
-      });
-    }
-  } catch (error) {
-    console.error(
-      "Errore durante il recupero delle divisioni da Firebase:",
-      error
-    );
-  }
-}

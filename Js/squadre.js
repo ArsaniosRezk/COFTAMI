@@ -80,6 +80,7 @@ async function visualizzaSquadreConMembri() {
     squadreSnapshot.forEach((squadra) => {
       const squadraData = squadra.val();
       const nomeSquadra = squadra.key;
+      const nomeSquadraPuntato = nomeSquadra.replace(/-/g, ".");
       const logoSquadra = squadraData.Logo;
       const allenatori = squadraData.Allenatori || {};
       const giocatori = squadraData.Giocatori || {};
@@ -102,7 +103,7 @@ async function visualizzaSquadreConMembri() {
 
       // Creazione dell'elemento span
       const spanElemento = document.createElement("span");
-      spanElemento.textContent = nomeSquadra;
+      spanElemento.textContent = nomeSquadraPuntato;
 
       // Aggiunta degli elementi al DOM
       nomeTeamDiv.appendChild(spanElemento);
@@ -143,7 +144,12 @@ async function visualizzaSquadreConMembri() {
       containerSquadre.appendChild(squadraDiv);
 
       squadraDiv.addEventListener("click", () => {
-        openTeamMembersOverlay(nomeSquadra, allenatori, giocatori, logoSquadra);
+        openTeamMembersOverlay(
+          nomeSquadraPuntato,
+          allenatori,
+          giocatori,
+          logoSquadra
+        );
       });
     });
   } else {
@@ -159,7 +165,7 @@ function isMobileDevice() {
 
 // Funzione per aprire l'overlay e popolare i dati della squadra
 function openTeamMembersOverlay(
-  nomeSquadra,
+  nomeSquadraPuntato,
   allenatori,
   giocatori,
   logoSquadra
@@ -187,7 +193,7 @@ function openTeamMembersOverlay(
     const giocatoriElement = document.getElementById("overlay-giocatori");
 
     // Popola i dati della squadra nell'overlay
-    teamNameElement.textContent = nomeSquadra;
+    teamNameElement.textContent = nomeSquadraPuntato;
     logoElement.src = logoSquadra;
     allenatoriElement.textContent = Object.keys(allenatori).join(", ");
     giocatoriElement.textContent = Object.keys(giocatori).join(", ");

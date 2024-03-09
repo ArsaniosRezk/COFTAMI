@@ -5,21 +5,21 @@
   align-items: start;
 }
 
-.girone-container {
+/* .girone-container {
   background-color: var(--secondary);
   border-radius: 10px;
   margin: 10px 0;
   padding: 0;
-}
+} */
 
-caption {
+/* caption {
   letter-spacing: 1.2px;
 
   font-family: "Bebas Neue", sans-serif;
   font-weight: 400;
   font-size: 1.4rem;
   margin: 20px 0 10px 0;
-}
+} */
 
 .custom-table {
   width: auto;
@@ -38,7 +38,7 @@ caption {
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid #e3e3e3;
+  border-bottom: 1px solid var(--verdescuro);
 
   text-align: center;
 }
@@ -69,14 +69,26 @@ caption {
   white-space: nowrap;
 }
 
-/* .custom-table tr:nth-child(1),
-.custom-table tr:nth-child(2) {
-  background-color: hsl(126, 100%, 98%);
+thead :nth-child(1) {
+  border-top-left-radius: 10px;
+}
+
+thead :nth-child(10) {
+  border-top-right-radius: 10px;
+}
+
+/* .custom-table tbody tr:nth-child(1),
+.custom-table tbody tr:nth-child(2),
+.custom-table tbody tr:nth-child(3),
+.custom-table tbody tr:nth-child(4) {
+  background-color: color;
 } */
 
 .custom-table tr:nth-child(1) td:nth-child(1),
-.custom-table tr:nth-child(2) td:nth-child(1) {
-  background-color: hsl(126, 100%, 95%);
+.custom-table tr:nth-child(2) td:nth-child(1),
+.custom-table tr:nth-child(3) td:nth-child(1),
+.custom-table tr:nth-child(4) td:nth-child(1) {
+  background-color: var(--squadreChePassano);
 }
 
 .custom-table td:nth-child(1),
@@ -116,10 +128,10 @@ break points
     align-items: start;
   }
 
-  .girone-container {
+  /* .girone-container {
     padding: 20px 30px;
     margin: 10px;
-  }
+  } */
 
   caption {
     letter-spacing: 1.2px;
@@ -129,27 +141,20 @@ break points
   }
 
   .custom-table {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
+    margin: 15px 0 25px 0;
   }
 
   .custom-table td,
   .custom-table th {
-    padding: 5px 0;
-    width: 35px;
+    padding: 20px 20px;
+    width: 80px;
   }
 
   .custom-table th {
     font-size: 1.4rem;
     font-weight: 500;
-  }
-
-  thead :nth-child(1) {
-    border-top-left-radius: 10px;
-  }
-
-  thead :nth-child(10) {
-    border-top-right-radius: 10px;
   }
 
   .custom-table th:nth-child(2),
@@ -272,48 +277,190 @@ Prossima Giornata
 ===================================
 */
 
-/* #prossima-giornata {
+@font-face {
+  font-family: nomeSquadra;
+  src: url(/Asset/UA\ Cadet.ttf);
+}
+
+#prossima-giornata {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: start;
+  flex-wrap: wrap;
+
+  width: 90%;
+  gap: 20px;
+}
+
+.giornata {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  padding: 20px;
+
+  background-color: var(--secondary);
+  width: 100%;
+
+  border-radius: 10px;
+}
+
+.data-giornata {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.partite {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  width: 100%;
+  gap: 15px;
 }
 
-#data-prossima-giornata {
-  color: var(--bluscuro);
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.container-partite {
+.partita {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: 10px;
+  font-weight: 600;
+
+  padding: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(77, 187, 84, 1) 0%,
+
+    rgba(206, 254, 142, 1) 50%,
+
+    rgba(77, 187, 84, 1) 100%
+  );
+}
+
+.squadraCasa,
+.squadraOspite,
+.risultato {
+  display: flex;
   align-items: center;
-  gap: 100px;
 }
 
-.container-partite-girone {
-  font-weight: 500;
-  font
+.nome-squadra {
+  display: none;
 }
 
-.prossima-giornata-caption {
-  color: var(--bluscuro);
-  letter-spacing: 1.2px;
-  text-align: center;
+.container-logo {
+  width: 50px;
+  height: 50px;
+}
 
-  font-family: "Bebas Neue", sans-serif;
-  font-weight: 400;
+.squadraCasa img,
+.squadraOspite img {
+  max-width: 50px;
+  max-height: 50px;
+}
+
+.risultato {
+  font-family: "nomeSquadra";
   font-size: 1.5rem;
-  margin-bottom: 5px;
-  margin-top: 20px;
 }
 
-.partite {
-  text-align: center;
-  font-weight: 500;
-} */
+@media (min-width: 576px) {
+  .data-giornata {
+    font-size: 1rem;
+  }
+
+  .nome-squadra {
+    display: block;
+    font-family: "nomeSquadra";
+    font-size: 0.8rem;
+
+    margin: 0 10px;
+    width: 80px;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .risultato {
+    font-size: 1.2rem;
+  }
+
+  .squadraCasa .nome-squadra {
+    text-align: left;
+  }
+
+  .squadraOspite .nome-squadra {
+    text-align: right;
+  }
+}
+
+@media (min-width: 992px) {
+  #prossima-giornata {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .giornata {
+    width: auto;
+    height: auto;
+  }
+
+  .data-giornata {
+    font-size: 1.5rem;
+  }
+
+  .partite {
+    gap: 15px;
+  }
+
+  .nome-squadra {
+    font-size: 1.2rem;
+
+    width: 200px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .container-logo {
+    width: 80px;
+    height: 80px;
+  }
+
+  .squadraCasa img,
+  .squadraOspite img {
+    max-width: 80px;
+    max-height: 80px;
+  }
+
+  .risultato {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .data-giornata {
+    font-size: 1.5rem;
+  }
+
+  .nome-squadra {
+    font-size: 1.5rem;
+    margin: 0 20px;
+
+    width: 300px;
+    max-width: 300px;
+  }
+
+  .risultato {
+    font-size: 1.2rem;
+  }
+}
 
 /*
 ===================================
