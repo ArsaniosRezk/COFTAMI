@@ -40,7 +40,6 @@ const divisioneSelectSmartphone = document.getElementById(
   "divisione-smartphone"
 );
 let selectedDivisione = "Superiori";
-let gironi = null;
 
 // Funzioni che partono al caricamento della pagina
 document.addEventListener("DOMContentLoaded", () => {
@@ -65,34 +64,8 @@ divisioneSelectSmartphone.addEventListener("change", async () => {
 
 // Chiamata alla funzione principale con gestione della sequenza
 async function sequenzaEsecuzione() {
-  await recuperaGironi();
-  calcolaClassificaGironi();
+  calcolaClassificaGirone();
   calcolaClassificheMarcatoriAssist();
-}
-
-// Funzione per ottenere i gironi
-async function recuperaGironi() {
-  try {
-    const gironiRef = ref(db, `Calcio/${selectedDivisione}/Gironi`);
-    const gironiSnapshot = await get(gironiRef);
-
-    if (gironiSnapshot.exists()) {
-      gironi = gironiSnapshot.val();
-    } else {
-      console.log(
-        `Nessun girone trovato per la divisione ${selectedDivisione} in Firebase`
-      );
-    }
-  } catch (error) {
-    console.error("Errore durante il recupero dei gironi da Firebase:", error);
-  }
-}
-
-// Funzione per calcolare classifiche dei gironi
-function calcolaClassificaGironi() {
-  Object.keys(gironi).forEach((girone) => {
-    calcolaClassificaGirone(girone, `Girone ${girone}`);
-  });
 }
 
 /*
@@ -102,11 +75,11 @@ CLASSIFICA GIRONI
 */
 
 // Funzione per calcolare classifica di un girone
-async function calcolaClassificaGirone(girone, caption) {
-  const containerId = `classifica-girone-${girone}`;
+async function calcolaClassificaGirone() {
+  const containerId = `classifica`;
 
   const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
-  const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite/${girone}`);
+  const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite`);
 
   try {
     const squadreSnapshot = await get(squadreRef);
@@ -120,19 +93,17 @@ async function calcolaClassificaGirone(girone, caption) {
       // Inizializza i punteggi per ogni squadra nel girone
       Object.keys(squadre).forEach((squadraKey) => {
         const squadra = squadre[squadraKey];
-        if (squadra.Girone === girone) {
-          punteggi[squadraKey] = {
-            partiteGiocate: 0,
-            partiteVinte: 0,
-            partitePareggiate: 0,
-            partitePerse: 0,
-            golFatti: 0,
-            golSubiti: 0,
-            differenzaReti: 0,
-            punti: 0,
-            scontriDiretti: {},
-          };
-        }
+        punteggi[squadraKey] = {
+          partiteGiocate: 0,
+          partiteVinte: 0,
+          partitePareggiate: 0,
+          partitePerse: 0,
+          golFatti: 0,
+          golSubiti: 0,
+          differenzaReti: 0,
+          punti: 0,
+          scontriDiretti: {},
+        };
       });
 
       // Itera sulle partite e aggiorna i punteggi
@@ -196,15 +167,15 @@ async function calcolaClassificaGirone(girone, caption) {
       });
 
       // Rappresenta la classifica
-      rappresentaClassificaGironi(containerId, classificaArray, caption);
+      rappresentaClassificaGironi(containerId, classificaArray);
     } else {
       console.log(
-        `Nessuna partita o squadra trovata per il girone ${girone} in Firebase`
+        `Nessuna partita o squadra trovata per il girone in Firebase`
       );
     }
   } catch (error) {
     console.error(
-      `Errore nel recupero delle partite o squadre per il girone ${girone} da Firebase:`,
+      `Errore nel recupero delle partite o squadre per il girone da Firebase:`,
       error
     );
   }
@@ -268,19 +239,11 @@ function aggiornaPunteggi(punteggi, squadra, golFatti, golSubiti, avversario) {
 }
 
 // Funzione per rappresentare la classifica gironi
-function rappresentaClassificaGironi(
-  containerId,
-  classificaArray,
-  captionText
-) {
+function rappresentaClassificaGironi(containerId, classificaArray) {
   const classificaDiv = document.getElementById(containerId);
   classificaDiv.innerHTML = "";
   const table = document.createElement("table");
   table.classList.add("custom-table");
-
-  // Aggiungi il caption alla tabella
-  const caption = table.createCaption();
-  caption.textContent = captionText;
 
   const thead = document.createElement("thead");
 
@@ -305,9 +268,12 @@ function rappresentaClassificaGironi(
   classificaArray.forEach(([squadra, dati], index) => {
     const tr = document.createElement("tr");
 
+    // Modifica il nome della squadra sostituendo "-" con "."
+    const squadraPuntata = squadra.replace(/-/g, ".");
+
     const colonneDati = [
       index + 1,
-      squadra,
+      squadraPuntata,
       dati.partiteGiocate,
       dati.partiteVinte,
       dati.partitePareggiate,
@@ -344,36 +310,32 @@ async function calcolaClassificheMarcatoriAssist() {
   const assistman = {};
 
   // Itera su tutti i gironi e tutte le partite della divisione selezionata
-  for (const girone in gironi) {
-    const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite/${girone}`);
+  const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite`);
 
-    try {
-      const partiteSnapshot = await get(partiteRef);
+  try {
+    const partiteSnapshot = await get(partiteRef);
 
-      if (partiteSnapshot.exists()) {
-        const partite = partiteSnapshot.val();
+    if (partiteSnapshot.exists()) {
+      const partite = partiteSnapshot.val();
 
-        // Itera su tutte le partite del girone corrente
-        for (const partitaKey in partite) {
-          const partita = partite[partitaKey];
+      // Itera su tutte le partite del girone corrente
+      for (const partitaKey in partite) {
+        const partita = partite[partitaKey];
 
-          // Aggiorna la classifica dei marcatori
-          aggiornaClassifica(marcatori, partita.Marcatori);
+        // Aggiorna la classifica dei marcatori
+        aggiornaClassifica(marcatori, partita.Marcatori);
 
-          // Aggiorna la classifica degli assistman
-          aggiornaClassifica(assistman, partita.Assistman);
-        }
-      } else {
-        console.log(
-          `Nessuna partita trovata per il girone ${girone} in Firebase`
-        );
+        // Aggiorna la classifica degli assistman
+        aggiornaClassifica(assistman, partita.Assistman);
       }
-    } catch (error) {
-      console.error(
-        `Errore nel recupero delle partite per il girone ${girone} da Firebase:`,
-        error
-      );
+    } else {
+      console.log(`Nessuna partita trovata per il girone in Firebase`);
     }
+  } catch (error) {
+    console.error(
+      `Errore nel recupero delle partite per il girone da Firebase:`,
+      error
+    );
   }
 
   // Converti le classifiche in array per ordinare i giocatori
@@ -389,13 +351,17 @@ async function calcolaClassificheMarcatoriAssist() {
     "classificaGol",
     marcatoriArray,
     "Marcatori",
-    "G"
+    "G",
+    1,
+    10
   );
   rappresentaClassificheGiocatori(
     "classificaAssist",
     assistmanArray,
     "Assist",
-    "A"
+    "A",
+    1,
+    10
   );
 }
 
@@ -411,12 +377,14 @@ function aggiornaClassifica(classifica, giocatori) {
   }
 }
 
-// Funzione per rappresentare le classifiche dei marcatori e assistman
-function rappresentaClassificheGiocatori(
+// Funzione per rappresentare le classifiche dei marcatori e assistman con paginazione
+async function rappresentaClassificheGiocatori(
   containerId,
   classificaArray,
   captionText,
-  tipo
+  tipo,
+  paginaCorrente = 1,
+  righePerPagina = 10
 ) {
   const classificaDiv = document.getElementById(containerId);
   classificaDiv.innerHTML = "";
@@ -446,23 +414,36 @@ function rappresentaClassificheGiocatori(
   thead.appendChild(theadRow);
   table.appendChild(thead);
 
-  // Variabile per tenere traccia della posizione nella classifica
+  // Variabili per tenere traccia della posizione nella classifica
   let posizioneAttuale = 0;
   let valorePrecedente = null;
 
-  // Righe della tabella
-  classificaArray.forEach(async ([giocatore, valore], index) => {
+  // Calcola il numero totale di pagine
+  const numeroPagine = Math.ceil(classificaArray.length / righePerPagina);
+
+  // Calcola l'indice iniziale e finale per la pagina corrente
+  const indiceIniziale = (paginaCorrente - 1) * righePerPagina;
+  const indiceFinale = Math.min(
+    indiceIniziale + righePerPagina,
+    classificaArray.length
+  );
+
+  // Itera solo sulle righe della pagina corrente
+  for (let index = indiceIniziale; index < indiceFinale; index++) {
+    const [giocatore, valore] = classificaArray[index];
+
     const tr = document.createElement("tr");
 
     // Recupera la squadra del giocatore
     const squadra = await recuperaSquadraGiocatore(giocatore);
+    const squadraPuntata = squadra.replace(/-/g, ".");
 
     // Controlla la parità
     if (valore !== valorePrecedente) {
       posizioneAttuale = index + 1;
     }
 
-    const colonneDati = [posizioneAttuale, giocatore, squadra, valore];
+    const colonneDati = [posizioneAttuale, giocatore, squadraPuntata, valore];
 
     colonneDati.forEach((dato, columnIndex) => {
       const td = document.createElement("td");
@@ -480,10 +461,63 @@ function rappresentaClassificheGiocatori(
 
     // Aggiorna il valore precedente
     valorePrecedente = valore;
-  });
+  }
 
   table.appendChild(tbody);
   classificaDiv.appendChild(table);
+
+  // Aggiungi i controlli di paginazione
+  aggiungiControlliPaginazione(
+    classificaDiv,
+    numeroPagine,
+    paginaCorrente,
+    classificaArray,
+    captionText,
+    tipo,
+    righePerPagina
+  );
+}
+
+// Funzione per aggiungere i controlli di paginazione
+function aggiungiControlliPaginazione(
+  container,
+  numeroPagine,
+  paginaCorrente,
+  classificaArray,
+  captionText,
+  tipo,
+  righePerPagina
+) {
+  const paginazioneDiv = document.createElement("div");
+  paginazioneDiv.classList.add("pagination");
+
+  for (let pagina = 1; pagina <= numeroPagine; pagina++) {
+    const link = document.createElement("a");
+    link.href = "#";
+    link.textContent = pagina;
+
+    // Aggiungi classe attiva per la pagina corrente
+    if (pagina === paginaCorrente) {
+      link.classList.add("active");
+    }
+
+    // Aggiungi l'evento per cambiare la pagina
+    link.addEventListener("click", (event) => {
+      event.preventDefault(); // Previeni il comportamento predefinito del link
+      rappresentaClassificheGiocatori(
+        container.id,
+        classificaArray,
+        captionText,
+        tipo,
+        pagina,
+        righePerPagina
+      );
+    });
+
+    paginazioneDiv.appendChild(link);
+  }
+
+  container.appendChild(paginazioneDiv);
 }
 
 // Funzione per recuperare giocatori da inserire in tabelle marcatori e assist

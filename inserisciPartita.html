@@ -30,15 +30,6 @@
           <label>Divisione</label>
           <select id="divisione"></select>
         </div>
-
-        <div class="dato">
-          <label>Girone</label>
-          <select id="girone">
-            <option value=""></option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-          </select>
-        </div>
       </div>
 
       <div class="dati-partita">
@@ -117,7 +108,7 @@
 
       var sport = document.getElementById("sport");
       var divisione = document.getElementById("divisione");
-      var girone = document.getElementById("girone");
+
       var squadraCasa = document.getElementById("sqCasa");
       var squadraOspite = document.getElementById("sqOspite");
       var golSquadraCasa = document.getElementById("golSqCasa");
@@ -176,7 +167,7 @@
       async function populateTeams() {
         const sportSelect = document.getElementById("sport");
         const divisionSelect = document.getElementById("divisione");
-        const gironeSelect = document.getElementById("girone");
+
         const sqCasaSelect = document.getElementById("sqCasa");
         const sqOspiteSelect = document.getElementById("sqOspite");
 
@@ -184,7 +175,6 @@
         if (
           !sportSelect ||
           !divisionSelect ||
-          !gironeSelect ||
           !sqCasaSelect ||
           !sqOspiteSelect
         ) {
@@ -192,14 +182,13 @@
           return;
         }
 
-        // Recupera lo sport, la divisione e il girone selezionati
+        // Recupera lo sport e la divisione selezionati
         const selectedSport = sportSelect.value;
         const selectedDivision = divisionSelect.value;
-        const selectedGirone = gironeSelect.value;
 
-        // Verifica che siano stati selezionati sport, divisione e girone
-        if (!selectedSport || !selectedDivision || !selectedGirone) {
-          console.error("Seleziona uno sport, una divisione e un girone.");
+        // Verifica che siano stati selezionati sport e divisione
+        if (!selectedSport || !selectedDivision) {
+          console.error("Seleziona uno sport, una divisione");
           return;
         }
 
@@ -214,29 +203,11 @@
         if (teamsSnapshot.exists()) {
           const teams = Object.keys(teamsSnapshot.val());
 
-          // Filtra le squadre in base al girone selezionato
-          const promises = teams.map(async (team) => {
-            const teamGironeRef = ref(
-              db,
-              `/${selectedSport}/${selectedDivision}/Squadre/${team}/Girone`
-            );
-            const teamGironeSnapshot = await get(teamGironeRef);
-
-            return teamGironeSnapshot.exists() &&
-              teamGironeSnapshot.val() === selectedGirone
-              ? team
-              : null;
-          });
-
-          const filteredTeams = (await Promise.all(promises)).filter(
-            (team) => team !== null
-          );
-
           // Popola gli elementi con id "sqCasa" e "sqOspite" con le opzioni delle squadre
           sqCasaSelect.innerHTML = "";
           sqOspiteSelect.innerHTML = "";
 
-          filteredTeams.forEach((team) => {
+          teams.forEach((team) => {
             const option = document.createElement("option");
             option.text = team;
             sqCasaSelect.add(option.cloneNode(true));
@@ -245,15 +216,12 @@
         }
       }
 
-      // Aggiungi un listener per richiamare la funzione quando cambiano sport, divisione o girone
+      // Aggiungi un listener per richiamare la funzione quando cambiano sport e divisione
       document
         .getElementById("sport")
         .addEventListener("change", populateTeams);
       document
         .getElementById("divisione")
-        .addEventListener("change", populateTeams);
-      document
-        .getElementById("girone")
         .addEventListener("change", populateTeams);
 
       // Chiama la funzione quando la pagina si carica
@@ -264,7 +232,7 @@
       function InserisciPartita() {
         const sportSelect = document.getElementById("sport");
         const divisionSelect = document.getElementById("divisione");
-        const gironeSelect = document.getElementById("girone");
+
         const sqCasaSelect = document.getElementById("sqCasa");
         const sqOspiteSelect = document.getElementById("sqOspite");
         const golSquadraCasaInput = document.getElementById("golSqCasa");
@@ -282,7 +250,6 @@
         if (
           !sportSelect ||
           !divisionSelect ||
-          !gironeSelect ||
           !sqCasaSelect ||
           !sqOspiteSelect ||
           !golSquadraCasaInput ||
@@ -292,10 +259,10 @@
           return;
         }
 
-        // Recupera lo sport, la divisione, il girone e le squadre selezionate
+        // Recupera lo sport, la divisione e le squadre selezionate
         const selectedSport = sportSelect.value;
         const selectedDivision = divisionSelect.value;
-        const selectedGirone = gironeSelect.value;
+
         const selectedSqCasa = sqCasaSelect.value;
         const selectedSqOspite = sqOspiteSelect.value;
 
@@ -303,11 +270,10 @@
         const golSquadraCasa = parseInt(golSquadraCasaInput.value) || 0;
         const golSquadraOspite = parseInt(golSquadraOspiteInput.value) || 0;
 
-        // Verifica che siano stati selezionati sport, divisione, girone e squadre
+        // Verifica che siano stati selezionati sport, divisione e squadre
         if (
           !selectedSport ||
           !selectedDivision ||
-          !selectedGirone ||
           !selectedSqCasa ||
           !selectedSqOspite
         ) {
@@ -321,12 +287,11 @@
         // Riferimento al nodo delle partite
         const matchesRef = ref(
           db,
-          `/${selectedSport}/${selectedDivision}/Partite/${selectedGirone}/${matchNode}`
+          `/${selectedSport}/${selectedDivision}/Partite/${matchNode}`
         );
 
         // Dati della partita
         const matchData = {
-          Girone: selectedGirone,
           SquadraCasa: selectedSqCasa,
           SquadraOspite: selectedSqOspite,
           GolSquadraCasa: golSquadraCasa,
@@ -367,6 +332,16 @@
         set(matchesRef, matchData)
           .then(() => {
             alert("Risultato della partita inviato con successo a Firebase.");
+
+            // Chiamata alla funzione di controllo e aggiornamento
+            updateCalendario(
+              selectedSport,
+              selectedDivision,
+              matchNode,
+              golSquadraCasa,
+              golSquadraOspite
+            );
+
             // Puoi aggiungere qui altre azioni dopo l'inserimento dei dati
           })
           .catch((error) => {
@@ -466,6 +441,41 @@
           const selectedTeam = event.target.value;
           populatePlayers(selectedTeam, "giocatori-ospite");
         });
+
+      async function updateCalendario(
+        selectedSport,
+        selectedDivision,
+        matchNode,
+        golSquadraCasa,
+        golSquadraOspite
+      ) {
+        // Riferimento al nodo Calendario
+        const calendarioRef = ref(
+          db,
+          `/${selectedSport}/${selectedDivision}/Calendario`
+        );
+
+        // Recupera l'elenco delle partite nel Calendario
+        const calendarioSnapshot = await get(calendarioRef);
+
+        if (calendarioSnapshot.exists()) {
+          const calendario = calendarioSnapshot.val();
+
+          // Itera attraverso le chiavi del Calendario
+          for (const key in calendario) {
+            if (calendario[key].hasOwnProperty(matchNode)) {
+              // Trovata la corrispondenza, aggiorna il value della chiave
+              const matchRef = ref(
+                db,
+                `/${selectedSport}/${selectedDivision}/Calendario/${key}/${matchNode}`
+              );
+              const newValue = `${golSquadraCasa}:${golSquadraOspite}`;
+              await set(matchRef, newValue);
+              break; // Esce dal loop dopo la prima corrispondenza trovata
+            }
+          }
+        }
+      }
     </script>
   </body>
 </html>

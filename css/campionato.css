@@ -11,12 +11,12 @@
   align-items: start;
 }
 
-.girone-container {
+/* .girone-container {
   background-color: var(--secondary);
   border-radius: 10px;
   margin: 10px 0;
   padding: 0;
-}
+} */
 
 .classifica-giocatori {
   background-color: var(--secondary);
@@ -48,7 +48,7 @@ caption {
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--bluscuro);
-  background-color: var(--bianco);
+  background-color: var(--tabella);
 
   border-radius: 10px;
 }
@@ -58,7 +58,7 @@ caption {
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid #e3e3e3;
+  border-bottom: 1px solid var(--verdescuro);
 
   text-align: center;
 }
@@ -76,7 +76,7 @@ caption {
 }
 
 .custom-table thead {
-  background-color: #f4f4f4;
+  background-color: var(--intTabella);
 }
 
 .custom-table th:nth-child(2),
@@ -95,8 +95,10 @@ caption {
 } */
 
 .custom-table tr:nth-child(1) td:nth-child(1),
-.custom-table tr:nth-child(2) td:nth-child(1) {
-  background-color: hsl(126, 100%, 95%);
+.custom-table tr:nth-child(2) td:nth-child(1),
+.custom-table tr:nth-child(3) td:nth-child(1),
+.custom-table tr:nth-child(4) td:nth-child(1) {
+  background-color: var(--squadreChePassano);
 }
 
 .custom-table td:nth-child(1),
@@ -126,7 +128,7 @@ caption {
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--bluscuro);
-  background-color: var(--bianco);
+  background-color: var(--tabella);
 
   border-radius: 10px;
 }
@@ -136,7 +138,7 @@ caption {
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid #e3e3e3;
+  border-bottom: 1px solid var(--verdescuro);
 
   text-align: center;
 }
@@ -174,7 +176,7 @@ caption {
 }
 
 .custom-table-g-a th {
-  background-color: #f4f4f4;
+  background-color: var(--intTabella);
   font-size: 1.2rem;
   font-weight: 400;
   font-family: "Bebas Neue", sans-serif;
@@ -182,6 +184,33 @@ caption {
 
 .custom-table-g-a tbody tr:last-child {
   border-bottom: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: end;
+  width: fit-content;
+  border-radius: 10px;
+  border: 1px solid #e3e3e3;
+  margin-top: 5px;
+  background-color: white;
+  overflow: hidden;
+}
+
+.pagination a {
+  display: inline-block;
+  padding: 5px 12px; /* Aggiungi spazio intorno al testo */
+  text-decoration: none;
+  font-size: 0.8rem;
+  border-right: 1px solid #e3e3e3;
+}
+
+.pagination a:last-child {
+  border-right: none !important;
+}
+
+.pagination a.active {
+  background-color: #f4f4f4;
 }
 
 /* FASE FINALE*/
@@ -208,10 +237,10 @@ break points
     align-items: center;
   }
 
-  .girone-container {
+  /* .girone-container {
     padding: 20px 30px;
     margin: 10px;
-  }
+  } */
 
   .classifica-giocatori {
     margin: 20px 30px;
@@ -295,7 +324,7 @@ break points
   .custom-table-g-a {
     font-size: 1rem;
     font-weight: 500;
-    margin: 15px 10px 25px 10px;
+    margin: 15px 10px 0 10px;
   }
 
   .custom-table-g-a td,
@@ -330,6 +359,30 @@ break points
 
   .custom-table-g-a thead :nth-child(4) {
     border-top-right-radius: 10px;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: end;
+    width: fit-content;
+    border-radius: 10px;
+    border: 1px solid #e3e3e3;
+    margin-top: 5px;
+    background-color: white !important;
+    overflow: hidden;
+    margin-left: 10px;
+  }
+
+  .pagination a {
+    display: inline-block;
+    padding: 8px 12px; /* Aggiungi spazio intorno al testo */
+    text-decoration: none;
+    font-size: 1rem;
+    border-right: 1px solid #e3e3e3;
+  }
+
+  .pagination a.active {
+    background-color: #f4f4f4;
   }
 
   /* FASE FINALE*/

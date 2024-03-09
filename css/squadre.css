@@ -132,7 +132,7 @@ break points
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 950px;
+    width: 100%;
   }
 
   .squadra {
@@ -143,6 +143,7 @@ break points
     border-radius: 10px;
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
     overflow: hidden;
+    margin: 15px 0;
   }
 
   .logo-e-nome {

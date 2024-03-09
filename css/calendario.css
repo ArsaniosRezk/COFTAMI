@@ -1,0 +1,180 @@
+@font-face {
+  font-family: nomeSquadra;
+  src: url(/Asset/UA\ Cadet.ttf);
+}
+
+#giornate {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: start;
+  flex-wrap: wrap;
+
+  width: 90%;
+  gap: 20px;
+}
+
+.giornata {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  padding: 20px;
+
+  background-color: var(--secondary);
+  width: 100%;
+
+  border-radius: 10px;
+}
+
+.data-giornata {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.partite {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  gap: 15px;
+}
+
+.partita {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: 10px;
+  font-weight: 600;
+
+  padding: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(77, 187, 84, 1) 0%,
+
+    rgba(206, 254, 142, 1) 50%,
+
+    rgba(77, 187, 84, 1) 100%
+  );
+}
+
+.squadraCasa,
+.squadraOspite,
+.risultato {
+  display: flex;
+  align-items: center;
+}
+
+.nome-squadra {
+  display: none;
+}
+
+.container-logo {
+  width: 50px;
+  height: 50px;
+}
+
+.squadraCasa img,
+.squadraOspite img {
+  max-width: 50px;
+  max-height: 50px;
+}
+
+.risultato {
+  font-family: "nomeSquadra";
+  font-size: 1.5rem;
+}
+
+@media (min-width: 576px) {
+  .data-giornata {
+    font-size: 1rem;
+  }
+
+  .nome-squadra {
+    display: block;
+    font-family: "nomeSquadra";
+    font-size: 0.8rem;
+
+    margin: 0 10px;
+    width: 80px;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .risultato {
+    font-size: 1.2rem;
+  }
+
+  .squadraCasa .nome-squadra {
+    text-align: left;
+  }
+
+  .squadraOspite .nome-squadra {
+    text-align: right;
+  }
+}
+
+@media (min-width: 992px) {
+  #giornate {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .giornata {
+    width: 45%;
+    height: 370px;
+  }
+
+  .data-giornata {
+    font-size: 1.2rem;
+  }
+
+  .partite {
+    gap: 15px;
+  }
+
+  .nome-squadra {
+    /* font-size: 0.8rem; */
+
+    width: 70px;
+    max-width: 70px;
+  }
+
+  .container-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .squadraCasa img,
+  .squadraOspite img {
+    max-width: 40px;
+    max-height: 40px;
+  }
+
+  .risultato {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .data-giornata {
+    font-size: 1.2rem;
+  }
+
+  .nome-squadra {
+    font-size: 1rem;
+
+    width: 130px;
+    max-width: 130px;
+  }
+
+  .risultato {
+    font-size: 1.2rem;
+  }
+}

@@ -46,6 +46,7 @@ async function visualizzaSquadre() {
     squadreSnapshot.forEach((squadra) => {
       const squadraData = squadra.val();
       const nomeSquadra = squadra.key;
+      const nomeSquadraPuntato = nomeSquadra.replace(/-/g, ".");
       const logoSquadra = squadraData.Logo;
 
       // Creazione del div per la squadra
@@ -62,7 +63,7 @@ async function visualizzaSquadre() {
 
       // Creazione dell'elemento span
       const spanElemento = document.createElement("span");
-      spanElemento.textContent = nomeSquadra;
+      spanElemento.textContent = nomeSquadraPuntato;
 
       // Aggiunta degli elementi al DOM
       nomeTeamDiv.appendChild(spanElemento);
