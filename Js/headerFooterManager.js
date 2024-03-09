@@ -31,9 +31,7 @@ class MyHeader extends HTMLElement {
             <li>
               <a class="nav-link" href="/squadre.html">Squadre</a>
             </li>
-            <li>
-              <a class="nav-link" href="/calendario.html">Calendario</a>
-            </li>
+            
             <li>
               <a class="nav-link" href="/regolamento.html">Regolamento</a>
             </li>
@@ -58,9 +56,7 @@ class MyHeader extends HTMLElement {
             <li>
               <a href="/squadre.html">Squadre</a>
             </li>
-            <li>
-              <a href="/calendario.html">Calendario</a>
-            </li>
+            
             <li>
               <a href="/regolamento.html">Regolamento</a>
             </li>
