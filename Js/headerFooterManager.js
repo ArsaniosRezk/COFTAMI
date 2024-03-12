@@ -97,9 +97,8 @@ class MyFooter extends HTMLElement {
           <h4>Contatti</h4>
           <p>Per maggiori info manda una <br />mail a: <b>info@coftamilano.com</b></p>
           <div class="contacts-icon">
-            <i class="fa-brands fa-youtube contact-icon"></i>
-            <i class="fa-brands fa-instagram contact-icon"></i>
-            <i class="fa-solid fa-envelope contact-icon"></i>
+            <a href=""><i class="fa-brands fa-instagram contact-icon"></i></a>
+            <a href="mailto: info@coftamilano.com"><i class="fa-solid fa-envelope contact-icon"></i></a>
           </div>
         </div>
       </div>
@@ -107,6 +106,8 @@ class MyFooter extends HTMLElement {
     `;
   }
 }
+
+/* <a href=""><i class="fa-brands fa-youtube contact-icon"></i></a> */
 
 customElements.define("my-header", MyHeader);
 customElements.define("my-footer", MyFooter);
