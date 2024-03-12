@@ -94,12 +94,12 @@ caption {
   background-color: hsl(126, 100%, 98%);
 } */
 
-.custom-table tr:nth-child(1) td:nth-child(1),
+/* .custom-table tr:nth-child(1) td:nth-child(1),
 .custom-table tr:nth-child(2) td:nth-child(1),
 .custom-table tr:nth-child(3) td:nth-child(1),
 .custom-table tr:nth-child(4) td:nth-child(1) {
   background-color: var(--squadreChePassano);
-}
+} */
 
 .custom-table td:nth-child(1),
 .custom-table td:nth-child(2),
