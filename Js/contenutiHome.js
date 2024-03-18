@@ -271,7 +271,7 @@ function rappresentaClassificaGironi(containerId, classificaArray) {
     const tr = document.createElement("tr");
 
     // Modifica il nome della squadra sostituendo "-" con "."
-    const squadraPuntata = squadra.replace(/-/g, ".");
+    const squadraPuntata = squadra.replace(/_/g, ".");
 
     const colonneDati = [
       index + 1,
@@ -320,7 +320,7 @@ async function visualizzaSquadreHome() {
     squadreSnapshot.forEach((squadra) => {
       const squadraData = squadra.val();
       const nomeSquadra = squadra.key;
-      const nomeSquadraPuntato = nomeSquadra.replace(/-/g, ".");
+      const nomeSquadraPuntato = nomeSquadra.replace(/_/g, ".");
       const logoSquadra = squadraData.Logo;
 
       // Creazione del div per la squadra
@@ -369,68 +369,72 @@ PROSSIMA GIORNATA
 */
 
 async function recuperaProssimaGiornata() {
-  const calendarioRef = ref(db, `Calcio/${selectedDivisione}/Calendario`);
-  const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
-  const prossimaGiornataDiv = document.getElementById("prossima-giornata");
+  // Ottenere il riferimento alla giornata da mostrare
+  const giornataDaMostrareRef = ref(
+    db,
+    `Calcio/${selectedDivisione}/GiornataDaMostrare`
+  );
 
-  const [calendarioSnapshot, squadreSnapshot] = await Promise.all([
-    get(calendarioRef),
-    get(squadreRef),
-  ]);
+  // Ottenere lo snapshot della giornata da mostrare
+  const giornataSnapshot = await get(giornataDaMostrareRef);
 
-  // Dichiarazione di prossimaData all'inizio della funzione
-  let prossimaData;
+  // Verificare se la giornata da mostrare esiste
+  if (giornataSnapshot.exists()) {
+    const giornataDaMostrare = giornataSnapshot.val();
 
-  // Verifica che il nodo Calendario contenga dati
-  if (calendarioSnapshot.exists()) {
-    // Trova la chiave (data) più vicina alla data attuale
-    const today = new Date();
-    const dateKeys = Object.keys(calendarioSnapshot.val());
+    // Ottenere il riferimento al calendario della divisione
+    const calendarioRef = ref(
+      db,
+      `Calcio/${selectedDivisione}/Calendario/${giornataDaMostrare}`
+    );
 
-    // Ordina le date e le stampa sulla console
-    const dateKeysSorted = dateKeys.sort((a, b) => {
-      const [dayA, monthA, yearA] = a.split("-").map(Number);
-      const [dayB, monthB, yearB] = b.split("-").map(Number);
+    // Ottenere lo snapshot del calendario per la giornata da mostrare
+    const calendarioSnapshot = await get(calendarioRef);
 
-      return (
-        new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB)
-      );
-    });
+    // Ottenere il riferimento alle squadre della divisione
+    const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
 
-    prossimaData = dateKeysSorted.find((data) => new Date(data) > today);
+    // Ottenere lo snapshot delle squadre della divisione
+    const squadreSnapshot = await get(squadreRef);
 
-    if (prossimaData) {
+    // Se lo snapshot del calendario per la giornata da mostrare esiste
+    if (calendarioSnapshot.exists()) {
+      // Pulire il contenuto del div "prossima-giornata" prima di aggiungere le partite
       const prossimaGiornataDiv = document.getElementById("prossima-giornata");
-
-      // Rimuove eventuali contenuti precedenti nel div
       prossimaGiornataDiv.innerHTML = "";
 
+      // Creare un div per la giornata
       const giornataDiv = document.createElement("div");
       giornataDiv.classList.add("giornata");
 
+      // Creare un elemento per la data della giornata
       const dataElement = document.createElement("p");
-      dataElement.classList.add("data-giornata");
-      dataElement.textContent = prossimaData;
-
+      dataElement.classList.add("numero-giornata");
+      dataElement.textContent = giornataDaMostrare;
       giornataDiv.appendChild(dataElement);
 
+      // Creare un div per le partite della giornata
       const partiteDiv = document.createElement("div");
       partiteDiv.classList.add("partite");
 
-      // Recupera le partite della giornata più vicina
-      const partiteSnapshot = calendarioSnapshot.child(prossimaData);
-      partiteSnapshot.forEach((partitaSnapshot) => {
+      // Per ogni partita nella giornata, creare gli elementi corrispondenti nel DOM
+      calendarioSnapshot.forEach((partitaSnapshot) => {
+        // Codice per creare gli elementi della partita (come fatto nella funzione recuperaCalendario)
         const partitaString = partitaSnapshot.key;
 
         const [squadraCasa, squadraOspite] = partitaString.split(":");
-        const squadraCasaPuntato = squadraCasa.replace(/-/g, ".");
-        const squadraOspitePuntato = squadraOspite.replace(/-/g, ".");
+        const squadraCasaPuntato = squadraCasa.replace(/_/g, ".");
+        const squadraOspitePuntato = squadraOspite.replace(/_/g, ".");
 
+        // container della partita
         const partitaDiv = document.createElement("div");
-        partitaDiv.classList.add("partita");
+        partitaDiv.classList.add("partita-div");
 
-        // ... (resto del codice per creare le squadre e visualizzare la partita)
+        // container delle squadre che si affrontano
+        const partita = document.createElement("div");
+        partita.classList.add("partita");
 
+        // SQUADRA CASA
         const squadraCasaDiv = document.createElement("div");
         squadraCasaDiv.classList.add("squadraCasa");
 
@@ -444,21 +448,32 @@ async function recuperaProssimaGiornata() {
           .val();
         logoCasaElement.src = logoCasaUrl;
 
+        const nomeSquadraCasaContainer = document.createElement("div");
+        nomeSquadraCasaContainer.classList.add("container-nome-squadra");
         const squadraCasaElement = document.createElement("p");
         squadraCasaElement.textContent = squadraCasaPuntato;
         squadraCasaElement.classList.add("nome-squadra");
 
         logoCasaContainer.appendChild(logoCasaElement);
+        nomeSquadraCasaContainer.appendChild(squadraCasaElement);
         squadraCasaDiv.appendChild(logoCasaContainer);
-        squadraCasaDiv.appendChild(squadraCasaElement);
+        squadraCasaDiv.appendChild(nomeSquadraCasaContainer);
 
+        // RISULTATO
         const risultatoDiv = document.createElement("div");
         risultatoDiv.classList.add("risultato");
 
-        // Controlla se il value è vuoto o contiene qualcosa
-        const risultatoValue = partitaSnapshot.val();
-        risultatoDiv.textContent = risultatoValue ? risultatoValue : "VS";
+        // Controlla se il risultato è presente e non è vuoto
+        const risultatoValue = partitaSnapshot.hasChild("Risultato")
+          ? partitaSnapshot.child("Risultato").val()
+          : "";
 
+        // Se il risultato è vuoto, imposta "VS"
+        risultatoDiv.textContent = risultatoValue.trim()
+          ? risultatoValue
+          : "VS";
+
+        // SQUADRA OSPITE
         const squadraOspiteDiv = document.createElement("div");
         squadraOspiteDiv.classList.add("squadraOspite");
 
@@ -472,28 +487,77 @@ async function recuperaProssimaGiornata() {
           .val();
         logoOspiteElement.src = logoOspiteUrl;
 
+        const nomeSquadraOspiteContainer = document.createElement("div");
+        nomeSquadraOspiteContainer.classList.add("container-nome-squadra");
         const squadraOspiteElement = document.createElement("p");
         squadraOspiteElement.textContent = squadraOspitePuntato;
         squadraOspiteElement.classList.add("nome-squadra");
 
         logoOspiteContainer.appendChild(logoOspiteElement);
-        squadraOspiteDiv.appendChild(squadraOspiteElement);
+        nomeSquadraOspiteContainer.appendChild(squadraOspiteElement);
         squadraOspiteDiv.appendChild(logoOspiteContainer);
+        squadraOspiteDiv.appendChild(nomeSquadraOspiteContainer);
 
-        partitaDiv.appendChild(squadraCasaDiv);
-        partitaDiv.appendChild(risultatoDiv);
-        partitaDiv.appendChild(squadraOspiteDiv);
+        // container di luogo e data
+        const partitaVenueDiv = document.createElement("div");
+        partitaVenueDiv.classList.add("partita-venue");
+
+        const dataPartita = partitaSnapshot.hasChild("Data")
+          ? partitaSnapshot.child("Data").val()
+          : null;
+        const orarioPartita = partitaSnapshot.hasChild("Orario")
+          ? partitaSnapshot.child("Orario").val()
+          : null;
+        const luogoPartita = partitaSnapshot.hasChild("Luogo")
+          ? partitaSnapshot.child("Luogo").val()
+          : null;
+
+        const dataDiv = document.createElement("div");
+        dataDiv.classList.add("data");
+        const luogoDiv = document.createElement("div");
+        luogoDiv.classList.add("luogo");
+
+        if (dataPartita && orarioPartita) {
+          const dataElement = document.createElement("p");
+          dataElement.textContent = `${dataPartita} - ${orarioPartita}`;
+          dataDiv.appendChild(dataElement);
+        } else {
+          const dataElement = document.createElement("p");
+          dataElement.textContent = "TBD";
+          dataDiv.appendChild(dataElement);
+        }
+
+        if (luogoPartita) {
+          const luogoElement = document.createElement("p");
+          luogoElement.textContent = `${luogoPartita}`;
+          luogoDiv.appendChild(luogoElement);
+        } else {
+          const luogoElement = document.createElement("p");
+          luogoElement.textContent = "TBD";
+          luogoDiv.appendChild(luogoElement);
+        }
+
+        partita.appendChild(squadraCasaDiv);
+        partita.appendChild(risultatoDiv);
+        partita.appendChild(squadraOspiteDiv);
+
+        partitaVenueDiv.appendChild(luogoDiv);
+        partitaVenueDiv.appendChild(dataDiv);
+
+        partitaDiv.appendChild(partita);
+        partitaDiv.appendChild(partitaVenueDiv);
 
         partiteDiv.appendChild(partitaDiv);
+
+        // Aggiungere gli elementi della partita al div delle partite
+        // partiteDiv.appendChild(partitaDiv);
       });
 
+      // Aggiungere il div delle partite al div della giornata
       giornataDiv.appendChild(partiteDiv);
+
+      // Aggiungere il div della giornata al div "prossima-giornata" nel DOM
       prossimaGiornataDiv.appendChild(giornataDiv);
-    } else {
-      console.log("Non ci sono giornate future nel calendario.");
-      prossimaGiornataDiv.innerHTML = `<p>Attualmente non sono previste partite per la divisione ${selectedDivisione}</p>`;
     }
-  } else {
-    console.log("Il nodo Calendario non contiene dati");
   }
 }

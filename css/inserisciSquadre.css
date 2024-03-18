@@ -117,11 +117,13 @@ MEMBRI
 
 .membri {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 10px;
 }
 
 .membri .dato {
-  margin: 8px 0;
+  width: 450px;
 }
 
 .membri input {
@@ -138,10 +140,34 @@ MEMBRI
   text-align: left;
 }
 
-.allenatori,
+.allenatori {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  flex-wrap: wrap;
+
+  padding: 8px;
+  gap: 8px;
+  width: 1000px;
+  height: 80px;
+  margin: 5px;
+  border: 1px solid #b1b1b1;
+  border-radius: 10px;
+}
+
 .giocatori {
-  width: 500px;
-  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  flex-wrap: wrap;
+
+  padding: 8px;
+  gap: 8px;
+  width: 1000px;
+  height: 350px;
+  margin: 5px;
   border: 1px solid #b1b1b1;
   border-radius: 10px;
 }

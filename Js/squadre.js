@@ -80,7 +80,7 @@ async function visualizzaSquadreConMembri() {
     squadreSnapshot.forEach((squadra) => {
       const squadraData = squadra.val();
       const nomeSquadra = squadra.key;
-      const nomeSquadraPuntato = nomeSquadra.replace(/-/g, ".");
+      const nomeSquadraPuntato = nomeSquadra.replace(/_/g, ".");
       const logoSquadra = squadraData.Logo;
       const allenatori = squadraData.Allenatori || {};
       const giocatori = squadraData.Giocatori || {};

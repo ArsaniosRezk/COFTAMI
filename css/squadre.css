@@ -10,39 +10,38 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  width: 300px;
+  width: 100%;
+
+  gap: 30px;
 }
 
 .squadra {
   display: flex;
   flex-direction: column;
   width: 120px;
-  height: 200px;
+  height: 160px;
   border-radius: 10px;
   box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  margin: 15px;
+  /* margin: 15px; */
 }
 
 .logo-e-nome {
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: center;
   align-items: center;
 
   width: 100%;
   height: 100%;
 
-  background-color: var(--verdescuro);
+  background-color: #62c869;
 }
 
 .squadra img {
-  padding: 8px;
-  height: 120px;
+  height: 90px;
   max-width: 100%;
-  margin-bottom: 15px;
-
-  padding: 10px;
+  margin-bottom: 10px;
 }
 
 .membri {
@@ -50,8 +49,8 @@
 }
 
 .nome-team {
-  font-size: 0.95em;
-  font-weight: 600;
+  font-size: 0.8em;
+  font-weight: 700;
   text-align: center;
   padding: 5px;
   color: white;
@@ -77,7 +76,7 @@ team overlay
 
 #team-info {
   position: absolute;
-  top: 15%;
+  top: 10%;
   text-align: center;
   opacity: 0;
   transition: all 1s ease;
@@ -88,16 +87,17 @@ team overlay
 
 #team-logo {
   max-height: 150px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 #team-name {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 #team-info h3 {
+  font-size: 1rem;
   margin-bottom: 8px;
   color: var(--blu);
 }
@@ -156,7 +156,7 @@ break points
     width: 150px;
     height: 200px;
 
-    background-color: var(--verdescuro);
+    background-color: #62c869;
     color: var(--bianco);
   }
 
@@ -179,7 +179,7 @@ break points
   }
 
   .nome-team {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     text-align: center;
   }
