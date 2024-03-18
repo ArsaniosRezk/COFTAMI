@@ -104,11 +104,7 @@ class MyFooter extends HTMLElement {
           <h4>Contatti</h4>
           <p>Per maggiori info manda una <br />mail a: <b>info@coftamilano.com</b></p>
           <div class="contacts-icon">
-<<<<<<< HEAD
             <a href="https://www.instagram.com/coftamilano"><i class="fa-brands fa-instagram contact-icon"></i></a>
-=======
-            <a href=""><i class="fa-brands fa-instagram contact-icon"></i></a>
->>>>>>> 96cdf33c3cb43e9b1a35871a3166f64b410df5b2
             <a href="mailto: info@coftamilano.com"><i class="fa-solid fa-envelope contact-icon"></i></a>
           </div>
         </div>
