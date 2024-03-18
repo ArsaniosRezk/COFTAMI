@@ -66,7 +66,7 @@ divisioneSelectSmartphone.addEventListener("change", async () => {
 async function sequenzaEsecuzione() {
   recuperaProssimaGiornata();
 
-  visualizzaSquadreHome();
+  // visualizzaSquadreHome();
   calcolaClassificaGirone();
 }
 
