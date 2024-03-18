@@ -93,7 +93,7 @@ async function recuperaCalendario() {
       giornataDiv.classList.add("giornata");
 
       const dataElement = document.createElement("p");
-      dataElement.classList.add("data-giornata");
+      dataElement.classList.add("numero-giornata");
       dataElement.textContent = data;
 
       giornataDiv.appendChild(dataElement);
@@ -101,16 +101,24 @@ async function recuperaCalendario() {
       const partiteDiv = document.createElement("div");
       partiteDiv.classList.add("partite");
 
+      const partiteArray = [];
+
       childSnapshot.forEach((partitaSnapshot) => {
         const partitaString = partitaSnapshot.key;
 
         const [squadraCasa, squadraOspite] = partitaString.split(":");
-        const squadraCasaPuntato = squadraCasa.replace(/-/g, ".");
-        const squadraOspitePuntato = squadraOspite.replace(/-/g, ".");
+        const squadraCasaPuntato = squadraCasa.replace(/_/g, ".");
+        const squadraOspitePuntato = squadraOspite.replace(/_/g, ".");
 
+        // container della partita
         const partitaDiv = document.createElement("div");
-        partitaDiv.classList.add("partita");
+        partitaDiv.classList.add("partita-div");
 
+        // container delle squadre che si affrontano
+        const partita = document.createElement("div");
+        partita.classList.add("partita");
+
+        // SQUADRA CASA
         const squadraCasaDiv = document.createElement("div");
         squadraCasaDiv.classList.add("squadraCasa");
 
@@ -124,21 +132,32 @@ async function recuperaCalendario() {
           .val();
         logoCasaElement.src = logoCasaUrl;
 
+        const nomeSquadraCasaContainer = document.createElement("div");
+        nomeSquadraCasaContainer.classList.add("container-nome-squadra");
         const squadraCasaElement = document.createElement("p");
         squadraCasaElement.textContent = squadraCasaPuntato;
         squadraCasaElement.classList.add("nome-squadra");
 
         logoCasaContainer.appendChild(logoCasaElement);
+        nomeSquadraCasaContainer.appendChild(squadraCasaElement);
         squadraCasaDiv.appendChild(logoCasaContainer);
-        squadraCasaDiv.appendChild(squadraCasaElement);
+        squadraCasaDiv.appendChild(nomeSquadraCasaContainer);
 
+        // RISULTATO
         const risultatoDiv = document.createElement("div");
         risultatoDiv.classList.add("risultato");
 
-        // Controlla se il value è vuoto o contiene qualcosa
-        const risultatoValue = partitaSnapshot.val();
-        risultatoDiv.textContent = risultatoValue ? risultatoValue : "VS";
+        // Controlla se il risultato è presente e non è vuoto
+        const risultatoValue = partitaSnapshot.hasChild("Risultato")
+          ? partitaSnapshot.child("Risultato").val()
+          : "";
 
+        // Se il risultato è vuoto, imposta "VS"
+        risultatoDiv.textContent = risultatoValue.trim()
+          ? risultatoValue
+          : "VS";
+
+        // SQUADRA OSPITE
         const squadraOspiteDiv = document.createElement("div");
         squadraOspiteDiv.classList.add("squadraOspite");
 
@@ -152,46 +171,85 @@ async function recuperaCalendario() {
           .val();
         logoOspiteElement.src = logoOspiteUrl;
 
+        const nomeSquadraOspiteContainer = document.createElement("div");
+        nomeSquadraOspiteContainer.classList.add("container-nome-squadra");
         const squadraOspiteElement = document.createElement("p");
         squadraOspiteElement.textContent = squadraOspitePuntato;
         squadraOspiteElement.classList.add("nome-squadra");
 
         logoOspiteContainer.appendChild(logoOspiteElement);
-        squadraOspiteDiv.appendChild(squadraOspiteElement);
+        nomeSquadraOspiteContainer.appendChild(squadraOspiteElement);
         squadraOspiteDiv.appendChild(logoOspiteContainer);
+        squadraOspiteDiv.appendChild(nomeSquadraOspiteContainer);
 
-        partitaDiv.appendChild(squadraCasaDiv);
-        partitaDiv.appendChild(risultatoDiv);
-        partitaDiv.appendChild(squadraOspiteDiv);
+        // container di luogo e data
+        const partitaVenueDiv = document.createElement("div");
+        partitaVenueDiv.classList.add("partita-venue");
 
+        const dataPartita = partitaSnapshot.hasChild("Data")
+          ? partitaSnapshot.child("Data").val()
+          : null;
+        const orarioPartita = partitaSnapshot.hasChild("Orario")
+          ? partitaSnapshot.child("Orario").val()
+          : null;
+        const luogoPartita = partitaSnapshot.hasChild("Luogo")
+          ? partitaSnapshot.child("Luogo").val()
+          : null;
+
+        const dataDiv = document.createElement("div");
+        dataDiv.classList.add("data");
+        const luogoDiv = document.createElement("div");
+        luogoDiv.classList.add("luogo");
+
+        if (dataPartita && orarioPartita) {
+          const dataElement = document.createElement("p");
+          dataElement.textContent = `${dataPartita} - ${orarioPartita}`;
+          dataDiv.appendChild(dataElement);
+        } else {
+          const dataElement = document.createElement("p");
+          dataElement.textContent = "TBD";
+          dataDiv.appendChild(dataElement);
+        }
+
+        if (luogoPartita) {
+          const luogoElement = document.createElement("p");
+          luogoElement.textContent = `${luogoPartita}`;
+          luogoDiv.appendChild(luogoElement);
+        } else {
+          const luogoElement = document.createElement("p");
+          luogoElement.textContent = "TBD";
+          luogoDiv.appendChild(luogoElement);
+        }
+
+        partita.appendChild(squadraCasaDiv);
+        partita.appendChild(risultatoDiv);
+        partita.appendChild(squadraOspiteDiv);
+
+        partitaVenueDiv.appendChild(luogoDiv);
+        partitaVenueDiv.appendChild(dataDiv);
+
+        partitaDiv.appendChild(partita);
+        partitaDiv.appendChild(partitaVenueDiv);
+
+        partiteArray.push(partitaDiv);
+      });
+      // Ordina le partite in base all'orario
+      partiteArray.sort((a, b) => {
+        const orarioA = a.querySelector(".data p").textContent;
+        const orarioB = b.querySelector(".data p").textContent;
+        return orarioA.localeCompare(orarioB); // Ordina in base all'orario
+      });
+
+      // Svuota il contenuto del div delle partite
+      partiteDiv.innerHTML = "";
+
+      // Aggiungi le partite ordinate al div delle partite
+      partiteArray.forEach((partitaDiv) => {
         partiteDiv.appendChild(partitaDiv);
       });
 
       giornataDiv.appendChild(partiteDiv);
       calendarioPartiteDiv.appendChild(giornataDiv);
     });
-    // Ordina i div delle giornate in base alla data
-    const giornateDivs = Array.from(calendarioPartiteDiv.children);
-    giornateDivs.sort((a, b) => {
-      const dataA = convertiFormatoData(
-        a.querySelector(".data-giornata").textContent
-      );
-      const dataB = convertiFormatoData(
-        b.querySelector(".data-giornata").textContent
-      );
-      return new Date(dataA) - new Date(dataB);
-    });
-
-    calendarioPartiteDiv.innerHTML = "";
-    giornateDivs.forEach((giornataDiv) => {
-      calendarioPartiteDiv.appendChild(giornataDiv);
-    });
-  } else {
-    console.log("Il nodo Calendario non contiene dati");
   }
-}
-
-function convertiFormatoData(data) {
-  const [day, month, year] = data.split("-");
-  return `${year}-${month}-${day}`;
 }

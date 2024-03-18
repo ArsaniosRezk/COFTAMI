@@ -43,6 +43,10 @@
   margin-top: 20px;
 }
 
+.footer-menu li {
+  margin-bottom: 5px;
+}
+
 .footer-logo {
   display: flex;
   justify-content: center;

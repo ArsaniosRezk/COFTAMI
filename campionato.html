@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cofta</title>
+    <title>Campionato - Cofta</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,20 +25,13 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="css/footer.css" />
-    <link rel="stylesheet" href="css/home.css" />
-    <link rel="stylesheet" href="css/regolamento-home.css" />
+    <link rel="stylesheet" href="css/campionato.css" />
   </head>
   <body>
     <div class="grid">
       <my-header></my-header>
 
       <main>
-        <section id="ng">
-          <p class="section-title">Prossima Giornata</p>
-
-          <div id="prossima-giornata"></div>
-        </section>
-
         <section>
           <p class="section-title">Classifica</p>
 
@@ -48,9 +41,17 @@
         </section>
 
         <section>
-          <p class="section-title">Squadre</p>
+          <p class="section-title">Marcatori e Assist</p>
 
-          <div id="container-squadre"></div>
+          <div class="container-classifica-giocatori">
+            <div id="classificaGol" class="classifica-giocatori"></div>
+            <!-- <div id="classificaAssist" class="classifica-giocatori"></div> -->
+          </div>
+        </section>
+
+        <section>
+          <p class="section-title">Fase Finale</p>
+          <img class="tabellone" src="immagini/Tabellone.png" alt="" />
         </section>
       </main>
 
@@ -58,6 +59,6 @@
     </div>
     <script src="script.js"></script>
     <script type="module" src="Js/headerFooterManager.js"></script>
-    <script type="module" src="Js/contenutiHome.js"></script>
+    <script type="module" src="Js/contenutiCampionato.js"></script>
   </body>
 </html>

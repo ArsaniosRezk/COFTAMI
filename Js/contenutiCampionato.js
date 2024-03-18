@@ -269,7 +269,7 @@ function rappresentaClassificaGironi(containerId, classificaArray) {
     const tr = document.createElement("tr");
 
     // Modifica il nome della squadra sostituendo "-" con "."
-    const squadraPuntata = squadra.replace(/-/g, ".");
+    const squadraPuntata = squadra.replace(/_/g, ".");
 
     const colonneDati = [
       index + 1,
@@ -307,7 +307,7 @@ CLASSIFICA MARCATORI E ASSIST
 // Funzione per calcolare e rappresentare le classifiche dei marcatori e degli assist
 async function calcolaClassificheMarcatoriAssist() {
   const marcatori = {};
-  const assistman = {};
+  // const assistman = {};
 
   // Itera su tutti i gironi e tutte le partite della divisione selezionata
   const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite`);
@@ -325,8 +325,8 @@ async function calcolaClassificheMarcatoriAssist() {
         // Aggiorna la classifica dei marcatori
         aggiornaClassifica(marcatori, partita.Marcatori);
 
-        // Aggiorna la classifica degli assistman
-        aggiornaClassifica(assistman, partita.Assistman);
+        // // Aggiorna la classifica degli assistman
+        // aggiornaClassifica(assistman, partita.Assistman);
       }
     } else {
       console.log(`Nessuna partita trovata per il girone in Firebase`);
@@ -340,11 +340,11 @@ async function calcolaClassificheMarcatoriAssist() {
 
   // Converti le classifiche in array per ordinare i giocatori
   const marcatoriArray = Object.entries(marcatori);
-  const assistmanArray = Object.entries(assistman);
+  // const assistmanArray = Object.entries(assistman);
 
   // Ordina gli array in base ai gol o agli assist
   marcatoriArray.sort((a, b) => b[1] - a[1]);
-  assistmanArray.sort((a, b) => b[1] - a[1]);
+  // assistmanArray.sort((a, b) => b[1] - a[1]);
 
   // Rappresenta le classifiche marcatori e assist
   rappresentaClassificheGiocatori(
@@ -355,14 +355,14 @@ async function calcolaClassificheMarcatoriAssist() {
     1,
     10
   );
-  rappresentaClassificheGiocatori(
-    "classificaAssist",
-    assistmanArray,
-    "Assist",
-    "A",
-    1,
-    10
-  );
+  // rappresentaClassificheGiocatori(
+  //   "classificaAssist",
+  //   assistmanArray,
+  //   "Assist",
+  //   "A",
+  //   1,
+  //   10
+  // );
 }
 
 // Funzione per aggiornare la classifica di marcatori o assistman
@@ -436,7 +436,7 @@ async function rappresentaClassificheGiocatori(
 
     // Recupera la squadra del giocatore
     const squadra = await recuperaSquadraGiocatore(giocatore);
-    const squadraPuntata = squadra.replace(/-/g, ".");
+    const squadraPuntata = squadra.replace(/_/g, ".");
 
     // Controlla la parità
     if (valore !== valorePrecedente) {
