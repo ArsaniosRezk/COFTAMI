@@ -417,6 +417,9 @@ async function recuperaProssimaGiornata() {
       const partiteDiv = document.createElement("div");
       partiteDiv.classList.add("partite");
 
+      // Array per memorizzare le partite per l'ordinamento
+      const partiteArray = [];
+
       // Per ogni partita nella giornata, creare gli elementi corrispondenti nel DOM
       calendarioSnapshot.forEach((partitaSnapshot) => {
         // Codice per creare gli elementi della partita (come fatto nella funzione recuperaCalendario)
@@ -547,10 +550,23 @@ async function recuperaProssimaGiornata() {
         partitaDiv.appendChild(partita);
         partitaDiv.appendChild(partitaVenueDiv);
 
-        partiteDiv.appendChild(partitaDiv);
+        // Aggiungi la partita all'array per l'ordinamento
+        partiteArray.push(partitaDiv);
 
         // Aggiungere gli elementi della partita al div delle partite
         // partiteDiv.appendChild(partitaDiv);
+      });
+
+      // Ordina le partite in base all'orario
+      partiteArray.sort((a, b) => {
+        const orarioA = a.querySelector(".data p").textContent;
+        const orarioB = b.querySelector(".data p").textContent;
+        return orarioA.localeCompare(orarioB); // Ordina in base all'orario
+      });
+
+      // Aggiungi le partite ordinate al div delle partite
+      partiteArray.forEach((partitaDiv) => {
+        partiteDiv.appendChild(partitaDiv);
       });
 
       // Aggiungere il div delle partite al div della giornata
