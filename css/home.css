@@ -511,3 +511,9 @@ Prossima Giornata
     font-size: 0.8rem;
   }
 }
+
+.form {
+  color: darkblue;
+
+  font-weight: bold;
+}
