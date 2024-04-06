@@ -197,6 +197,13 @@ function aggiornaPunteggi(punteggi, squadra, golFatti, golSubiti, avversario) {
     };
   }
 
+  // Verifica se la squadra corrente è quella a cui aggiungere il punto di penalità
+  const squadraDaPenalizzare = "S_ Marco B"; // Inserisci il nome della squadra da penalizzare
+  const penalita = 1; // Numero di punti da penalità
+
+  // Calcola i punti totali della squadra prima dell'applicazione della penalità
+  const puntiPrePenalita = punteggi[squadra].punti;
+
   punteggi[squadra].partiteGiocate++;
   punteggi[squadra].golFatti += golFatti;
   punteggi[squadra].golSubiti += golSubiti;
@@ -211,6 +218,14 @@ function aggiornaPunteggi(punteggi, squadra, golFatti, golSubiti, avversario) {
     punteggi[squadra].punti += 1;
   } else {
     punteggi[squadra].partitePerse++;
+  }
+
+  // Se la squadra corrente corrisponde a quella da penalizzare, e ha effettivamente dei punti
+  if (squadra === squadraDaPenalizzare && puntiPrePenalita > 0) {
+    // Calcola i punti totali della squadra dopo l'applicazione della penalità
+    const puntiDopoPenalita = Math.max(puntiPrePenalita - penalita, 0);
+    // Aggiorna i punti della squadra con il calcolo appena eseguito
+    punteggi[squadra].punti = puntiDopoPenalita;
   }
 
   // Aggiorna scontri diretti sempre
