@@ -35,7 +35,8 @@
   width: 100%;
   height: 100%;
 
-  background-color: #62c869;
+  background-color: #3063f0;
+  color: var(--testo);
 }
 
 .squadra img {
@@ -53,7 +54,7 @@
   font-weight: 700;
   text-align: center;
   padding: 5px;
-  color: white;
+  color: var(--testo);
 }
 
 /*
@@ -71,7 +72,8 @@ team overlay
   background-color: var(--primary);
   text-align: center;
   transition: all 0.5s ease;
-  color: var(--bluscuro);
+  color: var(--testo);
+  z-index: 2000;
 }
 
 #team-info {
@@ -99,7 +101,7 @@ team overlay
 #team-info h3 {
   font-size: 1rem;
   margin-bottom: 8px;
-  color: var(--blu);
+  color: var(--testo);
 }
 
 #overlay-allenatori,
@@ -155,9 +157,6 @@ break points
 
     width: 150px;
     height: 200px;
-
-    background-color: #62c869;
-    color: var(--bianco);
   }
 
   .squadra img {
@@ -173,7 +172,7 @@ break points
     padding: 0 40px 0 30px;
     height: 100%;
     width: 100%;
-    background-color: var(--secondary);
+    background-color: #669af2;
     line-height: 22px;
     text-align: left;
   }
@@ -188,12 +187,12 @@ break points
     font-weight: bold;
     padding-top: 15px;
     padding-bottom: 5px;
-    color: var(--blu);
+    color: yellow;
   }
 
   .membro {
     font-weight: 500;
-    color: var(--bluscuro);
+    color: var(--testo);
   }
 
   #overlay-content {

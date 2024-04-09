@@ -38,10 +38,11 @@ option:focus {
 .menu-icon {
   font-size: 25px;
   cursor: pointer;
+  color: var(--bluscuro);
 }
 
 .active {
-  color: var(--testo) !important;
+  color: var(--bluscuro) !important;
   text-decoration: underline var(--secondary);
   text-decoration-thickness: 5px;
   text-underline-offset: 8px;
@@ -52,7 +53,7 @@ option:focus {
 .close-menu-icon {
   float: right;
   margin: 40px;
-  color: var(--testo);
+  color: var(--bluscuro);
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -143,7 +144,7 @@ break points
   .nav-link {
     font-size: 1.1rem;
     padding-left: 25px;
-    color: var(--testo);
+    color: var(--bluscuro);
     opacity: 0.8;
     font-weight: 500;
   }

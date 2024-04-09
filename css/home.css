@@ -29,6 +29,7 @@
   font-weight: 500;
 
   background-color: var(--tabella);
+  color: var(--testo);
 
   border-radius: 10px;
 }
@@ -38,7 +39,7 @@
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid var(--verdescuro);
+  border-bottom: 1px solid var(--sfondo);
 
   text-align: center;
 }
@@ -53,6 +54,7 @@
   font-size: 1.2rem;
   font-weight: 500;
   font-family: "Bebas Neue", sans-serif;
+  color: yellow;
 }
 
 .custom-table thead {
@@ -77,19 +79,20 @@ thead :nth-child(10) {
   border-top-right-radius: 10px;
 }
 
-/* .custom-table tbody tr:nth-child(1),
+.custom-table tbody tr:nth-child(1),
 .custom-table tbody tr:nth-child(2),
 .custom-table tbody tr:nth-child(3),
 .custom-table tbody tr:nth-child(4) {
-  background-color: color;
-} */
+  /* background-color: rgba(185, 208, 38, 0.8); */
+  background-color: rgba(255, 255, 0, 0.5);
+}
 
-/* .custom-table tr:nth-child(1) td:nth-child(1),
+.custom-table tr:nth-child(1) td:nth-child(1),
 .custom-table tr:nth-child(2) td:nth-child(1),
 .custom-table tr:nth-child(3) td:nth-child(1),
 .custom-table tr:nth-child(4) td:nth-child(1) {
   background-color: var(--squadreChePassano);
-} */
+}
 
 .custom-table td:nth-child(1),
 .custom-table td:nth-child(2),
@@ -378,11 +381,11 @@ Prossima Giornata
   padding: 10px;
   background: linear-gradient(
     90deg,
-    rgba(77, 187, 84, 1) 0%,
+    #3063f0 0%,
 
-    rgba(206, 254, 142, 1) 50%,
+    #669af2 50%,
 
-    rgba(77, 187, 84, 1) 100%
+    #3063f0 100%
   );
 }
 
@@ -397,7 +400,7 @@ Prossima Giornata
 }
 
 .partita-venue p {
-  color: var(--bluscuro);
+  color: var(--testo);
   font-size: 0.5rem;
 
   font-weight: bold;
