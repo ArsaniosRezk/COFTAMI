@@ -105,6 +105,7 @@ async function calcolaClassificaGirone() {
           differenzaReti: 0,
           punti: 0,
           scontriDiretti: {},
+          penalita: squadra.penalita || 0, // Recupera i punti di penalità, se presenti
         };
       });
 
@@ -131,14 +132,21 @@ async function calcolaClassificaGirone() {
       // Converti l'oggetto punteggi in un array per ordinare le squadre
       const classificaArray = Object.entries(punteggi);
 
-      // Ordina l'array in base al punteggio e ai criteri aggiuntivi
+      // Ordina l'array in base al punteggio e ai criteri aggiuntivi, considerando anche i punti di penalità
       classificaArray.sort((a, b) => {
-        if (b[1].punti !== a[1].punti) {
-          return b[1].punti - a[1].punti;
+        // Calcola il totale dei punti aggiungendo i punti guadagnati e sottraendo i punti di penalità
+        const puntiTotaliA = a[1].punti - (a[1].penalita || 0);
+        const puntiTotaliB = b[1].punti - (b[1].penalita || 0);
+
+        // Effettua il confronto basato sui punti totali
+        if (puntiTotaliB !== puntiTotaliA) {
+          return puntiTotaliB - puntiTotaliA;
         } else {
+          // Continua con gli altri criteri in caso di parità nei punti totali
+
           // Verifica scontri diretti
-          const scontriDirettiA = punteggi[a[0]].scontriDiretti;
-          const scontriDirettiB = punteggi[b[0]].scontriDiretti;
+          const scontriDirettiA = a[1].scontriDiretti;
+          const scontriDirettiB = b[1].scontriDiretti;
 
           if (scontriDirettiA && scontriDirettiB) {
             const scontroDirettoA = scontriDirettiA[b[0]];
@@ -159,7 +167,7 @@ async function calcolaClassificaGirone() {
             }
           }
 
-          // Se non c'è scontro diretto o i criteri non sono sufficienti, continua con gli altri criteri
+          // Se non ci sono scontri diretti o i criteri non sono sufficienti, continua con gli altri criteri
           return (
             b[1].differenzaReti - a[1].differenzaReti ||
             b[1].golFatti - a[1].golFatti ||
@@ -199,13 +207,6 @@ function aggiornaPunteggi(punteggi, squadra, golFatti, golSubiti, avversario) {
     };
   }
 
-  // Verifica se la squadra corrente è quella a cui aggiungere il punto di penalità
-  const squadraDaPenalizzare = "S_ Marco B"; // Inserisci il nome della squadra da penalizzare
-  const penalita = 1; // Numero di punti da penalità
-
-  // Calcola i punti totali della squadra prima dell'applicazione della penalità
-  const puntiPrePenalita = punteggi[squadra].punti;
-
   punteggi[squadra].partiteGiocate++;
   punteggi[squadra].golFatti += golFatti;
   punteggi[squadra].golSubiti += golSubiti;
@@ -220,14 +221,6 @@ function aggiornaPunteggi(punteggi, squadra, golFatti, golSubiti, avversario) {
     punteggi[squadra].punti += 1;
   } else {
     punteggi[squadra].partitePerse++;
-  }
-
-  // Se la squadra corrente corrisponde a quella da penalizzare, e ha effettivamente dei punti
-  if (squadra === squadraDaPenalizzare && puntiPrePenalita > 0) {
-    // Calcola i punti totali della squadra dopo l'applicazione della penalità
-    const puntiDopoPenalita = Math.max(puntiPrePenalita - penalita, 0);
-    // Aggiorna i punti della squadra con il calcolo appena eseguito
-    punteggi[squadra].punti = puntiDopoPenalita;
   }
 
   // Aggiorna scontri diretti sempre
@@ -285,8 +278,14 @@ function rappresentaClassificaGironi(containerId, classificaArray) {
   classificaArray.forEach(([squadra, dati], index) => {
     const tr = document.createElement("tr");
 
+    // Aggiungi un asterisco accanto al nome della squadra se ha subito penalità
+    const nomeSquadra = dati.penalita > 0 ? squadra + "*" : squadra;
+
     // Modifica il nome della squadra sostituendo "-" con "."
-    const squadraPuntata = squadra.replace(/_/g, ".");
+    const squadraPuntata = nomeSquadra.replace(/_/g, ".");
+
+    // Sottrai i punti di penalità, se presenti
+    const puntiSenzaPenalita = dati.punti - (dati.penalita || 0);
 
     const colonneDati = [
       index + 1,
@@ -298,7 +297,7 @@ function rappresentaClassificaGironi(containerId, classificaArray) {
       dati.golFatti,
       dati.golSubiti,
       dati.differenzaReti,
-      dati.punti,
+      puntiSenzaPenalita, // Utilizzare puntiSenzaPenalita invece di dati.punti
     ];
 
     colonneDati.forEach((dato, columnIndex) => {
@@ -313,6 +312,26 @@ function rappresentaClassificaGironi(containerId, classificaArray) {
 
   table.appendChild(tbody);
   classificaDiv.appendChild(table);
+
+  // Dopo la rappresentazione della tabella della classifica
+  if (classificaArray.some(([_, dati]) => dati.penalita > 0)) {
+    const penalitaDiv = document.createElement("div");
+    penalitaDiv.classList.add("penalita-message");
+
+    const penalitaMessage = classificaArray
+      .filter(([_, dati]) => dati.penalita > 0)
+      .map(
+        ([squadra, dati]) =>
+          `<strong>${squadra.replace(/_/g, ".")}</strong>: -${
+            dati.penalita
+          } punti di penalità`
+      )
+      .join("<br>");
+
+    penalitaDiv.innerHTML = penalitaMessage;
+
+    classificaDiv.appendChild(penalitaDiv);
+  }
 }
 
 /*

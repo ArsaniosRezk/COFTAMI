@@ -4,7 +4,7 @@
 ===================================
 */
 
-:root {
+/* :root {
   --sfondo: #ffffff;
   --primary: #e5ffbe;
   --secondary: #cefe8e;
@@ -16,6 +16,20 @@
   --intTabella: #f4f4f4;
   --tabella: #f5fff6;
   --squadreChePassano: #bcf9c3;
+} */
+
+:root {
+  --sfondo: #ffffff;
+  --primary: #3e79df;
+  --secondary: #2560d5;
+  --testo: #fff;
+  --bluscuro: #262f3e;
+  --nero: black;
+  --verdescuro: #4dbb54;
+  --arancione: orange;
+  --intTabella: #144f8f;
+  --tabella: #2560d5;
+  --squadreChePassano: #b9d026;
 }
 
 * {
@@ -76,7 +90,10 @@ GRID
 
 header {
   grid-area: alias-header;
-  /* width: 100%; */
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
 }
 
 main {
@@ -85,10 +102,15 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  top: 110px;
 }
 
 footer {
   grid-area: alias-footer;
+  width: 100%;
+  position: relative;
+  top: 110px;
 }
 
 /*
@@ -160,7 +182,22 @@ break points
 @media (min-width: 1440px) {
 }
 
-.penalita {
-  margin: 5px;
-  font-size: 0.8rem;
+/*
+===================================
+penalità
+===================================
+*/
+
+.penalita-message {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 0.7rem;
+}
+
+@media (min-width: 576px) {
+  .penalita-message {
+    margin-top: 5px;
+    text-align: right;
+    font-size: 0.9rem;
+  }
 }
