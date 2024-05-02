@@ -128,7 +128,7 @@ async function recuperaCalendario() {
         const logoCasaElement = document.createElement("img");
         const logoCasaUrl = squadreSnapshot
           .child(squadraCasa)
-          .child("Logo")
+          .child("LogoLR")
           .val();
         logoCasaElement.src = logoCasaUrl;
 
@@ -167,7 +167,7 @@ async function recuperaCalendario() {
         const logoOspiteElement = document.createElement("img");
         const logoOspiteUrl = squadreSnapshot
           .child(squadraOspite)
-          .child("Logo")
+          .child("LogoLR")
           .val();
         logoOspiteElement.src = logoOspiteUrl;
 

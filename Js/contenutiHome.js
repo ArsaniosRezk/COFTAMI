@@ -481,7 +481,7 @@ async function recuperaProssimaGiornata() {
         const logoCasaElement = document.createElement("img");
         const logoCasaUrl = squadreSnapshot
           .child(squadraCasa)
-          .child("Logo")
+          .child("LogoLR")
           .val();
         logoCasaElement.src = logoCasaUrl;
 
@@ -520,7 +520,7 @@ async function recuperaProssimaGiornata() {
         const logoOspiteElement = document.createElement("img");
         const logoOspiteUrl = squadreSnapshot
           .child(squadraOspite)
-          .child("Logo")
+          .child("LogoLR")
           .val();
         logoOspiteElement.src = logoOspiteUrl;
 
