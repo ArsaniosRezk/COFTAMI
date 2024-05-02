@@ -124,7 +124,7 @@ caption {
   width: auto;
   border-collapse: collapse;
   font-family: "roboto", sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.55rem;
   font-weight: 500;
   color: var(--testo);
   background-color: var(--tabella);
