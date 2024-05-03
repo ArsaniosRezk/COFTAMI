@@ -150,8 +150,8 @@ caption {
 .custom-table-g-a th:nth-child(2),
 .custom-table-g-a td:nth-child(2) {
   text-align: left;
-  width: 135px;
-  max-width: 135px;
+  width: 115px;
+  max-width: 115px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -160,8 +160,8 @@ caption {
 .custom-table-g-a th:nth-child(3),
 .custom-table-g-a td:nth-child(3) {
   text-align: left;
-  width: 100px;
-  max-width: 100px;
+  width: 120px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -190,7 +190,7 @@ caption {
   display: flex;
   justify-content: end;
   width: fit-content;
-  border-radius: 10px;
+  border-radius: 5px;
   border: 1px solid #3063f0;
   margin-top: 5px;
   background-color: #669af2;
@@ -202,7 +202,7 @@ caption {
   display: inline-block;
   padding: 5px 12px; /* Aggiungi spazio intorno al testo */
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: 0.55rem;
   border-right: 1px solid #3063f0;
 }
 
@@ -341,8 +341,8 @@ break points
   .custom-table-g-a th:nth-child(3),
   .custom-table-g-a td:nth-child(2),
   .custom-table-g-a td:nth-child(3) {
-    width: 200px;
-    max-width: 200px;
+    width: 400px;
+    max-width: 400px;
   }
 
   .custom-table-g-a th:nth-child(1),

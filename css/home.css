@@ -1,3 +1,9 @@
+/*
+===================================
+CLASSIFICA SQUADRE
+===================================
+*/
+
 .container-classifica-gironi {
   display: flex;
   flex-direction: column;
@@ -26,7 +32,7 @@
   border-collapse: collapse;
   font-family: "roboto", sans-serif;
   font-size: 0.55rem;
-  font-weight: 500;
+  /* font-weight: 500; */
 
   background-color: var(--tabella);
   color: var(--testo);
@@ -51,10 +57,10 @@
 }
 
 .custom-table th {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
   font-family: "Bebas Neue", sans-serif;
-  color: yellow;
+  color: var(--intestazioni);
 }
 
 .custom-table thead {
@@ -83,7 +89,6 @@ thead :nth-child(10) {
 .custom-table tbody tr:nth-child(2),
 .custom-table tbody tr:nth-child(3),
 .custom-table tbody tr:nth-child(4) {
-  /* background-color: rgba(185, 208, 38, 0.8); */
   background-color: rgba(255, 255, 0, 0.5);
 }
 
@@ -94,10 +99,16 @@ thead :nth-child(10) {
   background-color: var(--squadreChePassano);
 }
 
-.custom-table td:nth-child(1),
 .custom-table td:nth-child(2),
 .custom-table td:nth-child(10) {
   font-weight: 600;
+}
+
+.custom-table td:nth-child(3),
+.custom-table td:nth-child(4),
+.custom-table td:nth-child(5),
+.custom-table td:nth-child(6) {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .custom-table tbody tr:last-child {
@@ -189,93 +200,7 @@ break points
 
 /*
 ===================================
-SQUADRE
-===================================
-*/
-
-#container-squadre {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-
-  gap: 30px;
-}
-
-.squadra {
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: center;
-
-  width: 120px;
-  height: 150px;
-}
-
-.squadra img {
-  height: 90px;
-  max-width: 100%;
-  margin-bottom: 10px;
-}
-
-.nome-team {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-align: center;
-  padding: 10px;
-}
-
-/*
-===================================
-break points squadre
-===================================
-*/
-
-@media (min-width: 576px) {
-}
-
-@media (min-width: 992px) {
-  #container-squadre {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    width: 1000px; /* cambio questo valore in base alla quantità di squadre */
-
-    gap: 0;
-  }
-
-  .squadra {
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
-
-    width: 150px;
-    height: 200px;
-
-    margin: 15px 25px; /* cambio questo valore in base alla quantità di squadre: auto? */
-  }
-
-  .squadra img {
-    height: 125px;
-    margin-bottom: 15px;
-  }
-
-  .nome-team {
-    font-size: 1rem;
-  }
-}
-
-@media (min-width: 1440px) {
-}
-
-/*
-===================================
-Prossima Giornata
+PROSSIMA GIORNATA
 ===================================
 */
 
@@ -291,8 +216,7 @@ Prossima Giornata
   align-items: start;
   flex-wrap: wrap;
 
-  width: 90%;
-  gap: 20px;
+  width: 100%;
 }
 
 .giornata {
@@ -300,7 +224,7 @@ Prossima Giornata
   flex-direction: column;
   justify-content: start;
   align-items: center;
-  padding: 20px;
+  padding: 15px;
 
   background-color: var(--secondary);
   width: 100%;
@@ -309,9 +233,10 @@ Prossima Giornata
 }
 
 .numero-giornata {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  /* color: var(--intestazioni); */
 }
 
 .partite {
@@ -319,66 +244,18 @@ Prossima Giornata
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
+  /* background-color: orange; */
   width: 100%;
-  gap: 15px;
-}
-
-.partita {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.squadraCasa,
-.squadraOspite,
-.risultato {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.nome-squadra {
-  font-family: "nomeSquadra";
-  font-size: 0.6rem;
-
-  margin-top: 5px;
-  width: 80px;
-  max-width: 80px;
-}
-
-.container-nome-squadra {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 30px;
-}
-
-.container-logo {
-  width: 50px;
-  height: 50px;
-}
-
-.squadraCasa img,
-.squadraOspite img {
-  max-width: 50px;
-  max-height: 50px;
-}
-
-.risultato {
-  font-family: "nomeSquadra";
-  font-size: 1.2rem;
-  width: 35px;
+  gap: 10px;
 }
 
 .partita-div {
   display: flex;
   flex-direction: column;
+  width: 100%;
 
   border-radius: 10px;
-  padding: 10px;
+
   background: linear-gradient(
     90deg,
     #3063f0 0%,
@@ -389,21 +266,75 @@ Prossima Giornata
   );
 }
 
+.partita {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 4px 5px;
+}
+
+.squadraCasa,
+.squadraOspite,
+.risultato {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* background-color: red; */
+}
+
+.nome-squadra {
+  font-family: "nomeSquadra";
+  font-size: 0.6rem;
+
+  margin-top: 5px;
+  width: 75px;
+  max-width: 75px;
+  /* background-color: orange; */
+}
+
+.container-nome-squadra {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 30px;
+  /* background-color: green; */
+}
+
+.container-logo {
+  width: 25px;
+  height: 25px;
+  /* background-color: purple; */
+}
+
+.squadraCasa img,
+.squadraOspite img {
+  max-width: 25px;
+  max-height: 25px;
+}
+
+.risultato {
+  font-family: "nomeSquadra";
+  font-size: 1.2rem;
+  width: 35px;
+}
+
 .partita-venue {
   display: flex;
   justify-content: space-between;
 
-  gap: 20px;
-  margin-top: 5px;
-  padding: 5px;
-  border-top: 1px solid rgba(38, 47, 62, 0.2);
+  padding: 5px 20px;
+  background-color: rgba(255, 0, 0, 0.3);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  overflow: hidden;
 }
 
 .partita-venue p {
   color: var(--testo);
-  font-size: 0.5rem;
-
-  font-weight: bold;
+  font-size: 0.4rem;
+  font-weight: 500;
 }
 
 @media (min-width: 576px) {
