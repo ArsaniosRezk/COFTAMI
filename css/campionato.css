@@ -5,27 +5,10 @@
   align-items: start;
 }
 
-/* .girone-container {
-  background-color: var(--secondary);
-  border-radius: 10px;
-  margin: 10px 0;
-  padding: 0;
-} */
-
-/* caption {
-  letter-spacing: 1.2px;
-
-  font-family: "Bebas Neue", sans-serif;
-  font-weight: 400;
-  font-size: 1.4rem;
-  margin: 20px 0 10px 0;
-} */
-
 .classifica-giocatori {
   background-color: var(--secondary);
   border-radius: 10px;
   margin: 10px 0;
-  padding: 0;
 }
 
 .custom-table {
@@ -259,7 +242,6 @@ break points
 
   .classifica-giocatori {
     margin: 20px 30px;
-    padding: 10px;
   }
 
   .container-classifica-giocatori {
@@ -341,7 +323,7 @@ break points
   .custom-table-g-a {
     font-size: 1rem;
     font-weight: 500;
-    margin: 15px 10px 0 10px;
+    /* margin: 15px 10px 0 10px; */
   }
 
   .custom-table-g-a td,
@@ -387,12 +369,11 @@ break points
     margin-top: 5px;
 
     overflow: hidden;
-    margin-left: 10px;
   }
 
   .pagination a {
     display: inline-block;
-    padding: 8px 12px; /* Aggiungi spazio intorno al testo */
+    padding: 8px 12px;
     text-decoration: none;
     font-size: 1rem;
   }

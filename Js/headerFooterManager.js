@@ -156,3 +156,36 @@ const firebaseConfig = {
   appId: "1:99662203430:web:3cd23e844459925954b4e7",
   measurementId: "G-QB8RJEV0RX",
 };
+
+// Funzione per salvare l'opzione selezionata nello storage locale
+function saveSelectedOption(selectId) {
+  const selectElement = document.getElementById(selectId);
+  const selectedOption = selectElement.value;
+  localStorage.setItem(selectId, selectedOption);
+}
+
+// Funzione per caricare l'opzione selezionata salvata nello storage locale
+function loadSelectedOption(selectId) {
+  const selectElement = document.getElementById(selectId);
+  const savedOption = localStorage.getItem(selectId);
+  if (savedOption) {
+    selectElement.value = savedOption;
+  }
+}
+
+// Chiamata alla funzione per caricare l'opzione selezionata al caricamento della pagina
+window.onload = function () {
+  loadSelectedOption("divisione");
+  loadSelectedOption("divisione-smartphone");
+};
+
+// Codice per gestire il cambiamento dell'opzione selezionata
+document.getElementById("divisione").addEventListener("change", function () {
+  saveSelectedOption("divisione");
+});
+
+document
+  .getElementById("divisione-smartphone")
+  .addEventListener("change", function () {
+    saveSelectedOption("divisione-smartphone");
+  });
