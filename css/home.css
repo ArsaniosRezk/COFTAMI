@@ -11,22 +11,6 @@ CLASSIFICA SQUADRE
   align-items: start;
 }
 
-/* .girone-container {
-  background-color: var(--secondary);
-  border-radius: 10px;
-  margin: 10px 0;
-  padding: 0;
-} */
-
-/* caption {
-  letter-spacing: 1.2px;
-
-  font-family: "Bebas Neue", sans-serif;
-  font-weight: 400;
-  font-size: 1.4rem;
-  margin: 20px 0 10px 0;
-} */
-
 .custom-table {
   width: auto;
   border-collapse: collapse;
@@ -139,18 +123,6 @@ break points
     flex-direction: row;
     justify-content: space-evenly;
     align-items: start;
-  }
-
-  /* .girone-container {
-    padding: 20px 30px;
-    margin: 10px;
-  } */
-
-  caption {
-    letter-spacing: 1.2px;
-    font-weight: 400;
-    font-size: 1.9rem;
-    margin: 10px 0;
   }
 
   .custom-table {

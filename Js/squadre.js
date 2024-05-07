@@ -171,21 +171,6 @@ function openTeamMembersOverlay(
   logoSquadra
 ) {
   if (isMobileDevice()) {
-    // const overlay = document.getElementById("team-overlay");
-    // const teamNameElement = document.getElementById("team-name");
-    // const logoElement = document.getElementById("team-logo");
-    // const allenatoriElement = document.getElementById("overlay-allenatori");
-    // const giocatoriElement = document.getElementById("overlay-giocatori");
-
-    // // Popola i dati della squadra nell'overlay
-    // teamNameElement.textContent = nomeSquadra;
-    // logoElement.src = logoSquadra;
-    // allenatoriElement.textContent = Object.keys(allenatori).join(", ");
-    // giocatoriElement.textContent = Object.keys(giocatori).join(", ");
-
-    // // Mostra l'overlay
-    // overlay.style.display = "flex";
-
     const overlay = document.getElementById("team-overlay");
     const teamNameElement = document.getElementById("team-name");
     const logoElement = document.getElementById("team-logo");
