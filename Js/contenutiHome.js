@@ -35,17 +35,38 @@ import {
 
 const db = getDatabase();
 
-// // Utilizzo della variabile selectedDivisione dal file del header
-// if (window.selectedDivisione) {
-//   // Ora puoi utilizzare la variabile selectedDivisione qui nel file della home
-//   console.log(window.selectedDivisione);
-// } else {
-//   console.log("La variabile selectedDivisione non è definita.");
-// }
+const divisioneSelect = document.getElementById("divisione");
+const divisioneSelectSmartphone = document.getElementById(
+  "divisione-smartphone"
+);
+let selectedDivisione = "Superiori";
+
+// Funzioni che partono al caricamento della pagina
+document.addEventListener("DOMContentLoaded", () => {
+  sequenzaEsecuzione();
+});
+
+// Funzioni che partono quando cambio divisione
+divisioneSelect.addEventListener("change", async () => {
+  selectedDivisione = divisioneSelect.value;
+
+  // Chiamata alla funzione per visualizzare le squadre
+  sequenzaEsecuzione();
+});
+
+// Funzioni che partono quando cambio divisione
+divisioneSelectSmartphone.addEventListener("change", async () => {
+  selectedDivisione = divisioneSelectSmartphone.value;
+
+  // Chiamata alla funzione per visualizzare le squadre
+  sequenzaEsecuzione();
+});
 
 // Chiamata alla funzione principale con gestione della sequenza
-export async function sequenzaEsecuzione() {
+async function sequenzaEsecuzione() {
   recuperaProssimaGiornata();
+
+  // visualizzaSquadreHome();
   calcolaClassificaGirone();
 }
 
@@ -61,7 +82,6 @@ async function calcolaClassificaGirone() {
 
   const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
   const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite`);
-  console.log(selectedDivisione);
 
   try {
     const squadreSnapshot = await get(squadreRef);

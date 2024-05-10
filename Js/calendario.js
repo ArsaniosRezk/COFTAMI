@@ -35,8 +35,35 @@ import {
 
 const db = getDatabase();
 
+const divisioneSelect = document.getElementById("divisione");
+const divisioneSelectSmartphone = document.getElementById(
+  "divisione-smartphone"
+);
+let selectedDivisione = "Superiori";
+
+// Funzioni che partono al caricamento della pagina
+document.addEventListener("DOMContentLoaded", () => {
+  sequenzaEsecuzione();
+});
+
+// Funzioni che partono quando cambio divisione
+divisioneSelect.addEventListener("change", async () => {
+  selectedDivisione = divisioneSelect.value;
+
+  // Chiamata alla funzione per visualizzare le squadre
+  sequenzaEsecuzione();
+});
+
+// Funzioni che partono quando cambio divisione da telefono
+divisioneSelectSmartphone.addEventListener("change", async () => {
+  selectedDivisione = divisioneSelectSmartphone.value;
+
+  // Chiamata alla funzione per visualizzare le squadre
+  sequenzaEsecuzione();
+});
+
 // Chiamata alla funzione principale con gestione della sequenza
-export async function sequenzaEsecuzione() {
+async function sequenzaEsecuzione() {
   recuperaCalendario();
 }
 
