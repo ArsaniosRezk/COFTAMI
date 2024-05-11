@@ -1,6 +1,3 @@
-// $("#header-content").load("pages/header.html");
-// $("#footer-content").load("pages/footer.html");
-
 function openMenu() {
   document.getElementById("overlay-menu-container").style.left = "0%";
   document.getElementById("overlay-menu").style.opacity = "1";
