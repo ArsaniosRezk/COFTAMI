@@ -178,6 +178,8 @@ function loadSavedOption(selectId) {
     selectElement.value = savedOption;
     // Assegnazione del valore della divisione salvata alla variabile selectedDivisione
     window.selectedDivisione = savedOption;
+  } else {
+    window.selectedDivisione = "Superiori";
   }
 }
 
