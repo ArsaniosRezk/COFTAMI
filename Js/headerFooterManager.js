@@ -128,7 +128,7 @@ navLinkEls.forEach((navLinkEl) => {
 
   if (
     windowPathname === navLinkPathname ||
-    (windowPathname === "/" && navLinkPathname === "/")
+    (windowPathname === "/index.html" && navLinkPathname === "/")
   ) {
     navLinkEl.classList.add("active");
   }
@@ -136,106 +136,56 @@ navLinkEls.forEach((navLinkEl) => {
 
 //////////////////////////////////////////////////////////////////////////////////
 
-let sequenzaEsecuzioneModule;
+// Codice JavaScript per recuperare dati da Firebase e calcolare la classifica
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
-switch (window.location.pathname) {
-  case "/":
-    sequenzaEsecuzioneModule = import("./funzioniHome.js");
-    break;
-  case "/campionato.html":
-    sequenzaEsecuzioneModule = import("./funzioniCampionato.js");
-    break;
-  case "/squadre.html":
-    sequenzaEsecuzioneModule = import("./funzioniSquadre.js");
-    break;
-  case "/calendario.html":
-    sequenzaEsecuzioneModule = import("./funzioniCalendario.js");
-    break;
-  case "/regolamento.html":
-    break;
-  default:
-    console.error(
-      "La pagina corrente non ha una funzione sequenzaEsecuzione definita."
-    );
-    break;
-}
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Definizione globale della variabile selectedDivisione
-window.selectedDivisione;
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB016Bj67OcUqsvrtPD21Yq4w2Uv5Apn5I",
+  authDomain: "cofta-mi.firebaseapp.com",
+  databaseURL:
+    "https://cofta-mi-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "cofta-mi",
+  storageBucket: "cofta-mi.appspot.com",
+  messagingSenderId: "99662203430",
+  appId: "1:99662203430:web:3cd23e844459925954b4e7",
+  measurementId: "G-QB8RJEV0RX",
+};
 
 // Funzione per salvare l'opzione selezionata nello storage locale
 function saveSelectedOption(selectId) {
   const selectElement = document.getElementById(selectId);
-  selectedDivisione = selectElement.value;
-  localStorage.setItem(selectId, selectedDivisione);
+  const selectedOption = selectElement.value;
+  localStorage.setItem(selectId, selectedOption);
 }
 
 // Funzione per caricare l'opzione selezionata salvata nello storage locale
-function loadSavedOption(selectId) {
+function loadSelectedOption(selectId) {
   const selectElement = document.getElementById(selectId);
   const savedOption = localStorage.getItem(selectId);
   if (savedOption) {
     selectElement.value = savedOption;
-    // Assegnazione del valore della divisione salvata alla variabile selectedDivisione
-    window.selectedDivisione = savedOption;
   }
 }
 
+// Chiamata alla funzione per caricare l'opzione selezionata al caricamento della pagina
 window.onload = function () {
-  loadSavedOption("divisione");
-  loadSavedOption("divisione-smartphone");
-  // Chiamata alla funzione sequenzaEsecuzione solo se selectedDivisione è stata assegnata
-  if (window.selectedDivisione) {
-    // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-    sequenzaEsecuzioneModule.then((module) => {
-      if (module && module.sequenzaEsecuzione) {
-        module.sequenzaEsecuzione();
-      } else {
-        console.error(
-          "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-        );
-      }
-    });
-  }
+  loadSelectedOption("divisione");
+  loadSelectedOption("divisione-smartphone");
 };
 
 // Codice per gestire il cambiamento dell'opzione selezionata
 document.getElementById("divisione").addEventListener("change", function () {
   saveSelectedOption("divisione");
-  updateSelectElement("divisione-smartphone", selectedDivisione);
-  // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-  sequenzaEsecuzioneModule.then((module) => {
-    if (module && module.sequenzaEsecuzione) {
-      module.sequenzaEsecuzione();
-    } else {
-      console.error(
-        "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-      );
-    }
-  });
 });
 
 document
   .getElementById("divisione-smartphone")
   .addEventListener("change", function () {
     saveSelectedOption("divisione-smartphone");
-    updateSelectElement("divisione", selectedDivisione);
-    // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-    sequenzaEsecuzioneModule.then((module) => {
-      if (module && module.sequenzaEsecuzione) {
-        module.sequenzaEsecuzione();
-      } else {
-        console.error(
-          "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-        );
-      }
-    });
   });
-
-// Funzione per aggiornare entrambi gli elementi <select>
-function updateSelectElement(selectId, value) {
-  const selectElement = document.getElementById(selectId);
-  if (selectElement) {
-    selectElement.value = value;
-  }
-}
