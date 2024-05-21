@@ -396,32 +396,21 @@ async function rappresentaClassificheGiocatori(
   const table = document.createElement("table");
   table.classList.add("custom-table-g-a");
 
-  // // Aggiungi il caption alla tabella
-  // const caption = table.createCaption();
-  // caption.textContent = captionText;
-
   const thead = document.createElement("thead");
-
   const tbody = document.createElement("tbody");
 
   // Intestazione della tabella
   const theadRow = document.createElement("tr");
 
   const colonne = ["#", "Giocatore", "Squadra", tipo];
-
   colonne.forEach((colonna, index) => {
     const th = document.createElement("th");
     th.textContent = colonna;
-
     theadRow.appendChild(th);
   });
 
   thead.appendChild(theadRow);
   table.appendChild(thead);
-
-  // Variabili per tenere traccia della posizione nella classifica
-  let posizioneAttuale = 0;
-  let valorePrecedente = null;
 
   // Calcola il numero totale di pagine
   const numeroPagine = Math.ceil(classificaArray.length / righePerPagina);
@@ -433,36 +422,44 @@ async function rappresentaClassificheGiocatori(
     classificaArray.length
   );
 
-  // Itera solo sulle righe della pagina corrente
-  for (let index = indiceIniziale; index < indiceFinale; index++) {
+  // Variabili per tenere traccia della posizione nella classifica
+  let posizioneAttuale = 0;
+  let valorePrecedente = null;
+  let posizioneCorrente = 1; // Per tracciare la posizione assoluta in classifica
+
+  // Itera su tutte le righe per determinare la posizione continua
+  for (let index = 0; index < classificaArray.length; index++) {
     const [giocatore, valore] = classificaArray[index];
-
-    const tr = document.createElement("tr");
-
-    // Recupera la squadra del giocatore
-    const squadra = await recuperaSquadraGiocatore(giocatore);
-    const squadraPuntata = squadra.replace(/_/g, ".");
 
     // Controlla la parità
     if (valore !== valorePrecedente) {
-      posizioneAttuale = index + 1;
+      posizioneAttuale = posizioneCorrente;
     }
+    posizioneCorrente++;
 
-    const colonneDati = [posizioneAttuale, giocatore, squadraPuntata, valore];
+    // Itera solo sulle righe della pagina corrente
+    if (index >= indiceIniziale && index < indiceFinale) {
+      const tr = document.createElement("tr");
 
-    colonneDati.forEach((dato, columnIndex) => {
-      const td = document.createElement("td");
-      td.textContent = dato;
+      // Recupera la squadra del giocatore
+      const squadra = await recuperaSquadraGiocatore(giocatore);
+      const squadraPuntata = squadra ? squadra.replace(/_/g, ".") : "N/A";
 
-      // Aggiungi classe per le prime due celle della prima colonna del body
-      if (columnIndex === 0 && posizioneAttuale <= 2) {
-        td.classList.add("primaColonnaCella" + posizioneAttuale);
-      }
+      const colonneDati = [posizioneAttuale, giocatore, squadraPuntata, valore];
+      colonneDati.forEach((dato, columnIndex) => {
+        const td = document.createElement("td");
+        td.textContent = dato;
 
-      tr.appendChild(td);
-    });
+        // Aggiungi classe per le prime due celle della prima colonna del body
+        if (columnIndex === 0 && posizioneAttuale <= 2) {
+          td.classList.add("primaColonnaCella" + posizioneAttuale);
+        }
 
-    tbody.appendChild(tr);
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    }
 
     // Aggiorna il valore precedente
     valorePrecedente = valore;

@@ -164,28 +164,26 @@ switch (window.location.pathname) {
 }
 
 // Funzione per salvare l'opzione selezionata nello storage locale
-function saveSelectedOption(selectId) {
-  const selectElement = document.getElementById(selectId);
-  window.selectedDivisione = selectElement.value;
-  localStorage.setItem(selectId, selectedDivisione);
+function saveSelectedOption() {
+  localStorage.setItem("selectedDivisione", window.selectedDivisione);
 }
 
 // Funzione per caricare l'opzione selezionata salvata nello storage locale
-function loadSavedOption(selectId) {
-  const selectElement = document.getElementById(selectId);
-  const savedOption = localStorage.getItem(selectId);
+function loadSavedOption() {
+  const savedOption = localStorage.getItem("selectedDivisione");
   if (savedOption) {
-    selectElement.value = savedOption;
-    // Assegnazione del valore della divisione salvata alla variabile selectedDivisione
     window.selectedDivisione = savedOption;
+    updateSelectElement("divisione", savedOption);
+    updateSelectElement("divisione-smartphone", savedOption);
   } else {
     window.selectedDivisione = "Superiori";
+    updateSelectElement("divisione", "Superiori");
+    updateSelectElement("divisione-smartphone", "Superiori");
   }
 }
 
 window.onload = function () {
-  loadSavedOption("divisione");
-  loadSavedOption("divisione-smartphone");
+  loadSavedOption();
   // Chiamata alla funzione sequenzaEsecuzione solo se selectedDivisione è stata assegnata
   if (window.selectedDivisione) {
     // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
@@ -203,8 +201,9 @@ window.onload = function () {
 
 // Codice per gestire il cambiamento dell'opzione selezionata
 document.getElementById("divisione").addEventListener("change", function () {
-  saveSelectedOption("divisione");
-  updateSelectElement("divisione-smartphone", selectedDivisione);
+  window.selectedDivisione = this.value;
+  saveSelectedOption();
+  updateSelectElement("divisione-smartphone", window.selectedDivisione);
   // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
   sequenzaEsecuzioneModule.then((module) => {
     if (module && module.sequenzaEsecuzione) {
@@ -220,8 +219,9 @@ document.getElementById("divisione").addEventListener("change", function () {
 document
   .getElementById("divisione-smartphone")
   .addEventListener("change", function () {
-    saveSelectedOption("divisione-smartphone");
-    updateSelectElement("divisione", selectedDivisione);
+    window.selectedDivisione = this.value;
+    saveSelectedOption();
+    updateSelectElement("divisione", window.selectedDivisione);
     // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
     sequenzaEsecuzioneModule.then((module) => {
       if (module && module.sequenzaEsecuzione) {
