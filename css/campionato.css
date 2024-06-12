@@ -213,7 +213,7 @@
 
 /* FASE FINALE*/
 
-.tabellone {
+#tabellone {
   width: 100%;
 }
 
@@ -376,12 +376,6 @@ break points
     padding: 8px 12px;
     text-decoration: none;
     font-size: 1rem;
-  }
-
-  /* FASE FINALE*/
-
-  .tabellone {
-    width: 950px;
   }
 }
 
