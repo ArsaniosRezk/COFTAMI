@@ -39,6 +39,7 @@ const db = getDatabase();
 export async function sequenzaEsecuzione() {
   recuperaProssimaGiornata();
   calcolaClassificaGirone();
+  faseFinale();
 }
 
 /*
@@ -580,5 +581,38 @@ async function recuperaProssimaGiornata() {
       // Aggiungere il div della giornata al div "prossima-giornata" nel DOM
       prossimaGiornataDiv.appendChild(giornataDiv);
     }
+  }
+}
+
+/*
+===================================
+FASE FINALE
+===================================
+*/
+
+async function fileExists(url) {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+    return response.ok;
+  } catch (error) {
+    console.error(`Errore durante la verifica del file ${url}:`, error);
+    return false;
+  }
+}
+
+async function faseFinale() {
+  const tabelloneImg = document.getElementById("tabellone");
+
+  const supExists = await fileExists("immagini/Tabellone_Sup.png");
+  const giovExists = await fileExists("immagini/Tabellone_Giov.png");
+
+  if (supExists && giovExists) {
+    if (selectedDivisione === "Superiori") {
+      tabelloneImg.src = "immagini/Tabellone_Sup.png";
+    } else if (selectedDivisione === "Giovani") {
+      tabelloneImg.src = "immagini/Tabellone_Giov.png";
+    }
+  } else {
+    tabelloneImg.src = "immagini/Tabellone.png";
   }
 }
