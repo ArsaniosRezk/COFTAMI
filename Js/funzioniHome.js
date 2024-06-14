@@ -52,8 +52,8 @@ CLASSIFICA GIRONI
 async function calcolaClassificaGirone() {
   const containerId = `classifica`;
 
-  const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
-  const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite`);
+  const squadreRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Squadre`);
+  const partiteRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Partite`);
 
   try {
     const squadreSnapshot = await get(squadreRef);
@@ -319,7 +319,7 @@ async function visualizzaSquadreHome() {
   // Svuota div container squadre
   containerSquadre.innerHTML = "";
 
-  const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
+  const squadreRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Squadre`);
   const squadreSnapshot = await get(squadreRef);
 
   if (squadreSnapshot.exists()) {
@@ -378,7 +378,7 @@ async function recuperaProssimaGiornata() {
   // Ottenere il riferimento alla giornata da mostrare
   const giornataDaMostrareRef = ref(
     db,
-    `Calcio/${selectedDivisione}/GiornataDaMostrare`
+    `Calcio/2023-2024/${selectedDivisione}/GiornataDaMostrare`
   );
 
   // Ottenere lo snapshot della giornata da mostrare
@@ -391,14 +391,14 @@ async function recuperaProssimaGiornata() {
     // Ottenere il riferimento al calendario della divisione
     const calendarioRef = ref(
       db,
-      `Calcio/${selectedDivisione}/Calendario/${giornataDaMostrare}`
+      `Calcio/2023-2024/${selectedDivisione}/Calendario/${giornataDaMostrare}`
     );
 
     // Ottenere lo snapshot del calendario per la giornata da mostrare
     const calendarioSnapshot = await get(calendarioRef);
 
     // Ottenere il riferimento alle squadre della divisione
-    const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
+    const squadreRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Squadre`);
 
     // Ottenere lo snapshot delle squadre della divisione
     const squadreSnapshot = await get(squadreRef);
