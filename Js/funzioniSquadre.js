@@ -46,7 +46,7 @@ async function visualizzaSquadreConMembri() {
   // Svuota div container squadre
   containerSquadre.innerHTML = "";
 
-  const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
+  const squadreRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Squadre`);
   const squadreSnapshot = await get(squadreRef);
 
   if (squadreSnapshot.exists()) {
