@@ -52,8 +52,8 @@ CLASSIFICA GIRONI
 async function calcolaClassificaGirone() {
   const containerId = `classifica`;
 
-  const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
-  const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite`);
+  const squadreRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Squadre`);
+  const partiteRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Partite`);
 
   try {
     const squadreSnapshot = await get(squadreRef);
@@ -316,7 +316,7 @@ async function calcolaClassificheMarcatoriAssist() {
   // const assistman = {};
 
   // Itera su tutti i gironi e tutte le partite della divisione selezionata
-  const partiteRef = ref(db, `Calcio/${selectedDivisione}/Partite`);
+  const partiteRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Partite`);
 
   try {
     const partiteSnapshot = await get(partiteRef);
@@ -525,7 +525,7 @@ function aggiungiControlliPaginazione(
 
 // Funzione per recuperare giocatori da inserire in tabelle marcatori e assist
 async function recuperaSquadraGiocatore(giocatore) {
-  const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
+  const squadreRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Squadre`);
   try {
     const squadreSnapshot = await get(squadreRef);
     if (squadreSnapshot.exists()) {

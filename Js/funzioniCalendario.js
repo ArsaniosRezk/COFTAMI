@@ -47,8 +47,11 @@ CALENDARIO
 */
 
 async function recuperaCalendario() {
-  const calendarioRef = ref(db, `Calcio/${selectedDivisione}/Calendario`);
-  const squadreRef = ref(db, `Calcio/${selectedDivisione}/Squadre`);
+  const calendarioRef = ref(
+    db,
+    `Calcio/2023-2024/${selectedDivisione}/Calendario`
+  );
+  const squadreRef = ref(db, `Calcio/2023-2024/${selectedDivisione}/Squadre`);
   const calendarioPartiteDiv = document.getElementById("giornate");
 
   const [calendarioSnapshot, squadreSnapshot] = await Promise.all([
