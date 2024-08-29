@@ -1,0 +1,159 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+
+  padding: 20px 10px;
+  font-family: "montserrat", sans-serif;
+  color: var(--testo);
+  background-color: var(--sfondo);
+}
+
+.division-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+
+#space1 {
+  margin-top: 10px;
+}
+
+#space2 {
+  margin-top: 20px;
+}
+
+.table-container {
+  width: 100%;
+}
+
+.custom-table {
+  width: auto;
+  border-collapse: collapse;
+  font-family: "roboto", sans-serif;
+  font-size: 0.55rem;
+
+  border-radius: 10px;
+
+  /* border: 1px solid black; */
+}
+
+.custom-table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+
+.custom-table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+
+.custom-table tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+.custom-table tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
+.custom-table tr:nth-child(1) td:nth-child(1),
+.custom-table th,
+.custom-table tr {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+
+  text-align: center;
+}
+
+.custom-table td,
+.custom-table th {
+  padding: 8px 5px;
+  width: 25px;
+}
+
+.custom-table th {
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: "Bebas Neue", sans-serif;
+  color: var(--intestazioni);
+}
+
+.custom-table thead {
+  background-color: rgba(128, 128, 128, 0.3);
+}
+
+.custom-table tbody {
+  background-color: rgba(128, 128, 128, 0.2);
+}
+
+.custom-table th:nth-child(2),
+.custom-table td:nth-child(2) {
+  text-align: left;
+  width: 135px;
+  max-width: 135px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-table tbody tr:nth-child(1),
+.custom-table tbody tr:nth-child(2),
+.custom-table tbody tr:nth-child(3),
+.custom-table tbody tr:nth-child(4) {
+  background-color: rgba(255, 255, 0, 0.3);
+}
+
+.custom-table tr:nth-child(1) td:nth-child(1),
+.custom-table tr:nth-child(2) td:nth-child(1),
+.custom-table tr:nth-child(3) td:nth-child(1),
+.custom-table tr:nth-child(4) td:nth-child(1) {
+  background-color: rgba(255, 255, 0, 0.3);
+}
+
+.custom-table td:nth-child(2),
+.custom-table td:nth-child(10) {
+  font-weight: 600;
+}
+
+.custom-table td:nth-child(3),
+.custom-table td:nth-child(4),
+.custom-table td:nth-child(5),
+.custom-table td:nth-child(6) {
+  /* color: rgba(255, 255, 255, 0.7); */
+}
+
+.custom-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.penalty-message {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 0.7rem;
+}
+
+/* SCROLLBAR */
+/* Per nascondere la barra di scorrimento su tutta la pagina */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer e Edge */
+}
+
+body {
+  overflow: -moz-scrollbars-none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer e Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Per Webkit (Chrome, Safari, Opera) */
+body::-webkit-scrollbar {
+  display: none; /* Nascondi la barra di scorrimento */
+}

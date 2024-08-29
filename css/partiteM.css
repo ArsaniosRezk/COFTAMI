@@ -1,0 +1,310 @@
+#matches-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 100%;
+  /* background-color: red; */
+}
+
+/* Selezione Giornata */
+
+#matchday-selector-div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+  width: 80%;
+  height: 100%;
+  gap: 25px;
+  padding: 50px;
+  /* background-color: orange; */
+}
+
+.matchday-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 150px;
+  height: 150px;
+  padding: 5px 10px;
+  background-color: var(--secondary);
+  border: 1px solid var(--intestazioni);
+  border-radius: 5px;
+  cursor: pointer;
+
+  font-size: 1.2rem;
+}
+
+.matchday-btn:hover {
+  color: var(--nero);
+  background-color: var(--arancione);
+  border: 1px solid transparent;
+}
+
+/* Partite */
+
+#matches-selector-div {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  /* background-color: red; */
+}
+
+.match-div {
+  text-align: center;
+  font-weight: bold;
+
+  padding: 15px;
+
+  background-color: var(--secondary);
+  border: 1px solid var(--intestazioni);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.match-div:hover {
+  color: var(--nero);
+  background-color: var(--arancione);
+  border: 1px solid transparent;
+}
+
+#match-details-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  margin: 15px 30px;
+}
+
+#match-info-div {
+  display: flex;
+  flex-direction: column;
+
+  /* height: 200px; */
+  width: 100%;
+  /* background-color: orange; */
+
+  /* gap: 15px; */
+}
+
+.match-info-div input {
+  font-weight: bold;
+  text-align: center;
+}
+
+#match-title-div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  font-weight: bold;
+
+  color: var(--intestazioni);
+  font-size: 1.8rem;
+  /* background-color: orange; */
+}
+
+#match-title-div input {
+  align-self: center;
+  width: 50px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+#match-title-div input::-webkit-outer-spin-button,
+#match-title-div input::-webkit-inner-spin-button {
+  opacity: 1;
+}
+
+#home-section,
+#away-section {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--secondary);
+
+  width: 100%;
+  padding: 10px 20px;
+
+  border: var(--yellowBorder);
+  border-radius: 10px;
+}
+
+#home-section {
+  flex-direction: row;
+}
+
+#away-section {
+  flex-direction: row-reverse;
+}
+
+#match-scorers-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  margin-top: 5px;
+}
+
+#match-home-scorers-div,
+#match-away-scorers-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+
+  width: 100%;
+  height: 420px;
+  padding: 10px;
+
+  border: var(--yellowBorder);
+  border-radius: 10px;
+  background-color: var(--secondary);
+}
+
+.player-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 45%;
+  padding-bottom: 1px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+
+  text-align: left;
+}
+
+.player-name {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.player-div input {
+  width: 40px;
+  text-align: center;
+}
+
+.player-div input:not(:placeholder-shown) {
+  background-color: var(--intestazioni);
+}
+
+#buttons-div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+
+#buttons-div .custom-button {
+  width: 100%;
+}
+
+/* 
+
+
+
+
+
+
+
+*/
+
+/* .toggle-button {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 35px;
+  }
+  
+  .toggle-button input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-button .knob {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--intTabella);
+    transition: 0.2s;
+    border-radius: 5px;
+  }
+  .toggle-button .knob:before {
+    background-color: var(--intestazioni);
+    color: #000000;
+    font-weight: bold;
+    position: absolute;
+    content: "Off";
+    height: 25px;
+    width: 35px;
+    left: 5px;
+    bottom: 5px;
+    transition: 0.2s;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .toggle-button input:checked + .knob {
+    background-color: var(--intestazioni);
+  }
+  
+  .toggle-button input:focus + .knob {
+    box-shadow: 0 0 1px #2196f3;
+  }
+  
+  .toggle-button input:checked + .knob:before {
+    color: #ffffff;
+    content: "On";
+    background-color: var(--intTabella);
+    -webkit-transform: translateX(36px);
+    -ms-transform: translateX(36px);
+    transform: translateX(36px);
+  }
+  
+  .selector {
+    margin-bottom: 20px;
+  } */
+
+#match-to-show-div {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+  justify-content: start;
+  align-items: center;
+
+  gap: 20px;
+
+  height: auto;
+  /* width: 100%; */
+  padding: 15px;
+
+  border-radius: 10px;
+  box-shadow: var(--ombra1);
+  overflow: hidden;
+  background-color: var(--secondary);
+}
+
+#matchday-to-show-input {
+  width: 40px;
+
+  font-weight: bold;
+  text-align: center;
+}

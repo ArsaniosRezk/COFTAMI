@@ -28,7 +28,7 @@ CLASSIFICA SQUADRE
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid var(--sfondo);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 
   text-align: center;
 }
@@ -68,7 +68,7 @@ CLASSIFICA SQUADRE
   border-top-right-radius: 10px;
 }
 
-.custom-table tbody tr:nth-child(1),
+/* .custom-table tbody tr:nth-child(1),
 .custom-table tbody tr:nth-child(2),
 .custom-table tbody tr:nth-child(3),
 .custom-table tbody tr:nth-child(4) {
@@ -92,6 +92,30 @@ CLASSIFICA SQUADRE
 .custom-table td:nth-child(5),
 .custom-table td:nth-child(6) {
   color: rgba(255, 255, 255, 0.7);
+} */
+
+.custom-table td:nth-child(3),
+.custom-table td:nth-child(4),
+.custom-table td:nth-child(5),
+.custom-table td:nth-child(6),
+.custom-table td:nth-child(7),
+.custom-table td:nth-child(8),
+.custom-table td:nth-child(9) {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.custom-table tbody tr:nth-child(1),
+.custom-table tbody tr:nth-child(2),
+.custom-table tbody tr:nth-child(3),
+.custom-table tbody tr:nth-child(4) {
+  background-color: rgba(255, 255, 0, 0.3);
+}
+
+.custom-table tr:nth-child(1) td:nth-child(1),
+.custom-table tr:nth-child(2) td:nth-child(1),
+.custom-table tr:nth-child(3) td:nth-child(1),
+.custom-table tr:nth-child(4) td:nth-child(1) {
+  background-color: rgba(255, 255, 0, 0.3);
 }
 
 .custom-table tbody tr:last-child {

@@ -16,7 +16,7 @@ header {
   align-items: center;
 }
 
-#divisione-smartphone {
+#division-smartphone {
   margin-right: 5px;
 }
 
@@ -103,7 +103,7 @@ option:focus {
   display: none;
 }
 
-#divisione {
+#division {
   display: none;
 }
 
@@ -124,11 +124,11 @@ break points
     padding: 25px 100px;
   }
 
-  #divisione {
+  #division {
     display: flex;
   }
 
-  #divisione-smartphone {
+  #division-smartphone {
     display: none;
   }
 

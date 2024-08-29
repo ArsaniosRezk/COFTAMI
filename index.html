@@ -38,10 +38,16 @@
       referrerpolicy="no-referrer"
     />
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="css/footer.css" />
     <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/overlay-partite.css" />
   </head>
   <body>
     <div class="grid">
@@ -49,22 +55,20 @@
 
       <main>
         <section>
+          <p class="section-title">Prossima Giornata</p>
+
+          <div id="prossima-giornata"></div>
+        </section>
+
+        <section>
           <p class="section-title">Fase Finale</p>
           <img id="tabellone" src="" alt="" />
         </section>
 
-        <!-- <section>
-          <p class="section-title">Prossima Giornata</p>
-
-          <div id="prossima-giornata"></div>
-        </section> -->
-
         <section>
           <p class="section-title">Classifica</p>
 
-          <div class="container-classifica-gironi">
-            <div id="classifica"></div>
-          </div>
+          <div id="classifica-squadre"></div>
         </section>
       </main>
 
@@ -72,6 +76,8 @@
     </div>
     <script src="script.js"></script>
     <script type="module" src="Js/headerFooterManager.js"></script>
+    <script type="module" src="Js/firebase.js"></script>
+    <script type="module" src="Js/divisionAndVariables.js"></script>
     <script type="module" src="Js/funzioniHome.js"></script>
   </body>
 </html>

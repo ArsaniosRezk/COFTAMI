@@ -1,0 +1,111 @@
+#report-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: start;
+  width: 100%;
+  padding: 50px;
+}
+
+#scroll-container {
+  height: 500px;
+  overflow-y: auto;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  vertical-align: top;
+}
+
+table tr:nth-child(even) {
+  background: #144ec3;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  text-align: left;
+  font-weight: bold;
+  background-color: var(--intTabella);
+  color: var(--intestazioni);
+}
+
+tbody {
+  background-color: var(--tabella);
+}
+
+th,
+td {
+  padding: 10px;
+  vertical-align: top;
+}
+
+table th:nth-child(1),
+table td:nth-child(1) {
+  width: 125px;
+}
+
+table th:nth-child(2),
+table td:nth-child(2) {
+  width: 120px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+  width: 250px;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table th:nth-child(4),
+table td:nth-child(4) {
+  width: 2000px;
+  max-width: 200px;
+}
+
+table th:nth-child(5),
+table td:nth-child(5) {
+}
+
+table th:nth-child(6),
+table td:nth-child(6) {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+table th:nth-child(7),
+table td:nth-child(7) {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Stile di base per il bottone di conferma */
+.confirm-button {
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+/* Bottone non confermato (giallo) */
+.confirm-button.not-confirmed {
+  background-color: yellow;
+}
+
+/* Bottone confermato (verde) */
+.confirm-button.confirmed {
+  background-color: var(--verdescuro);
+}
+
+.confirm-button:hover {
+  background-color: var(--verdescuro);
+  width: 25px;
+  height: 25px;
+}
