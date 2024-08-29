@@ -1,0 +1,194 @@
+#dashboard-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 30px;
+}
+
+#match-to-show-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  background-color: var(--secondary);
+  height: auto;
+  width: 60%;
+  padding: 10px 20px;
+
+  border: var(--yellowBorder);
+  border-radius: 10px;
+}
+
+#match-to-show-div div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#matchday-to-show-input {
+  width: 40px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#rankings {
+  display: flex;
+  gap: 40px;
+}
+
+/*   */
+caption {
+  letter-spacing: 1.2px;
+  font-weight: 400;
+  font-size: 1.9rem;
+  margin: 10px 0 20px 0;
+
+  color: var(--testo);
+}
+
+/* TABELLE */
+
+table {
+  width: auto;
+  border-collapse: collapse;
+  font-family: "roboto", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  background-color: var(--tabella);
+  color: var(--testo);
+
+  border-radius: 10px;
+}
+
+table tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+table th,
+table td {
+  padding: 8px;
+  width: 35px;
+}
+
+table th {
+  font-size: 1.4rem;
+  font-weight: 500;
+  font-family: "Bebas Neue", sans-serif;
+  color: var(--intestazioni);
+  background-color: var(--intTabella);
+}
+
+table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+
+table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+
+table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* TABELLA CLASSIFICA SQUADRE  */
+
+.custom-table th:nth-child(2),
+.custom-table td:nth-child(2) {
+  text-align: left;
+  width: 200px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-table td:nth-child(3),
+.custom-table td:nth-child(4),
+.custom-table td:nth-child(5),
+.custom-table td:nth-child(6),
+.custom-table td:nth-child(7),
+.custom-table td:nth-child(8),
+.custom-table td:nth-child(9) {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.custom-table tbody tr:nth-child(1),
+.custom-table tbody tr:nth-child(2),
+.custom-table tbody tr:nth-child(3),
+.custom-table tbody tr:nth-child(4) {
+  background-color: rgba(255, 255, 0, 0.3);
+}
+
+.custom-table tr:nth-child(1) td:nth-child(1),
+.custom-table tr:nth-child(2) td:nth-child(1),
+.custom-table tr:nth-child(3) td:nth-child(1),
+.custom-table tr:nth-child(4) td:nth-child(1) {
+  background-color: rgba(255, 255, 0, 0.3);
+}
+
+/* TABELLA MARCATORI  */
+
+.custom-table-g-a th:nth-child(2),
+.custom-table-g-a td:nth-child(2),
+.custom-table-g-a th:nth-child(3),
+.custom-table-g-a td:nth-child(3) {
+  text-align: left;
+  width: 200px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-table-g-a td:nth-child(3) {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* .custom-table-g-a td:nth-child(1),
+.custom-table-g-a td:nth-child(2) {
+  font-weight: 600;
+} */
+
+.pagination {
+  display: flex;
+  justify-content: end;
+  width: fit-content;
+  border-radius: 5px;
+  border: 1px solid var(--intTabella);
+  margin-top: 5px;
+  background-color: #669af2;
+  overflow: hidden;
+}
+
+.pagination a {
+  color: var(--testo);
+  display: inline-block;
+  padding: 5px 12px; /* Aggiungi spazio intorno al testo */
+  text-decoration: none;
+  font-size: 0.55rem;
+  border-right: 1px solid var(--intTabella);
+}
+
+.pagination a:last-child {
+  border-right: none !important;
+}
+
+.pagination a.active {
+  color: var(--testo) !important;
+  background-color: var(--intTabella);
+}
+
+/*
+===================================
+penalità
+===================================
+*/
+
+.penalty-message {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 0.8rem;
+}

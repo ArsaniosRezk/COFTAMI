@@ -9,14 +9,14 @@ class MyHeader extends HTMLElement {
           ><img src="immagini/LOGO_COFTA_SITO.svg" width="150px" class="logo"
         /></a>
 
-        <select id="divisione">
+        <select id="division">
           <option value="Superiori">Superiori</option>
           <option value="Giovani">Giovani</option>
         </select>
       </div>
 
       <div class="right-header">
-        <select id="divisione-smartphone">
+        <select id="division-smartphone">
           <option value="Superiori">Superiori</option>
           <option value="Giovani">Giovani</option>
         </select>
@@ -133,111 +133,3 @@ navLinkEls.forEach((navLinkEl) => {
     navLinkEl.classList.add("active");
   }
 });
-
-//////////////////////////////////////////////////////////////////////////////////
-
-// Definizione globale della variabile selectedDivisione
-window.selectedDivisione;
-
-let sequenzaEsecuzioneModule;
-
-switch (window.location.pathname) {
-  case "/":
-    sequenzaEsecuzioneModule = import("./funzioniHome.js");
-    break;
-  case "/campionato.html":
-    sequenzaEsecuzioneModule = import("./funzioniCampionato.js");
-    break;
-  case "/squadre.html":
-    sequenzaEsecuzioneModule = import("./funzioniSquadre.js");
-    break;
-  case "/calendario.html":
-    sequenzaEsecuzioneModule = import("./funzioniCalendario.js");
-    break;
-  case "/regolamento.html":
-    break;
-  default:
-    console.error(
-      "La pagina corrente non ha una funzione sequenzaEsecuzione definita."
-    );
-    break;
-}
-
-// Funzione per salvare l'opzione selezionata nello storage locale
-function saveSelectedOption() {
-  localStorage.setItem("selectedDivisione", window.selectedDivisione);
-}
-
-// Funzione per caricare l'opzione selezionata salvata nello storage locale
-function loadSavedOption() {
-  const savedOption = localStorage.getItem("selectedDivisione");
-  if (savedOption) {
-    window.selectedDivisione = savedOption;
-    updateSelectElement("divisione", savedOption);
-    updateSelectElement("divisione-smartphone", savedOption);
-  } else {
-    window.selectedDivisione = "Superiori";
-    updateSelectElement("divisione", "Superiori");
-    updateSelectElement("divisione-smartphone", "Superiori");
-  }
-}
-
-window.onload = function () {
-  loadSavedOption();
-  // Chiamata alla funzione sequenzaEsecuzione solo se selectedDivisione è stata assegnata
-  if (window.selectedDivisione) {
-    // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-    sequenzaEsecuzioneModule.then((module) => {
-      if (module && module.sequenzaEsecuzione) {
-        module.sequenzaEsecuzione();
-      } else {
-        console.error(
-          "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-        );
-      }
-    });
-  }
-};
-
-// Codice per gestire il cambiamento dell'opzione selezionata
-document.getElementById("divisione").addEventListener("change", function () {
-  window.selectedDivisione = this.value;
-  saveSelectedOption();
-  updateSelectElement("divisione-smartphone", window.selectedDivisione);
-  // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-  sequenzaEsecuzioneModule.then((module) => {
-    if (module && module.sequenzaEsecuzione) {
-      module.sequenzaEsecuzione();
-    } else {
-      console.error(
-        "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-      );
-    }
-  });
-});
-
-document
-  .getElementById("divisione-smartphone")
-  .addEventListener("change", function () {
-    window.selectedDivisione = this.value;
-    saveSelectedOption();
-    updateSelectElement("divisione", window.selectedDivisione);
-    // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-    sequenzaEsecuzioneModule.then((module) => {
-      if (module && module.sequenzaEsecuzione) {
-        module.sequenzaEsecuzione();
-      } else {
-        console.error(
-          "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-        );
-      }
-    });
-  });
-
-// Funzione per aggiornare entrambi gli elementi <select>
-function updateSelectElement(selectId, value) {
-  const selectElement = document.getElementById(selectId);
-  if (selectElement) {
-    selectElement.value = value;
-  }
-}

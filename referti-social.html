@@ -18,8 +18,8 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calendario - Cofta</title>
-    <link rel="icon" type="image/x-icon" href="/immagini/favicon.ico" />
+    <title>Referti per Social</title>
+    <link rel="icon" type="image/x-icon" href="/immagini/favicon.svg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,42 +38,16 @@
       referrerpolicy="no-referrer"
     />
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
-
-    <script
-      src="https://c.webfontfree.com/c.js?f=UACadet"
-      type="text/javascript"
-    ></script>
-
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/footer.css" />
-    <link rel="stylesheet" href="css/calendario.css" />
-    <link rel="stylesheet" href="css/overlay-partite.css" />
+    <link rel="stylesheet" href="css/referti-social.css" />
   </head>
   <body>
-    <div class="grid">
-      <my-header></my-header>
+    <h2>REFERTI</h2>
+    <div id="reports"></div>
 
-      <main>
-        <section>
-          <p class="section-title">Calendario</p>
+    <script type="module">
+      import { loadMatchReports2 } from "./Js/funzioni.js";
 
-          <div id="giornate"></div>
-        </section>
-
-        <div id="overlay"></div>
-      </main>
-
-      <my-footer></my-footer>
-    </div>
-    <script src="script.js"></script>
-    <script type="module" src="Js/headerFooterManager.js"></script>
-    <script type="module" src="Js/firebase.js"></script>
-    <script type="module" src="Js/divisionAndVariables.js"></script>
-    <script type="module" src="Js/funzioniCalendario.js"></script>
+      loadMatchReports2();
+    </script>
   </body>
 </html>

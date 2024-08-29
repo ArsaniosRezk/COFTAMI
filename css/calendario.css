@@ -59,6 +59,10 @@
   );
 }
 
+.partita-div:hover {
+  background-color: var(--arancione);
+}
+
 .partita {
   display: flex;
   justify-content: space-between;

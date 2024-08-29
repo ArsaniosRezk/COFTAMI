@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Referto Partita</title>
+    <link rel="icon" type="image/x-icon" href="/immagini/favicon.svg" />
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/inviaReport.css" />
+  </head>
+  <body>
+    <h2>REFERTO PARTITA</h2>
+    <form id="match-report-form">
+      <div id="match-info-div">
+        <div class="form-group">
+          <input
+            type="text"
+            id="referee-name"
+            placeholder="Nome Arbitro"
+            required
+          />
+
+          <div class="two-columns-div">
+            <select id="division" required>
+              <option value="" disabled selected hidden>- Divisione -</option>
+              <option value="Superiori">Superiori</option>
+              <option value="Giovani">Giovani</option>
+            </select>
+
+            <select id="matchday" required>
+              <option value="" disabled selected hidden>- Giornata -</option>
+            </select>
+          </div>
+
+          <select id="match" required>
+            <option value="" disabled selected hidden>
+              - Seleziona Partita -
+            </option>
+          </select>
+
+          <div class="two-columns-div">
+            <input
+              type="number"
+              id="home-gol-score"
+              placeholder="Gol Casa"
+              required
+            />
+
+            <input
+              type="number"
+              id="away-gol-score"
+              placeholder="Gol Ospite"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group hidden" id="scorers-mvp">
+          <label>Marcatori e MVP</label>
+          <div class="team-section" id="team-home">
+            <p id="home-team-name">Squadra Casa</p>
+            <div id="home-players"></div>
+          </div>
+
+          <div class="team-section" id="team-away">
+            <p id="away-team-name"></p>
+            <div id="away-players"></div>
+          </div>
+
+          <select id="mvp" required>
+            <option value="" disabled selected hidden>- Seleziona MVP -</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="comments">Commenti, Segnalazioni, Espulsioni</label>
+          <textarea
+            id="comments"
+            rows="5"
+            placeholder="Cose da segnalare: comportamenti particolarmente scorretti, comportamenti di fairplay, espulsioni, ecc."
+          ></textarea>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="btn">Invia Referto</button>
+      </div>
+    </form>
+    <script type="module" src="Js/inviaReport.js"></script>
+  </body>
+</html>

@@ -1,0 +1,147 @@
+body {
+  margin: 35px 20px;
+  background-color: var(--primary);
+}
+
+h2 {
+  color: var(--intestazioni);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+label {
+  color: var(--intestazioni);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+input {
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  padding: 4px;
+}
+
+select {
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  padding: 4px;
+  text-align: center;
+}
+
+select:invalid {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+option[hidden] {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* --------------------------------- */
+
+#match-info-div {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 10px;
+  border: 1px solid var(--intestazioni);
+  border-radius: 10px;
+  background-color: var(--secondary);
+  text-align: center;
+}
+
+.two-columns-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+#home-gol-score,
+#away-gol-score {
+  text-align: center;
+}
+
+textarea {
+  resize: vertical;
+  border-radius: 5px;
+  padding: 4px;
+}
+
+.team-section {
+  margin-bottom: 5px;
+}
+
+.team-section p {
+  font-weight: bold;
+}
+
+.player-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 5px;
+
+  text-align: left;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.player-name {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.player-div input {
+  width: 40px;
+  text-align: center;
+}
+
+.player-div input:not(:placeholder-shown) {
+  background-color: var(--intestazioni);
+}
+
+.btn {
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+
+  padding: 10px 30px;
+  background-color: var(--secondary);
+  color: var(--intestazioni);
+  border-radius: 5px;
+  border: 1px solid var(--intestazioni);
+  cursor: pointer;
+
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: var(--intTabella);
+}
+
+.hidden {
+  display: none;
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-LHN9QNCZV6"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-LHN9QNCZV6");
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classifica Completa</title>
+    <link rel="icon" type="image/x-icon" href="/immagini/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="css/classifica-completa.css" />
+  </head>
+  <body>
+    <h2>CLASSIFICA</h2>
+    <div class="division-container">
+      <h3 id="space1">SUPERIORI</h3>
+      <div class="table-container" id="superiori"></div>
+    </div>
+    <div class="division-container">
+      <h3 id="space2">GIOVANI</h3>
+      <div class="table-container" id="giovani"></div>
+    </div>
+
+    <script type="module">
+      classificaGirone("superiori", "Superiori");
+      classificaGirone("giovani", "Giovani");
+
+      import { getData, getPaths } from "./Js/firebase.js";
+      import {
+        inizializzaPunteggi,
+        aggiornaPunteggi,
+        aggiornaScontriDiretti,
+        ordinaClassifica,
+        rappresentaClassifica,
+      } from "./Js/funzioni.js";
+
+      async function classificaGirone(targetDiv, division) {
+        const containerId = targetDiv;
+        const chosenDivision = division;
+        const edition = "2023-2024";
+        const teamsPath = `Calcio/${edition}/${chosenDivision}/Squadre`;
+        const matchesPath = `Calcio/${edition}/${chosenDivision}/Partite`;
+
+        try {
+          // Recupera le squadre
+          const teams = await getData(teamsPath);
+
+          if (!teams) {
+            console.log(`Nessuna squadra trovata`);
+            return;
+          }
+
+          // Inizializza i punteggi per le squadre
+          const scores = inizializzaPunteggi(teams);
+
+          // Itera attraverso le giornate per recuperare tutte le partite
+          const giornate = await getData(matchesPath);
+
+          if (!giornate) {
+            console.log(`Nessuna partita trovata`);
+            return;
+          }
+
+          // Filtra solo le giornate numeriche
+          const numeriGiornate = Object.keys(giornate).filter(
+            (key) => !isNaN(key)
+          );
+
+          for (const giornata of numeriGiornate) {
+            const matches = giornate[giornata];
+
+            for (const matchKey in matches) {
+              const match = matches[matchKey];
+
+              aggiornaPunteggi(
+                scores,
+                match.SquadraCasa,
+                match.GolSquadraCasa,
+                match.GolSquadraOspite,
+                match.SquadraOspite
+              );
+
+              aggiornaPunteggi(
+                scores,
+                match.SquadraOspite,
+                match.GolSquadraOspite,
+                match.GolSquadraCasa,
+                match.SquadraCasa
+              );
+            }
+          }
+
+          const rankingArray = ordinaClassifica(scores);
+          rappresentaClassifica(containerId, rankingArray);
+        } catch (error) {
+          console.error(
+            `Errore nel recupero delle partite o squadre da Firebase: ${error.message}`,
+            error
+          );
+        }
+      }
+    </script>
+  </body>
+</html>
