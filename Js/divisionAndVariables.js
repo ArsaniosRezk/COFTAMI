@@ -58,12 +58,10 @@ switch (window.location.pathname) {
     sequenzaEsecuzioneModule = import("./funzioniCalendario.js");
     break;
   case "/regolamento.html":
-  case "/inviaReport.html":
-  case "/inviareport":
+  case "/invia-report.html":
   case "/classifica-completa.html":
   case "/referti.html":
   case "/referti-social.html":
-
   case "/gestionale.html":
     // Per queste pagine, non è necessario definire `sequenzaEsecuzioneModule`
     sequenzaEsecuzioneModule = null;
@@ -77,7 +75,7 @@ switch (window.location.pathname) {
 }
 
 const excludedPaths = [
-  "/inviaReport.html",
+  "/invia-report.html",
   "/inviareport",
   "/classifica-completa.html",
   "/referti.html",
