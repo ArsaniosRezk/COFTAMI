@@ -45,7 +45,7 @@ switch (window.location.pathname) {
   case "/":
     sequenzaEsecuzioneModule = import("./funzioniHome.js");
     break;
-  case "/index":
+  case "/index.html":
     sequenzaEsecuzioneModule = import("./funzioniHome.js");
     break;
   case "/campionato.html":

@@ -38,6 +38,10 @@
   color: var(--testo);
 }
 
+.logo-e-nome:hover {
+  background-color: var(--intTabella);
+}
+
 .squadra img {
   height: 90px;
   max-width: 100%;
@@ -157,6 +161,10 @@ break points
 
     width: 150px;
     height: 200px;
+  }
+
+  .logo-e-nome:hover {
+    background-color: #3063f0;
   }
 
   .squadra img {

@@ -265,6 +265,11 @@ PROSSIMA GIORNATA
   );
 }
 
+.partita-div:hover {
+  background: var(--primary);
+  border: 1px solid var(--intestazioni);
+}
+
 .partita {
   display: flex;
   justify-content: space-between;
