@@ -12,8 +12,6 @@ body {
 
   padding: 20px 10px;
   font-family: "montserrat", sans-serif;
-  color: var(--testo);
-  background-color: var(--sfondo);
 }
 
 .division-container {
@@ -83,7 +81,6 @@ body {
   font-size: 1rem;
   font-weight: 500;
   font-family: "Bebas Neue", sans-serif;
-  color: var(--intestazioni);
 }
 
 .custom-table thead {

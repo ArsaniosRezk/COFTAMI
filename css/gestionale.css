@@ -1,26 +1,3 @@
-:root {
-  --sfondo: #ffffff;
-  --primary: #3e79df;
-  --secondary: #2560d5;
-  --testo: #fff;
-  --bluscuro: #262f3e;
-  --nero: black;
-  --verdescuro: #4dbb54;
-  --arancione: orange;
-  --intTabella: #144f8f;
-  --tabella: #2560d5;
-  --squadreChePassano: #b9d026;
-  --intestazioni: #ffff00;
-  --ombra1: 0px -2px 5px 0px rgba(0, 0, 0, 0.2),
-    2px 0px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 5px 0px rgba(0, 0, 0, 0.2),
-    -2px 0px 5px 0px rgba(0, 0, 0, 0.2);
-  --ombra2: 0px -2px 5px 0px rgba(0, 0, 0, 0.1),
-    2px 0px 5px 0px rgba(0, 0, 0, 0.1), 0px 2px 5px 0px rgba(0, 0, 0, 0.1),
-    -2px 0px 5px 0px rgba(0, 0, 0, 0.1);
-  --ombra3: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
-  --yellowBorder: 1px solid var(--intestazioni);
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -29,8 +6,8 @@
 
 body {
   font-family: "montserrat", sans-serif;
-  background-color: var(--primary);
-  color: white;
+  background-color: var(--blu1);
+  color: var(--testo);
   height: 100vh;
   font-size: 1rem;
 }
@@ -48,13 +25,13 @@ body {
 
 nav {
   grid-area: alias-nav;
-  background-color: var(--intTabella);
+  background-color: var(--blu3);
   width: 220px;
 }
 
 header {
   grid-area: alias-header;
-  background-color: var(--secondary);
+  background-color: var(--blu2);
   height: 90px;
 
   display: flex;
@@ -79,7 +56,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-color: var(--primary); */
+  /* background-color: var(--blu1); */
   height: 90px;
 }
 
@@ -109,8 +86,8 @@ nav ul li a {
 }
 
 .active {
-  color: var(--intestazioni);
-  /* text-decoration: underline var(--intestazioni); */
+  color: var(--giallo);
+  /* text-decoration: underline var(--giallo); */
   /* text-decoration-thickness: 5px; */
   /* text-underline-offset: 5px; */
   /* opacity: 1 !important; */
@@ -122,7 +99,7 @@ nav ul li a {
 #current-section {
   font-size: 2.5rem;
   margin: 20px 30px;
-  color: var(--intestazioni);
+  color: var(--giallo);
 }
 
 #division {
@@ -151,7 +128,7 @@ select {
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #3e79df #144f8f;
+  scrollbar-color: var(--blu1) var(--blu3);
 }
 
 /* Chrome, Edge, and Safari */
@@ -160,18 +137,18 @@ select {
 }
 
 *::-webkit-scrollbar-track {
-  background: #144f8f;
+  background: var(--blu3);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #3e79df;
+  background-color: var(--blu1);
   border-radius: 10px;
   border: 3px none #ffffff;
 }
 
 /* SHARED CSS */
 label {
-  color: var(--intestazioni);
+  color: var(--giallo);
   font-weight: bold;
 }
 
@@ -179,16 +156,17 @@ input {
   padding: 5px;
   border: none;
   border-radius: 5px;
+  /* background-color: #c2d3f3; */
 }
 
 .custom-button {
   font-weight: bold;
   font-size: 1rem;
 
-  color: var(--intestazioni);
-  background-color: var(--secondary);
+  color: var(--giallo);
+  background-color: var(--blu2);
   padding: 10px 30px;
-  border: 1px solid var(--intestazioni);
+  border: 1px solid var(--giallo);
   border-radius: 10px;
   cursor: pointer;
 }
@@ -205,10 +183,10 @@ input {
   font-weight: bold;
   font-size: 1rem;
 
-  color: var(--intestazioni);
-  background-color: var(--secondary);
+  color: var(--giallo);
+  background-color: var(--blu2);
   padding: 10px 15px;
-  border: 1px solid var(--intestazioni);
+  border: 1px solid var(--giallo);
   border-radius: 10px;
   cursor: pointer;
 }

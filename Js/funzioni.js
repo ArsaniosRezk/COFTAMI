@@ -156,7 +156,7 @@ export async function showTeams() {
   if (teamsSnapshot) {
     for (const [teamName, teamData] of Object.entries(teamsSnapshot)) {
       const abbreviatedTeamName = teamName.replace(/_/g, ".");
-      const teamLogo = teamData.LogoLR;
+      const teamLogo = teamData.Logo;
 
       // Creazione del div per la squadra
       const teamCard = document.createElement("div");
@@ -1547,9 +1547,9 @@ export async function loadMatchReports2() {
   reportsDiv.innerHTML = "";
 
   // Crea il contenitore per la tabella
-  const scrollContainer = document.createElement("div");
-  scrollContainer.id = "scroll-container";
-  reportsDiv.appendChild(scrollContainer);
+  const tableContainer = document.createElement("div");
+  tableContainer.className = "table-container";
+  reportsDiv.appendChild(tableContainer);
 
   // Crea la tabella
   const table = document.createElement("table");
@@ -1575,52 +1575,40 @@ export async function loadMatchReports2() {
   table.appendChild(thead);
 
   const tbody = document.createElement("tbody");
+  tbody.className = "scrollable-tbody";
 
-  // Percorso dei referti
   const reportsPath = `Calcio/${edition}/`;
-
   const allReports = [];
 
-  // Itera sulle divisioni
   const divisions = ["Superiori", "Giovani"];
   for (let division of divisions) {
     const divisionRefPath = `${reportsPath}${division}/Referti`;
-
-    // Ottieni tutte le giornate
     const giornateSnapshot = await getData(divisionRefPath);
 
     for (let giornata in giornateSnapshot) {
       const matchesSnapshot = giornateSnapshot[giornata];
-
-      // Itera su tutte le partite di una giornata
       for (let match in matchesSnapshot) {
         const report = matchesSnapshot[match];
-        // Aggiungi ogni report all'array allReports con alcune informazioni aggiuntive
         allReports.push({ report, division, giornata, match });
       }
     }
   }
 
-  // Ordina i report per data di invio decrescente (dal più recente al meno recente)
   allReports.sort(
     (a, b) => new Date(b.report.OraInvio) - new Date(a.report.OraInvio)
   );
 
-  // Popola la tabella con i report ordinati
   for (let { report, division, giornata, match } of allReports) {
     const row = document.createElement("tr");
 
-    // Data Ricezione
     const dataRicezione = document.createElement("td");
     dataRicezione.textContent = formatDateTime(report.OraInvio);
     row.appendChild(dataRicezione);
 
-    // Nome Arbitro
     const nomeArbitro = document.createElement("td");
     nomeArbitro.textContent = report.NomeArbitro;
     row.appendChild(nomeArbitro);
 
-    // Partita
     const partita = document.createElement("td");
     const squadraCasa = report.SquadraCasa.replace(/_/g, ".");
     const squadraOspite = report.SquadraOspite.replace(/_/g, ".");
@@ -1632,26 +1620,22 @@ export async function loadMatchReports2() {
       `;
     row.appendChild(partita);
 
-    // Marcatori
     const marcatori = document.createElement("td");
 
-    // Dividi i marcatori in casa e ospite
     const marcatoriCasa = report.Marcatori.MarcatoriCasa || {};
     const marcatoriOspite = report.Marcatori.MarcatoriOspite || {};
 
-    // Funzione per generare l'HTML dei marcatori
     const generateMarcatoriHTML = (squadra, marcatori) => {
       let html = `<strong>${squadra}</strong><br>`;
       for (let [nome, gol] of Object.entries(marcatori)) {
         if (nome.startsWith("Autogol")) {
-          continue; // Saltare gli autogol nella lista principale
+          continue;
         }
         html += `${nome}: ${gol}<br>`;
       }
       return html;
     };
 
-    // Funzione per generare l'HTML degli autogol
     const generateAutogolHTML = (marcatori) => {
       let html = "";
       let autogolTotale = 0;
@@ -1666,44 +1650,34 @@ export async function loadMatchReports2() {
       return html;
     };
 
-    // Crea il contenuto per i marcatori della squadra di casa
     let marcatoriCasaHTML = generateMarcatoriHTML(squadraCasa, marcatoriCasa);
-    // Crea il contenuto per i marcatori della squadra ospite
     let marcatoriOspiteHTML = generateMarcatoriHTML(
       squadraOspite,
       marcatoriOspite
     );
 
-    // Aggiungi gli autogol alla fine
     marcatoriCasaHTML += generateAutogolHTML(marcatoriCasa);
     marcatoriOspiteHTML += generateAutogolHTML(marcatoriOspite);
 
-    // Combina i due contenuti
     marcatori.innerHTML = `${marcatoriCasaHTML}<br>${marcatoriOspiteHTML}`;
     row.appendChild(marcatori);
 
-    // MVP
     const mvp = document.createElement("td");
     mvp.textContent = report.MVP;
     row.appendChild(mvp);
 
-    // Commenti/Espulsioni
     const commenti = document.createElement("td");
     commenti.textContent = report.Commenti;
     row.appendChild(commenti);
 
-    // Aggiungi l'evento di clic alla riga
     row.addEventListener("click", () => {
       {
         if (isMobileDevice()) {
-          // Ottieni il percorso della pagina corrente
           const currentPage = window.location.pathname;
 
           if (currentPage === "/referti.html") {
-            // Chiama openOverlay se siamo nella pagina /referti.html
             openOverlay(report, division, giornata);
           } else if (currentPage === "/referti-social.html") {
-            // Chiama openOverlay2 se siamo nella pagina /referti-social.html
             openOverlay2(report, division, giornata);
           }
         }
@@ -1714,7 +1688,7 @@ export async function loadMatchReports2() {
   }
 
   table.appendChild(tbody);
-  scrollContainer.appendChild(table);
+  tableContainer.appendChild(table);
 }
 
 //PADRI
@@ -2527,7 +2501,7 @@ export function rappresentaClassifica(containerId, rankingArray) {
 
   rankingDiv.innerHTML = "";
   const table = document.createElement("table");
-  table.classList.add("custom-table");
+  table.classList.add("ranking-table");
 
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
@@ -2586,7 +2560,7 @@ export function rappresentaClassifica(containerId, rankingArray) {
         ([team, data]) =>
           `<strong>${team.replace(/_/g, ".")}</strong>: -${
             data.penaltyPoints
-          } punti di penalità`
+          } punti penalità`
       )
       .join("<br>");
 
@@ -2740,7 +2714,7 @@ async function rappresentaClassificaMarcatori(
   const rankingWithPositions = calcolaPosizioniGlobali(rankingArray);
 
   const table = document.createElement("table");
-  table.classList.add("custom-table-g-a");
+  table.classList.add("scorers-table");
 
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");

@@ -6,7 +6,7 @@
   bottom: -100%;
   width: 100%;
   height: 100%;
-  background-color: var(--primary);
+  background-color: var(--blu1);
   text-align: center;
   transition: all 0.5s ease;
 
@@ -55,7 +55,7 @@
   font-size: 1rem;
   text-align: center;
   font-weight: bold;
-  color: var(--intestazioni);
+  color: var(--giallo);
 }
 
 #team-logo {
@@ -76,7 +76,7 @@
 
 .gol-number {
   font-size: 5rem;
-  color: var(--intestazioni);
+  color: var(--giallo);
   font-weight: bold;
 }
 

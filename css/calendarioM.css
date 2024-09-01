@@ -38,8 +38,8 @@
 
   width: 30px;
   padding: 5px 20px;
-  background-color: var(--secondary);
-  border: 1px solid var(--intestazioni);
+  background-color: var(--blu2);
+  border: 1px solid var(--giallo);
   border-radius: 5px;
   cursor: pointer;
 
@@ -47,14 +47,14 @@
 }
 
 .matchday-btn:hover {
-  color: black;
+  color: var(--nero);
   background-color: var(--arancione);
   border: 1px solid transparent;
 }
 
 .matchday-btn.active {
   background-color: var(--arancione);
-  color: black;
+  color: var(--nero);
   border: 1px solid transparent;
 }
 
@@ -78,7 +78,7 @@
 
   border-radius: 10px;
   box-shadow: var(--ombra3);
-  background-color: var(--secondary);
+  background-color: var(--blu2);
 }
 
 .match-info-div {
@@ -102,67 +102,6 @@
   align-self: end;
 }
 
-/* .toggle-button {
-  position: relative;
-  display: inline-block;
-  width: 80px;
-  height: 35px;
-}
-
-.toggle-button input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.toggle-button .knob {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--intTabella);
-  transition: 0.2s;
-  border-radius: 5px;
-}
-.toggle-button .knob:before {
-  background-color: var(--intestazioni);
-  color: #000000;
-  font-weight: bold;
-  position: absolute;
-  content: "Off";
-  height: 25px;
-  width: 35px;
-  left: 5px;
-  bottom: 5px;
-  transition: 0.2s;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggle-button input:checked + .knob {
-  background-color: var(--intestazioni);
-}
-
-.toggle-button input:focus + .knob {
-  box-shadow: 0 0 1px #2196f3;
-}
-
-.toggle-button input:checked + .knob:before {
-  color: #ffffff;
-  content: "On";
-  background-color: var(--intTabella);
-  -webkit-transform: translateX(36px);
-  -ms-transform: translateX(36px);
-  transform: translateX(36px);
-}
-
-.selector {
-  margin-bottom: 20px;
-} */
-
 #match-to-show-div {
   display: flex;
   flex-direction: column;
@@ -180,7 +119,7 @@
   border-radius: 10px;
   box-shadow: var(--ombra1);
   overflow: hidden;
-  background-color: var(--secondary);
+  background-color: var(--blu2);
 }
 
 #matchday-to-show-input {

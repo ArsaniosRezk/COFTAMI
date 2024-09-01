@@ -81,7 +81,7 @@ break points
 }
 
 .form {
-  color: yellow;
+  color: var(--giallo);
 
   font-weight: bold;
 }

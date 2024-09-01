@@ -34,12 +34,12 @@
   width: 100%;
   height: 100%;
 
-  background-color: #3063f0;
+  background-color: var(--blu2);
   color: var(--testo);
 }
 
 .logo-e-nome:hover {
-  background-color: var(--intTabella);
+  background-color: var(--blu3);
 }
 
 .squadra img {
@@ -72,7 +72,7 @@ team overlay
   bottom: -100%;
   width: 100%;
   height: 100%;
-  background-color: var(--primary);
+  background-color: var(--blu1);
   text-align: center;
   transition: all 0.5s ease;
   color: var(--testo);
@@ -99,13 +99,13 @@ team overlay
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 20px;
-  color: var(--intestazioni);
+  color: var(--giallo);
 }
 
 #team-info h3 {
   font-size: 1rem;
   margin-bottom: 8px;
-  color: var(--intestazioni);
+  color: var(--giallo);
 }
 
 #overlay-allenatori,
@@ -164,7 +164,7 @@ break points
   }
 
   .logo-e-nome:hover {
-    background-color: #3063f0;
+    background-color: var(--blu2);
   }
 
   .squadra img {
@@ -195,7 +195,7 @@ break points
     font-weight: bold;
     padding-top: 15px;
     padding-bottom: 5px;
-    color: yellow;
+    color: var(--giallo);
   }
 
   .membro {
