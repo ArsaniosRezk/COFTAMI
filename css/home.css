@@ -43,11 +43,11 @@ CLASSIFICA SQUADRE
   font-size: 1rem;
   font-weight: 500;
   font-family: "Bebas Neue", sans-serif;
-  color: var(--intestazioni);
+  color: var(--giallo);
 }
 
 .custom-table thead {
-  background-color: var(--intTabella);
+  background-color: var(--blu3);
 }
 
 .custom-table th:nth-child(2),
@@ -68,32 +68,6 @@ CLASSIFICA SQUADRE
   border-top-right-radius: 10px;
 }
 
-/* .custom-table tbody tr:nth-child(1),
-.custom-table tbody tr:nth-child(2),
-.custom-table tbody tr:nth-child(3),
-.custom-table tbody tr:nth-child(4) {
-  background-color: rgba(255, 255, 0, 0.5);
-}
-
-.custom-table tr:nth-child(1) td:nth-child(1),
-.custom-table tr:nth-child(2) td:nth-child(1),
-.custom-table tr:nth-child(3) td:nth-child(1),
-.custom-table tr:nth-child(4) td:nth-child(1) {
-  background-color: var(--squadreChePassano);
-}
-
-.custom-table td:nth-child(2),
-.custom-table td:nth-child(10) {
-  font-weight: 600;
-}
-
-.custom-table td:nth-child(3),
-.custom-table td:nth-child(4),
-.custom-table td:nth-child(5),
-.custom-table td:nth-child(6) {
-  color: rgba(255, 255, 255, 0.7);
-} */
-
 .custom-table td:nth-child(3),
 .custom-table td:nth-child(4),
 .custom-table td:nth-child(5),
@@ -101,21 +75,21 @@ CLASSIFICA SQUADRE
 .custom-table td:nth-child(7),
 .custom-table td:nth-child(8),
 .custom-table td:nth-child(9) {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--testoTrasparente);
 }
 
 .custom-table tbody tr:nth-child(1),
 .custom-table tbody tr:nth-child(2),
 .custom-table tbody tr:nth-child(3),
 .custom-table tbody tr:nth-child(4) {
-  background-color: rgba(255, 255, 0, 0.3);
+  background-color: var(--squadreChePassano);
 }
 
 .custom-table tr:nth-child(1) td:nth-child(1),
 .custom-table tr:nth-child(2) td:nth-child(1),
 .custom-table tr:nth-child(3) td:nth-child(1),
 .custom-table tr:nth-child(4) td:nth-child(1) {
-  background-color: rgba(255, 255, 0, 0.3);
+  background-color: var(--squadreChePassano);
 }
 
 .custom-table tbody tr:last-child {
@@ -227,7 +201,7 @@ PROSSIMA GIORNATA
   align-items: center;
   padding: 15px;
 
-  background-color: var(--secondary);
+  background-color: var(--blu2);
   width: 100%;
 
   border-radius: 10px;
@@ -266,8 +240,8 @@ PROSSIMA GIORNATA
 }
 
 .partita-div:hover {
-  background: var(--primary);
-  border: 1px solid var(--intestazioni);
+  background: var(--blu1);
+  border: 1px solid var(--giallo);
 }
 
 .partita {

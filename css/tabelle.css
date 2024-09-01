@@ -1,0 +1,266 @@
+/*
+  ===================================
+  TABELLE
+  ===================================
+*/
+
+table {
+  width: auto;
+  border-collapse: collapse;
+  font-family: "roboto", sans-serif;
+  font-size: 0.55rem;
+  font-weight: 400;
+
+  background-color: var(--tabella);
+  color: var(--testo);
+
+  border-radius: 10px;
+}
+
+table tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+table td,
+table th {
+  padding: 8px 5px;
+  width: 25px;
+}
+
+table th {
+  font-size: 1rem;
+  font-family: "Bebas Neue", sans-serif;
+  color: var(--giallo);
+  background-color: var(--blu3);
+  font-weight: 500;
+}
+
+table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+
+table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+
+table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/*
+  ===================================
+  TABELLA CLASSIFICA SQUADRE
+  ===================================
+*/
+
+.ranking-table th:nth-child(2),
+.ranking-table td:nth-child(2) {
+  text-align: left;
+  width: 135px;
+  max-width: 135px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking-table td:nth-child(3),
+.ranking-table td:nth-child(4),
+.ranking-table td:nth-child(5),
+.ranking-table td:nth-child(6),
+.ranking-table td:nth-child(7),
+.ranking-table td:nth-child(8),
+.ranking-table td:nth-child(9) {
+  color: var(--testoTrasparente);
+}
+
+.ranking-table tbody tr:nth-child(1),
+.ranking-table tbody tr:nth-child(2),
+.ranking-table tbody tr:nth-child(3),
+.ranking-table tbody tr:nth-child(4) {
+  background-color: var(--squadreChePassano);
+}
+
+.ranking-table tr:nth-child(1) td:nth-child(1),
+.ranking-table tr:nth-child(2) td:nth-child(1),
+.ranking-table tr:nth-child(3) td:nth-child(1),
+.ranking-table tr:nth-child(4) td:nth-child(1) {
+  background-color: var(--squadreChePassano);
+}
+
+.ranking-table th:nth-child(7),
+.ranking-table th:nth-child(8),
+.ranking-table th:nth-child(9),
+.ranking-table td:nth-child(7),
+.ranking-table td:nth-child(8),
+.ranking-table td:nth-child(9) {
+  display: none;
+}
+
+.ranking-table th:nth-child(2),
+.ranking-table td:nth-child(2) {
+  padding-left: 8px;
+}
+
+/*
+  ===================================
+  TABELLA MARCATORI
+  ===================================
+*/
+
+.scorers-table th:nth-child(2),
+.scorers-table td:nth-child(2) {
+  text-align: left;
+  width: 120px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scorers-table th:nth-child(3),
+.scorers-table td:nth-child(3) {
+  text-align: left;
+  width: 115px;
+  max-width: 115px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scorers-table td:nth-child(3) {
+  color: var(--testoTrasparente);
+}
+
+/*
+  ===================================
+  break points
+  ===================================
+*/
+
+@media (min-width: 576px) {
+}
+
+@media (min-width: 992px) {
+  table {
+    font-size: 0.8rem;
+  }
+
+  table td,
+  table th {
+    padding: 20px;
+    width: 80px;
+  }
+
+  table th {
+    font-size: 1.4rem;
+  }
+
+  /* Classifica Squadre  */
+
+  .ranking-table th:nth-child(2),
+  .ranking-table td:nth-child(2) {
+    width: 200px;
+    max-width: 200px;
+  }
+
+  .ranking-table th:nth-child(7),
+  .ranking-table th:nth-child(8),
+  .ranking-table th:nth-child(9),
+  .ranking-table td:nth-child(7),
+  .ranking-table td:nth-child(8),
+  .ranking-table td:nth-child(9) {
+    display: table-cell;
+  }
+
+  .ranking-table td:nth-child(1),
+  .ranking-table td:nth-child(2),
+  .ranking-table td:nth-child(10) {
+    font-weight: 600;
+  }
+
+  /* Classifica Marcatori  */
+
+  .scorers-table th:nth-child(2),
+  .scorers-table th:nth-child(3),
+  .scorers-table td:nth-child(2),
+  .scorers-table td:nth-child(3) {
+    width: 3800px;
+    max-width: 380px;
+  }
+
+  .scorers-table td:nth-child(2),
+  .scorers-table td:nth-child(4) {
+    font-weight: 600;
+  }
+}
+
+@media (min-width: 1440px) {
+}
+
+/*
+===================================
+ PAGINATION
+===================================
+*/
+
+.pagination {
+  display: flex;
+  justify-content: end;
+  width: fit-content;
+  border-radius: 5px;
+  background-color: var(--blu2);
+  overflow: hidden;
+
+  margin-top: 5px;
+}
+
+.pagination a {
+  display: inline-block;
+  padding: 5px 8px;
+  text-decoration: none;
+  font-size: 0.45rem;
+  border-right: 1px solid var(--blu3);
+  color: var(--testoTrasparente);
+}
+
+.pagination a:last-child {
+  border-right: none;
+}
+
+.pagination a.active {
+  color: var(--testo) !important;
+  background-color: var(--blu3);
+}
+
+@media (min-width: 576px) {
+}
+
+@media (min-width: 992px) {
+  .pagination {
+    margin-top: 10px;
+  }
+
+  .pagination a {
+    padding: 8px 12px;
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1440px) {
+}
+
+/* Penalità */
+
+.penalty-message {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 0.55rem;
+}
+
+@media (min-width: 992px) {
+  .penalty-message {
+    margin-top: 20px;
+    font-size: 1rem;
+  }
+}

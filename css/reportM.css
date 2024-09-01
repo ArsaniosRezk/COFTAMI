@@ -27,8 +27,8 @@ thead {
   top: 0;
   text-align: left;
   font-weight: bold;
-  background-color: var(--intTabella);
-  color: var(--intestazioni);
+  background-color: var(--blu3);
+  color: var(--giallo);
 }
 
 tbody {
@@ -96,16 +96,16 @@ table td:nth-child(7) {
 
 /* Bottone non confermato (giallo) */
 .confirm-button.not-confirmed {
-  background-color: yellow;
+  background-color: var(--giallo);
 }
 
 /* Bottone confermato (verde) */
 .confirm-button.confirmed {
-  background-color: var(--verdescuro);
+  background-color: var(--verde);
 }
 
 .confirm-button:hover {
-  background-color: var(--verdescuro);
+  background-color: var(--verde);
   width: 25px;
   height: 25px;
 }

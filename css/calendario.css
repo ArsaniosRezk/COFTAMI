@@ -21,7 +21,7 @@
   align-items: center;
   padding: 15px;
 
-  background-color: var(--secondary);
+  background-color: var(--blu2);
   width: 100%;
 
   border-radius: 10px;
@@ -60,8 +60,8 @@
 }
 
 .partita-div:hover {
-  background: var(--primary);
-  border: 1px solid var(--intestazioni);
+  background: var(--blu1);
+  border: 1px solid var(--giallo);
 }
 
 .partita {

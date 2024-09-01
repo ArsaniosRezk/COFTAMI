@@ -12,21 +12,47 @@ body {
 
   padding: 20px 10px;
   font-family: "montserrat", sans-serif;
-  color: balck;
-  background-color: white;
+  color: black;
 }
 
 #reports {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   width: 100%;
   margin-top: 20px;
 }
 
-#scroll-container {
-  height: 600px;
-  overflow-y: auto;
+.table-container {
+  position: relative;
   width: 100%;
+  border: 3px solid rgb(165, 154, 154);
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.scrollable-tbody {
+  display: block;
+  height: 600px;
+
+  overflow-y: auto;
+}
+
+.scrollable-tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+thead,
+tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 
 table {
@@ -46,8 +72,6 @@ thead {
   text-align: left;
   font-weight: bold;
   background-color: rgb(165, 154, 154);
-
-  color: var(--intestazioni);
 }
 
 tbody {
@@ -60,36 +84,32 @@ td {
   vertical-align: top;
 }
 
+table th:nth-child(1),
+table td:nth-child(1) {
+  /* width: 100px; */
+  max-width: 100px;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+  /* width: 200px; */
+  max-width: 200px;
+}
+
+table th:nth-child(2),
 table th:nth-child(4),
 table th:nth-child(5),
 table th:nth-child(6),
+table td:nth-child(2),
 table td:nth-child(4),
 table td:nth-child(5),
 table td:nth-child(6) {
   display: none;
 }
 
-/* tbody tr:hover,
+tbody tr:hover,
 table tr:nth-child(even):hover {
   background-color: yellow;
-} */
-
-/* SCROLLBAR */
-/* Per nascondere la barra di scorrimento su tutta la pagina */
-html {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer e Edge */
-}
-
-body {
-  overflow: -moz-scrollbars-none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer e Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-/* Per Webkit (Chrome, Safari, Opera) */
-body::-webkit-scrollbar {
-  display: none; /* Nascondi la barra di scorrimento */
 }
 
 /* OVERLAY */
@@ -128,31 +148,19 @@ body::-webkit-scrollbar {
 h3 {
   text-align: center;
 }
+
 h3 {
   margin-top: 10px;
 }
 
 /* Stile per il pulsante di chiusura */
-.close-button {
-  background: #f44336;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
 .close-overlay {
   position: absolute;
   top: 0;
   right: 0;
-  /* float: right; */
   padding: 10px;
-  color: black;
   font-size: 1.3rem;
   cursor: pointer;
-  /* background-color: red; */
 }
 
 /* BREAK POINTS */
@@ -171,33 +179,9 @@ h3 {
     vertical-align: top;
   }
 
-  table tr:nth-child(even) {
-    background-color: rgba(128, 128, 128, 0.3);
-  }
-
-  thead {
-    position: sticky;
-    top: 0;
-    text-align: left;
-    font-weight: bold;
-    background-color: rgb(165, 154, 154);
-
-    color: var(--intestazioni);
-  }
-
-  tbody {
-    background-color: rgba(128, 128, 128, 0.2);
-  }
-
-  th,
-  td {
-    padding: 10px;
-    vertical-align: top;
-  }
-
   table th:nth-child(1),
   table td:nth-child(1) {
-    width: 125px;
+    width: 100px;
   }
 
   table th:nth-child(2),
@@ -211,8 +195,8 @@ h3 {
 
   table th:nth-child(3),
   table td:nth-child(3) {
-    width: 250px;
-    max-width: 250px;
+    width: 200px;
+    max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -240,15 +224,43 @@ h3 {
     vertical-align: middle;
   }
 
+  table th:nth-child(2),
   table th:nth-child(4),
   table th:nth-child(5),
   table th:nth-child(6),
+  table td:nth-child(2),
   table td:nth-child(4),
   table td:nth-child(5),
   table td:nth-child(6) {
     display: table-cell;
   }
+
+  tbody tr:hover {
+    background-color: initial;
+  }
+
+  table tr:nth-child(even):hover {
+    background-color: rgba(128, 128, 128, 0.3);
+  }
 }
 
 @media (min-width: 1440px) {
+}
+
+/* SCROLLBAR */
+/* Per nascondere la barra di scorrimento su tutta la pagina */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer e Edge */
+}
+
+body {
+  overflow: -moz-scrollbars-none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer e Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Per Webkit (Chrome, Safari, Opera) */
+body::-webkit-scrollbar {
+  display: none; /* Nascondi la barra di scorrimento */
 }

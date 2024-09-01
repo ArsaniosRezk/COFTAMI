@@ -1,0 +1,23 @@
+:root {
+  --sfondo: #ffffff;
+  --testo: #ffffff;
+  --testoTrasparente: #ffffff80;
+  --nero: #000000;
+  --blu1: #3e79df;
+  --blu2: #2560d5;
+  --blu3: #144f8f;
+  --blu4: #262f3e;
+  --tabella: #2560d5;
+  --verde: #4dbb54;
+  --arancione: #ffa500;
+  --giallo: #ffff00;
+  --bordoGiallo: 1px solid var(--giallo);
+  --squadreChePassano: rgba(255, 255, 0, 0.3);
+  --ombra1: 0px -2px 5px 0px rgba(0, 0, 0, 0.2),
+    2px 0px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 5px 0px rgba(0, 0, 0, 0.2),
+    -2px 0px 5px 0px rgba(0, 0, 0, 0.2);
+  --ombra2: 0px -2px 5px 0px rgba(0, 0, 0, 0.1),
+    2px 0px 5px 0px rgba(0, 0, 0, 0.1), 0px 2px 5px 0px rgba(0, 0, 0, 0.1),
+    -2px 0px 5px 0px rgba(0, 0, 0, 0.1);
+  --ombra3: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+}

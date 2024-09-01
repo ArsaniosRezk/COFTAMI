@@ -4,28 +4,6 @@
 ===================================
 */
 
-:root {
-  --sfondo: #ffffff;
-  --primary: #3e79df;
-  --secondary: #2560d5;
-  --testo: #fff;
-  --bluscuro: #262f3e;
-  --nero: black;
-  --verdescuro: #4dbb54;
-  --arancione: orange;
-  --intTabella: #144f8f;
-  --tabella: #2560d5;
-  --squadreChePassano: #b9d026;
-  --intestazioni: #ffff00;
-  --ombra1: 0px -2px 5px 0px rgba(0, 0, 0, 0.2),
-    2px 0px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 5px 0px rgba(0, 0, 0, 0.2),
-    -2px 0px 5px 0px rgba(0, 0, 0, 0.2);
-  --ombra2: 0px -2px 5px 0px rgba(0, 0, 0, 0.1),
-    2px 0px 5px 0px rgba(0, 0, 0, 0.1), 0px 2px 5px 0px rgba(0, 0, 0, 0.1),
-    -2px 0px 5px 0px rgba(0, 0, 0, 0.1);
-  --ombra3: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -124,7 +102,7 @@ main section {
   margin: 10px 0;
   border-radius: 20px;
 
-  background-color: var(--primary);
+  background-color: var(--blu1);
   text-align: center;
 }
 
@@ -135,7 +113,7 @@ section .section-title {
   font-family: "Bebas Neue", sans-serif;
   text-align: center;
   margin-bottom: 10px;
-  color: var(--intestazioni);
+  color: var(--giallo);
 }
 
 @media (min-width: 576px) {
@@ -175,24 +153,4 @@ break points
 }
 
 @media (min-width: 1440px) {
-}
-
-/*
-===================================
-penalità
-===================================
-*/
-
-.penalty-message {
-  margin-top: 10px;
-  text-align: right;
-  font-size: 0.7rem;
-}
-
-@media (min-width: 576px) {
-  .penalty-message {
-    margin-top: 5px;
-    text-align: right;
-    font-size: 0.9rem;
-  }
 }

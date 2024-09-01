@@ -18,17 +18,15 @@
   height: 240px;
 
   border-radius: 10px;
-  border: var(--yellowBorder);
+  border: var(--bordoGiallo);
 
   overflow: hidden;
-  background-color: var(--secondary);
+  background-color: var(--blu2);
 }
 
 .team-card img {
   height: 160px;
-
   max-width: 100%;
-
   margin-top: 10px;
 }
 
@@ -53,7 +51,7 @@
 #add-team-button:hover {
   background-color: var(--arancione);
 
-  color: black;
+  color: var(--nero);
   border: none;
 }
 
@@ -71,12 +69,12 @@
   border: none;
   box-shadow: var(--ombra1);
   overflow: hidden;
-  background-color: var(--secondary);
+  background-color: var(--blu2);
 
-  color: var(--intestazioni);
+  color: var(--giallo);
   font-size: 1rem;
   font-weight: bold;
-  color: var(--intestazioni);
+  color: var(--giallo);
 }
 
 #add-team-button i {
@@ -107,8 +105,8 @@
 
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid var(--intestazioni);
-  background-color: var(--secondary);
+  border: 1px solid var(--giallo);
+  background-color: var(--blu2);
 }
 
 #name-and-logo h2 {
@@ -131,8 +129,8 @@
   gap: 20px;
 
   border-radius: 10px;
-  border: 1px solid var(--intestazioni);
-  background-color: var(--secondary);
+  border: 1px solid var(--giallo);
+  background-color: var(--blu2);
 
   font-weight: bold;
 }
@@ -169,11 +167,11 @@
   width: 100%;
   height: auto;
   border-radius: 10px;
-  border: 1px solid var(--intestazioni);
+  border: 1px solid var(--giallo);
 
   padding: 20px;
   gap: 10px;
-  background-color: var(--secondary);
+  background-color: var(--blu2);
 }
 
 #edit-area {
@@ -221,6 +219,7 @@ textarea {
   border-radius: 5px;
   resize: none;
   overflow: hidden;
+  /* background-color: #c2d3f3; */
 }
 
 #coaches-input {
@@ -248,7 +247,6 @@ textarea {
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
-
   font-weight: bold;
 }
 

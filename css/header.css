@@ -38,12 +38,12 @@ option:focus {
 .menu-icon {
   font-size: 25px;
   cursor: pointer;
-  color: var(--bluscuro);
+  color: var(--blu4);
 }
 
 .active {
-  color: var(--bluscuro) !important;
-  text-decoration: underline var(--secondary);
+  color: var(--blu4) !important;
+  text-decoration: underline var(--blu2);
   text-decoration-thickness: 5px;
   text-underline-offset: 8px;
   opacity: 1 !important;
@@ -53,7 +53,7 @@ option:focus {
 .close-menu-icon {
   float: right;
   margin: 40px;
-  color: var(--bluscuro);
+  color: var(--blu4);
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -95,7 +95,7 @@ option:focus {
 }
 
 #overlay-menu li a:hover {
-  background-color: var(--intTabella);
+  background-color: var(--blu3);
   color: var(--testo);
   border-radius: 7px;
 }
@@ -145,7 +145,7 @@ break points
   .nav-link {
     font-size: 1.1rem;
     padding-left: 25px;
-    color: var(--bluscuro);
+    color: var(--blu4);
     opacity: 0.8;
     font-weight: 500;
   }

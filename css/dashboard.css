@@ -11,12 +11,12 @@
   flex-direction: row;
   justify-content: space-between;
 
-  background-color: var(--secondary);
+  background-color: var(--blu2);
   height: auto;
   width: 60%;
   padding: 10px 20px;
 
-  border: var(--yellowBorder);
+  border: var(--bordoGiallo);
   border-radius: 10px;
 }
 
@@ -77,8 +77,8 @@ table th {
   font-size: 1.4rem;
   font-weight: 500;
   font-family: "Bebas Neue", sans-serif;
-  color: var(--intestazioni);
-  background-color: var(--intTabella);
+  color: var(--giallo);
+  background-color: var(--blu3);
 }
 
 table thead th:first-child {
@@ -95,8 +95,8 @@ table tbody tr:last-child {
 
 /* TABELLA CLASSIFICA SQUADRE  */
 
-.custom-table th:nth-child(2),
-.custom-table td:nth-child(2) {
+.ranking-table th:nth-child(2),
+.ranking-table td:nth-child(2) {
   text-align: left;
   width: 200px;
   max-width: 200px;
@@ -105,36 +105,36 @@ table tbody tr:last-child {
   white-space: nowrap;
 }
 
-.custom-table td:nth-child(3),
-.custom-table td:nth-child(4),
-.custom-table td:nth-child(5),
-.custom-table td:nth-child(6),
-.custom-table td:nth-child(7),
-.custom-table td:nth-child(8),
-.custom-table td:nth-child(9) {
-  color: rgba(255, 255, 255, 0.5);
+.ranking-table td:nth-child(3),
+.ranking-table td:nth-child(4),
+.ranking-table td:nth-child(5),
+.ranking-table td:nth-child(6),
+.ranking-table td:nth-child(7),
+.ranking-table td:nth-child(8),
+.ranking-table td:nth-child(9) {
+  color: var(--testoTrasparente);
 }
 
-.custom-table tbody tr:nth-child(1),
-.custom-table tbody tr:nth-child(2),
-.custom-table tbody tr:nth-child(3),
-.custom-table tbody tr:nth-child(4) {
-  background-color: rgba(255, 255, 0, 0.3);
+.ranking-table tbody tr:nth-child(1),
+.ranking-table tbody tr:nth-child(2),
+.ranking-table tbody tr:nth-child(3),
+.ranking-table tbody tr:nth-child(4) {
+  background-color: var(--squadreChePassano);
 }
 
-.custom-table tr:nth-child(1) td:nth-child(1),
-.custom-table tr:nth-child(2) td:nth-child(1),
-.custom-table tr:nth-child(3) td:nth-child(1),
-.custom-table tr:nth-child(4) td:nth-child(1) {
-  background-color: rgba(255, 255, 0, 0.3);
+.ranking-table tr:nth-child(1) td:nth-child(1),
+.ranking-table tr:nth-child(2) td:nth-child(1),
+.ranking-table tr:nth-child(3) td:nth-child(1),
+.ranking-table tr:nth-child(4) td:nth-child(1) {
+  background-color: var(--squadreChePassano);
 }
 
 /* TABELLA MARCATORI  */
 
-.custom-table-g-a th:nth-child(2),
-.custom-table-g-a td:nth-child(2),
-.custom-table-g-a th:nth-child(3),
-.custom-table-g-a td:nth-child(3) {
+.scorers-table th:nth-child(2),
+.scorers-table td:nth-child(2),
+.scorers-table th:nth-child(3),
+.scorers-table td:nth-child(3) {
   text-align: left;
   width: 200px;
   max-width: 200px;
@@ -143,42 +143,36 @@ table tbody tr:last-child {
   white-space: nowrap;
 }
 
-.custom-table-g-a td:nth-child(3) {
-  color: rgba(255, 255, 255, 0.5);
+.scorers-table td:nth-child(3) {
+  color: var(--testoTrasparente);
 }
-
-/* .custom-table-g-a td:nth-child(1),
-.custom-table-g-a td:nth-child(2) {
-  font-weight: 600;
-} */
 
 .pagination {
   display: flex;
   justify-content: end;
   width: fit-content;
   border-radius: 5px;
-  border: 1px solid var(--intTabella);
   margin-top: 5px;
-  background-color: #669af2;
+  background-color: var(--blu2);
   overflow: hidden;
 }
 
 .pagination a {
-  color: var(--testo);
   display: inline-block;
-  padding: 5px 12px; /* Aggiungi spazio intorno al testo */
+  padding: 5px 12px;
   text-decoration: none;
   font-size: 0.55rem;
-  border-right: 1px solid var(--intTabella);
+  border-right: 1px solid var(--blu3);
+  color: var(--testoTrasparente);
 }
 
 .pagination a:last-child {
-  border-right: none !important;
+  border-right: none;
 }
 
 .pagination a.active {
   color: var(--testo) !important;
-  background-color: var(--intTabella);
+  background-color: var(--blu3);
 }
 
 /*
