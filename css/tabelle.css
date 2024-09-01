@@ -18,7 +18,7 @@ table {
 }
 
 table tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
 
@@ -59,7 +59,7 @@ table tbody tr:last-child {
   text-align: left;
   width: 135px;
   max-width: 135px;
-  overflow: hidden;
+  /* overflow: hidden; */
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -221,6 +221,7 @@ table tbody tr:last-child {
   text-decoration: none;
   font-size: 0.45rem;
   border-right: 1px solid var(--blu3);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--testoTrasparente);
 }
 
