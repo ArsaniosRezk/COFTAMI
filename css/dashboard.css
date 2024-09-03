@@ -63,7 +63,7 @@ table {
 }
 
 table tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
 
@@ -100,7 +100,7 @@ table tbody tr:last-child {
   text-align: left;
   width: 200px;
   max-width: 200px;
-  overflow: hidden;
+  /* overflow: hidden; */
   text-overflow: ellipsis;
   white-space: nowrap;
 }
