@@ -152,9 +152,10 @@ table tbody tr:last-child {
   justify-content: end;
   width: fit-content;
   border-radius: 5px;
-  margin-top: 5px;
   background-color: var(--blu2);
   overflow: hidden;
+
+  margin-top: 5px;
 }
 
 .pagination a {
@@ -162,7 +163,8 @@ table tbody tr:last-child {
   padding: 5px 12px;
   text-decoration: none;
   font-size: 0.55rem;
-  border-right: 1px solid var(--blu3);
+  /* border-right: 1px solid var(--blu3); */
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--testoTrasparente);
 }
 
