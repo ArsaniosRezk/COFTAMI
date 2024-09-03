@@ -240,7 +240,7 @@
 
 /* Istruzioni */
 .instruction {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.6rem;
   width: 100%;
   margin: 10px;
