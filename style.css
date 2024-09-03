@@ -62,7 +62,7 @@ GRID
 
 header {
   grid-area: alias-header;
-  width: 100%;
+  width: 90%;
   position: fixed;
   top: 0;
   z-index: 1000;
@@ -80,7 +80,7 @@ main {
 
 footer {
   grid-area: alias-footer;
-  width: 100%;
+  width: 90%;
   position: relative;
   top: 110px;
 }
