@@ -1,3 +1,9 @@
+my-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 header {
   display: flex;
   justify-content: space-between;
@@ -122,7 +128,7 @@ break points
 
 @media (min-width: 992px) {
   header {
-    padding: 25px 100px;
+    padding: 25px 0;
   }
 
   #division {
@@ -157,7 +163,7 @@ break points
 
 @media (min-width: 1440px) {
   header {
-    padding: 25px 100px;
+    padding: 25px 0;
   }
 }
 
