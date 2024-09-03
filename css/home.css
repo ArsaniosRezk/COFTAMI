@@ -435,3 +435,30 @@ PROSSIMA GIORNATA
 
   font-weight: bold;
 }
+
+/* Istruzioni */
+.instruction {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.6rem;
+  width: 100%;
+  margin: 10px;
+}
+
+section .section-title {
+  margin-bottom: 0;
+}
+
+@media (min-width: 576px) {
+  .instruction {
+    font-size: 0.7rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .instruction {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1440px) {
+}
