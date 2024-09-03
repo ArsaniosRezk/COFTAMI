@@ -9,7 +9,7 @@ header {
   justify-content: space-between;
   align-items: center;
 
-  padding: 25px 20px;
+  padding: 20px 0;
 }
 
 .left-header {
@@ -121,16 +121,9 @@ break points
 */
 
 @media (min-width: 576px) {
-  header {
-    padding: 25px 50px;
-  }
 }
 
 @media (min-width: 992px) {
-  header {
-    padding: 25px 0;
-  }
-
   #division {
     display: flex;
   }
@@ -162,9 +155,6 @@ break points
 }
 
 @media (min-width: 1440px) {
-  header {
-    padding: 25px 0;
-  }
 }
 
 @media (min-width: 576px) {

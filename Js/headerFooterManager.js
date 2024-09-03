@@ -6,7 +6,7 @@ class MyHeader extends HTMLElement {
     <header>
       <div class="left-header">
         <a href="/"
-          ><img src="immagini/LOGO_COFTA_SITO.svg" width="150px" class="logo"
+          ><img src="immagini/LOGO_COFTA_SITO.svg" width="130px" class="logo"
         /></a>
 
         <select id="division">
@@ -98,7 +98,7 @@ class MyFooter extends HTMLElement {
           </ul>
         </div>
         <div class="footer-logo">
-          <a href="/"><img src="immagini/LOGO_COFTA_SITO.svg" width="150px" class="logo" /></a>
+          <a href="/"><img src="immagini/LOGO_COFTA_SITO_3.svg" height="90px" class="logo" /></a>
         </div>
         <div class="footer-contacts">
           <h4>Contatti</h4>
