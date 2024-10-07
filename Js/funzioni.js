@@ -2796,3 +2796,45 @@ function calcolaPosizioniGlobali(rankingArray) {
     return { position: uniquePosition, player, value };
   });
 }
+
+// async function getAllMatchReports(division) {
+//   const edition = "2023-2024";
+//   const matchReportsPath = `Calcio/${edition}/${division}/Referti`;
+//   const matchReportsSnapshot = await getData(matchReportsPath);
+//   return matchReportsSnapshot;
+// }
+
+// async function getMVPsByDivision(division) {
+//   // Recupera tutti i referti
+//   const matchReports = await getAllMatchReports(division);
+
+//   // Crea un array per memorizzare gli MVP
+//   const mvps = [];
+
+//   // Itera su ogni giornata di referti
+//   Object.keys(matchReports).forEach((matchday) => {
+//     const matchdayReports = matchReports[matchday];
+
+//     // Itera su ogni partita del referto
+//     Object.keys(matchdayReports).forEach((match) => {
+//       const report = matchdayReports[match];
+//       const mvp = report.MVP;
+
+//       // Aggiungi l'MVP all'array, se presente
+//       if (mvp) {
+//         mvps.push(mvp);
+//       }
+//     });
+//   });
+
+//   return mvps;
+// }
+
+// document
+//   .getElementById("get-mvps-button")
+//   .addEventListener("click", async () => {
+//     const division = document.getElementById("division").value;
+//     const mvps = await getMVPsByDivision(division);
+
+//     console.log("MVPs per la divisione selezionata:", mvps);
+//   });
