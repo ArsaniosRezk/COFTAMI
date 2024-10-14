@@ -70,8 +70,8 @@ const images = [
 
 // Lista dei video (puoi espandere questa lista con tutti i tuoi file video)
 const videos = [
-  { src: "Video/giornata 1.mp4", poster: "asset/Copertina-Video.jpg" },
-  { src: "Video/giornata 2.mp4", poster: "asset/Copertina-Video.jpg" },
+  { src: "Video/giornata 1.mp4" },
+  { src: "Video/giornata 2.mp4" },
   { src: "Video/giornata 3.mp4", poster: "asset/Copertina-Video.jpg" },
   { src: "Video/giornata 4.mp4", poster: "asset/Copertina-Video.jpg" },
   { src: "Video/giornata 5.mp4", poster: "asset/Copertina-Video.jpg" },
