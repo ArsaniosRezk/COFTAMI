@@ -111,7 +111,7 @@ function createVideoElement(video) {
 
   const source = document.createElement("source");
   source.src = video.src;
-  source.type = "video/mp4";
+  source.type = "video/MP4";
 
   videoElement.appendChild(source);
   div.appendChild(videoElement);
