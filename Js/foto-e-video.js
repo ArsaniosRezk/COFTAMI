@@ -107,7 +107,7 @@ function createVideoElement(video) {
 
   const videoElement = document.createElement("video");
   videoElement.preload = "none"; // Lazy loading per video
-  // videoElement.poster = video.poster;
+  videoElement.poster = video.poster; // Aggiunta del poster
 
   const source = document.createElement("source");
   source.src = video.src;
