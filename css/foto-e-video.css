@@ -1,0 +1,153 @@
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  /* align-items: center; */
+  gap: 10px;
+
+  /* background-color: red; */
+}
+
+.gallery-item {
+  border: 2px solid var(--giallo); /* Bordino giallo */
+
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+#foto-div {
+  height: 350px; /* Altezza fissa */
+  overflow-y: auto; /* Scroll verticale se il contenuto è più alto */
+}
+
+#video-div {
+  height: 350px; /* Altezza fissa */
+  overflow-y: auto; /* Scroll verticale se il contenuto è più alto */
+}
+
+/* Sezione foto */
+#foto-div img {
+  max-width: 120px;
+  display: block;
+}
+
+/* Sezione video */
+#video-div video {
+  display: block;
+  max-width: 120px;
+}
+
+@media (min-width: 576px) {
+}
+
+@media (min-width: 992px) {
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 0 5px;
+  }
+
+  /* Sezione foto */
+  #foto-div img {
+    max-width: 300px;
+    height: auto;
+    display: block;
+  }
+
+  /* Sezione video */
+  #video-div video {
+    max-width: 300px;
+  }
+
+  #foto-div {
+    height: 600px; /* Altezza fissa */
+    overflow-y: auto; /* Scroll verticale se il contenuto è più alto */
+  }
+
+  #video-div {
+    height: 600px; /* Altezza fissa */
+    overflow-y: auto; /* Scroll verticale se il contenuto è più alto */
+  }
+}
+
+@media (min-width: 1440px) {
+}
+
+/* ===== Scrollbar CSS per .gallery ===== */
+/* Firefox */
+.gallery {
+  scrollbar-width: thin;
+  scrollbar-color: var(--blu2) var(--blu3);
+}
+
+/* Chrome, Edge, and Safari */
+.gallery::-webkit-scrollbar {
+  width: 16px;
+}
+
+.gallery::-webkit-scrollbar-track {
+  background: var(--blu3);
+}
+
+.gallery::-webkit-scrollbar-thumb {
+  background-color: var(--blu1);
+  border-radius: 10px;
+  border: 3px none #ffffff;
+}
+
+/* Stile per l'overlay */
+.overlay {
+  display: none; /* Nascondi di default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  background-color: red;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay-content {
+  position: absolute;
+  top: 100px;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+#overlay-video {
+  height: 500px;
+}
+
+.close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: var(--giallo);
+  font-size: 40px;
+  cursor: pointer;
+  z-index: 1001; /* Assicurati che sia sopra l'overlay */
+}
+
+@media (min-width: 576px) {
+  /* Modifica overlay-content per centrare */
+  .overlay-content {
+    position: static;
+    margin: auto;
+    max-width: 90%;
+    max-height: 90%;
+  }
+
+  #overlay-video {
+    height: auto;
+  }
+}
+
+@media (min-width: 992px) {
+}
+
+@media (min-width: 1440px) {
+}

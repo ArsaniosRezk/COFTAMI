@@ -37,6 +37,9 @@ class MyHeader extends HTMLElement {
             <li>
               <a class="nav-link" href="/regolamento.html">Regolamento</a>
             </li>
+            <li>
+              <a class="nav-link" href="/foto-e-video.html">Foto e Video</a>
+            </li>
           </ul>
         </nav>
         <i class="fa-solid fa-bars menu-icon hide-hamb" onclick="openMenu()"></i>
@@ -63,6 +66,9 @@ class MyHeader extends HTMLElement {
             </li>
             <li>
               <a href="/regolamento.html">Regolamento</a>
+            </li>
+            <li>
+              <a href="/foto-e-video.html">Foto e Video</a>
             </li>
           </ul>
         </div>
@@ -94,6 +100,9 @@ class MyFooter extends HTMLElement {
             </li>
             <li>
               <a href="/regolamento.html">Regolamento</a>
+            </li>
+            <li>
+              <a href="/foto-e-video.html">Foto e Video</a>
             </li>
           </ul>
         </div>
