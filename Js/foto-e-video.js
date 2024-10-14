@@ -76,7 +76,7 @@ const videos = [
   { src: "Video/giornata 4.mp4", poster: "Asset/Copertina-Video.jpg" },
   { src: "Video/giornata 5.mp4", poster: "Asset/Copertina-Video.jpg" },
   { src: "Video/semifinali.mp4", poster: "Asset/Copertina-Video.jpg" },
-  { src: "Video/finale-superiori.mp4", poster: "Asset/Copertina-Video.jpg" },
+  { src: "Video/finale-superiori.MP4", poster: "Asset/Copertina-Video.jpg" },
   { src: "Video/finale-giovani.MP4", poster: "Asset/Copertina-Video.jpg" },
 
   // Aggiungi altri video
