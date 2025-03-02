@@ -1,5 +1,5 @@
 // Edizione Torneo/Anno
-const edition = "2023-2024";
+const edition = "2024";
 
 // Definizione variabile e funzioni per gestione divisione
 let selectedDivision;
@@ -56,6 +56,9 @@ switch (window.location.pathname) {
     break;
   case "/calendario.html":
     sequenzaEsecuzioneModule = import("./funzioniCalendario.js");
+    break;
+  case "/albo-d'oro.html":
+    sequenzaEsecuzioneModule = import("./funzioniAlboOro.js");
     break;
   case "/regolamento.html":
   case "/invia-report.html":

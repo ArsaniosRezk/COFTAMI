@@ -38,8 +38,8 @@
 
   width: 30px;
   padding: 5px 20px;
-  background-color: var(--blu2);
-  border: 1px solid var(--giallo);
+  background-color: var(--secondary);
+  border: var(--interaction);
   border-radius: 5px;
   cursor: pointer;
 
@@ -47,14 +47,14 @@
 }
 
 .matchday-btn:hover {
-  color: var(--nero);
-  background-color: var(--arancione);
+  color: var(--darkText);
+  background-color: var(--orange);
   border: 1px solid transparent;
 }
 
 .matchday-btn.active {
-  background-color: var(--arancione);
-  color: var(--nero);
+  background-color: var(--orange);
+  color: var(--darkText);
   border: 1px solid transparent;
 }
 
@@ -78,7 +78,7 @@
 
   border-radius: 10px;
   box-shadow: var(--ombra3);
-  background-color: var(--blu2);
+  background-color: var(--secondary);
 }
 
 .match-info-div {
@@ -119,7 +119,7 @@
   border-radius: 10px;
   box-shadow: var(--ombra1);
   overflow: hidden;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
 }
 
 #matchday-to-show-input {

@@ -1,3 +1,7 @@
+.rules-backround {
+  background-color: var(--tertiary) !important  ;
+}
+
 .regolamento {
   width: 90%;
 }
@@ -81,7 +85,7 @@ break points
 }
 
 .form {
-  color: var(--giallo);
+  color: var(--mainText);
 
   font-weight: bold;
 }

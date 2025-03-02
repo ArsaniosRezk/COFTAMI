@@ -12,29 +12,29 @@
 
 body {
   font-family: "montserrat", sans-serif;
-  color: var(--testo);
-  background-color: var(--sfondo);
+  color: var(--text);
+  background-color: var(--background);
 }
 
 header {
-  background-color: var(--sfondo);
-  color: var(--testo);
+  background-color: var(--background);
+  color: var(--text);
 }
 
 footer {
-  background-color: var(--sfondo);
-  color: var(--testo);
+  background-color: var(--background);
+  color: var(--text);
 }
 
 p {
   font-size: 1rem;
-  padding: var(--nero);
+  padding: var(--darkText);
 }
 
 a {
   text-decoration: none;
   font-size: 1rem;
-  color: var(--nero);
+  color: var(--darkText);
   cursor: pointer;
 }
 
@@ -102,7 +102,7 @@ main section {
   margin: 10px 0;
   border-radius: 20px;
 
-  background-color: var(--blu1);
+  background-color: var(--primary);
   text-align: center;
 }
 
@@ -113,7 +113,7 @@ section .section-title {
   font-family: "Bebas Neue", sans-serif;
   text-align: center;
   margin-bottom: 10px;
-  color: var(--giallo);
+  color: var(--mainText);
 }
 
 @media (min-width: 576px) {
@@ -153,4 +153,10 @@ break points
 }
 
 @media (min-width: 1440px) {
+}
+
+.full-screen-svg {
+  width: 80vw; /* Adatta alla larghezza dello schermo */
+  max-width: 600px; /* Limite massimo */
+  height: auto;
 }

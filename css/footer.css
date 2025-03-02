@@ -35,11 +35,11 @@ my-footer {
   justify-content: space-between;
   align-items: center;
   font-size: 1.3rem;
-  color: var(--blu4);
+  color: var(--darkText);
 }
 
 .footer-menu a {
-  color: var(--blu4);
+  color: var(--darkText);
 }
 
 .footer-menu ul {
@@ -65,7 +65,7 @@ my-footer {
   justify-content: space-between;
   align-items: center;
   font-size: 1.3rem;
-  color: var(--blu4);
+  color: var(--darkText);
   text-align: center;
 }
 

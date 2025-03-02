@@ -11,7 +11,7 @@
   flex-direction: row;
   justify-content: space-between;
 
-  background-color: var(--blu2);
+  background-color: var(--secondary);
   height: auto;
   width: 60%;
   padding: 10px 20px;
@@ -44,7 +44,7 @@ caption {
   font-size: 1.9rem;
   margin: 10px 0 20px 0;
 
-  color: var(--testo);
+  color: var(--text);
 }
 
 /* TABELLE */
@@ -56,8 +56,8 @@ table {
   font-size: 0.9rem;
   font-weight: 500;
 
-  background-color: var(--tabella);
-  color: var(--testo);
+  background-color: var(--table);
+  color: var(--text);
 
   border-radius: 10px;
 }
@@ -77,8 +77,8 @@ table th {
   font-size: 1.4rem;
   font-weight: 500;
   font-family: "Bebas Neue", sans-serif;
-  color: var(--giallo);
-  background-color: var(--blu3);
+  color: var(--mainText);
+  background-color: var(--secondary);
 }
 
 table thead th:first-child {
@@ -119,14 +119,14 @@ table tbody tr:last-child {
 .ranking-table tbody tr:nth-child(2),
 .ranking-table tbody tr:nth-child(3),
 .ranking-table tbody tr:nth-child(4) {
-  background-color: var(--squadreChePassano);
+  background-color: var(--finalsTeams);
 }
 
 .ranking-table tr:nth-child(1) td:nth-child(1),
 .ranking-table tr:nth-child(2) td:nth-child(1),
 .ranking-table tr:nth-child(3) td:nth-child(1),
 .ranking-table tr:nth-child(4) td:nth-child(1) {
-  background-color: var(--squadreChePassano);
+  background-color: var(--finalsTeams);
 }
 
 /* TABELLA MARCATORI  */
@@ -152,7 +152,7 @@ table tbody tr:last-child {
   justify-content: end;
   width: fit-content;
   border-radius: 5px;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
   overflow: hidden;
 
   margin-top: 5px;
@@ -163,7 +163,7 @@ table tbody tr:last-child {
   padding: 5px 12px;
   text-decoration: none;
   font-size: 0.55rem;
-  /* border-right: 1px solid var(--blu3); */
+  /* border-right: 1px solid var(--tertiary); */
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--testoTrasparente);
 }
@@ -173,8 +173,8 @@ table tbody tr:last-child {
 }
 
 .pagination a.active {
-  color: var(--testo) !important;
-  background-color: var(--blu3);
+  color: var(--text) !important;
+  background-color: var(--tertiary);
 }
 
 /*
