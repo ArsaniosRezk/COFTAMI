@@ -1,7 +1,7 @@
 /*
-  ===================================
+===================================
   TABELLE
-  ===================================
+===================================
 */
 
 table {
@@ -11,8 +11,8 @@ table {
   font-size: 0.55rem;
   font-weight: 400;
 
-  background-color: var(--tabella);
-  color: var(--testo);
+  background-color: var(--table);
+  color: var(--text);
 
   border-radius: 10px;
 }
@@ -31,8 +31,8 @@ table th {
 table th {
   font-size: 1rem;
   font-family: "Bebas Neue", sans-serif;
-  color: var(--giallo);
-  background-color: var(--blu3);
+  color: var(--mainText);
+  background-color: var(--tertiary);
   font-weight: 500;
 }
 
@@ -78,14 +78,14 @@ table tbody tr:last-child {
 .ranking-table tbody tr:nth-child(2),
 .ranking-table tbody tr:nth-child(3),
 .ranking-table tbody tr:nth-child(4) {
-  background-color: var(--squadreChePassano);
+  background-color: var(--finalsTeams);
 }
 
 .ranking-table tr:nth-child(1) td:nth-child(1),
 .ranking-table tr:nth-child(2) td:nth-child(1),
 .ranking-table tr:nth-child(3) td:nth-child(1),
 .ranking-table tr:nth-child(4) td:nth-child(1) {
-  background-color: var(--squadreChePassano);
+  background-color: var(--finalsTeams);
 }
 
 .ranking-table th:nth-child(7),
@@ -209,7 +209,7 @@ table tbody tr:last-child {
   justify-content: end;
   width: fit-content;
   border-radius: 5px;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
   overflow: hidden;
 
   margin-top: 5px;
@@ -220,7 +220,7 @@ table tbody tr:last-child {
   padding: 5px 8px;
   text-decoration: none;
   font-size: 0.45rem;
-  /* border-right: 1px solid var(--blu3); */
+  /* border-right: 1px solid var(--tertiary); */
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--testoTrasparente);
 }
@@ -230,8 +230,8 @@ table tbody tr:last-child {
 }
 
 .pagination a.active {
-  color: var(--testo) !important;
-  background-color: var(--blu3);
+  color: var(--text) !important;
+  background-color: var(--tertiary);
 }
 
 @media (min-width: 576px) {
@@ -264,4 +264,81 @@ table tbody tr:last-child {
     margin-top: 20px;
     font-size: 1rem;
   }
+}
+
+/*
+  ===================================
+  TABELLA ALBO
+  ===================================
+*/
+
+.albo-table-title {
+  padding-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.albo-table-header,
+.albo-table-cell {
+  text-align: left;
+  width: 120px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.albo-table-header {
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+}
+
+.albo-table-cell {
+  font-size: 0.55rem;
+}
+
+@media (min-width: 576px) {
+  .albo-table-title {
+    padding-bottom: 10px;
+    font-size: 1rem;
+  }
+
+  .albo-table-header,
+  .albo-table-cell {
+    width: 300px;
+    max-width: 300px;
+  }
+
+  .albo-table-header {
+    letter-spacing: 0.5px;
+    font-size: 1rem;
+  }
+
+  .albo-table-cell {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .albo-table-title {
+    padding-bottom: 10px;
+    font-size: 1.4rem;
+  }
+
+  .albo-table-header,
+  .albo-table-cell {
+    width: 300px;
+    max-width: 300px;
+  }
+
+  .albo-table-header {
+    letter-spacing: 0.5px;
+    font-size: 1.4rem;
+  }
+
+  .albo-table-cell {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1440px) {
 }

@@ -109,7 +109,7 @@ table td:nth-child(6) {
 
 tbody tr:hover,
 table tr:nth-child(even):hover {
-  background-color: yellow;
+  background-color: var(--mainText);
 }
 
 /* OVERLAY */

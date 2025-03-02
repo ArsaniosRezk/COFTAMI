@@ -28,8 +28,8 @@
   width: 150px;
   height: 150px;
   padding: 5px 10px;
-  background-color: var(--blu2);
-  border: 1px solid var(--giallo);
+  background-color: var(--secondary);
+  border: 1px solid var(--interaction);
   border-radius: 5px;
   cursor: pointer;
 
@@ -37,8 +37,8 @@
 }
 
 .matchday-btn:hover {
-  color: var(--nero);
-  background-color: var(--arancione);
+  color: var(--text);
+  background-color: var(--orange);
   border: 1px solid transparent;
 }
 
@@ -56,15 +56,15 @@
 
   padding: 15px;
 
-  background-color: var(--blu2);
-  border: 1px solid var(--giallo);
+  background-color: var(--secondary);
+  border: 1px solid var(--interaction);
   border-radius: 10px;
   cursor: pointer;
 }
 
 .match-div:hover {
-  color: var(--nero);
-  background-color: var(--arancione);
+  color: var(--mainText);
+  background-color: var(--orange);
   border: 1px solid transparent;
 }
 
@@ -98,7 +98,7 @@
 
   font-weight: bold;
 
-  color: var(--giallo);
+  color: var(--mainText);
   font-size: 1.8rem;
 }
 
@@ -118,7 +118,7 @@
 #away-section {
   display: flex;
   justify-content: space-between;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
 
   width: 100%;
   padding: 10px 20px;
@@ -159,7 +159,7 @@
 
   border: var(--bordoGiallo);
   border-radius: 10px;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
 }
 
 .player-div {
@@ -189,7 +189,7 @@
 }
 
 .player-div input:not(:placeholder-shown) {
-  background-color: var(--giallo);
+  background-color: var(--mainText);
 }
 
 #buttons-div {
@@ -230,7 +230,7 @@
   border-radius: 10px;
   box-shadow: var(--ombra1);
   overflow: hidden;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
 }
 
 #matchday-to-show-input {

@@ -9,7 +9,7 @@
 }
 
 .gallery-item {
-  border: 2px solid var(--giallo); /* Bordino giallo */
+  border: var(--interaction); /* Bordino giallo */
 
   border-radius: 5px;
   overflow: hidden;
@@ -78,7 +78,7 @@
 /* Firefox */
 .gallery {
   scrollbar-width: thin;
-  scrollbar-color: var(--blu2) var(--blu3);
+  scrollbar-color: var(--secondary) var(--tertiary);
 }
 
 /* Chrome, Edge, and Safari */
@@ -87,11 +87,11 @@
 }
 
 .gallery::-webkit-scrollbar-track {
-  background: var(--blu3);
+  background: var(--tertiary);
 }
 
 .gallery::-webkit-scrollbar-thumb {
-  background-color: var(--blu1);
+  background-color: var(--primary);
   border-radius: 10px;
   border: 3px none #ffffff;
 }
@@ -126,7 +126,7 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  color: var(--giallo);
+  color: var(--mainText);
   font-size: 40px;
   cursor: pointer;
   z-index: 1001; /* Assicurati che sia sopra l'overlay */

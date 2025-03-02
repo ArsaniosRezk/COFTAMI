@@ -21,7 +21,7 @@
   border: var(--bordoGiallo);
 
   overflow: hidden;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
 }
 
 .team-card img {
@@ -43,15 +43,15 @@
   font-size: 1rem;
   font-weight: 700;
   text-align: center;
-  color: var(--testo);
+  color: var(--text);
 }
 
 .team-card:hover,
 .team-card:hover *,
 #add-team-button:hover {
-  background-color: var(--arancione);
+  background-color: var(--orange);
 
-  color: var(--nero);
+  color: var(--darkText);
   border: none;
 }
 
@@ -69,12 +69,11 @@
   border: none;
   box-shadow: var(--ombra1);
   overflow: hidden;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
 
-  color: var(--giallo);
+  color: var(--text);
   font-size: 1rem;
   font-weight: bold;
-  color: var(--giallo);
 }
 
 #add-team-button i {
@@ -105,8 +104,8 @@
 
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid var(--giallo);
-  background-color: var(--blu2);
+  border: var(--interaction);
+  background-color: var(--secondary);
 }
 
 #name-and-logo h2 {
@@ -129,8 +128,8 @@
   gap: 20px;
 
   border-radius: 10px;
-  border: 1px solid var(--giallo);
-  background-color: var(--blu2);
+  border: var(--interaction);
+  background-color: var(--secondary);
 
   font-weight: bold;
 }
@@ -167,11 +166,11 @@
   width: 100%;
   height: auto;
   border-radius: 10px;
-  border: 1px solid var(--giallo);
+  border: var(--interaction);
 
   padding: 20px;
   gap: 10px;
-  background-color: var(--blu2);
+  background-color: var(--secondary);
 }
 
 #edit-area {

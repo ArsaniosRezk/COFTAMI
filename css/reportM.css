@@ -19,7 +19,7 @@ table {
 }
 
 table tr:nth-child(even) {
-  background: #144ec3;
+  background: var(--tertiary);
 }
 
 thead {
@@ -27,12 +27,12 @@ thead {
   top: 0;
   text-align: left;
   font-weight: bold;
-  background-color: var(--blu3);
-  color: var(--giallo);
+  background-color: var(--tertiary);
+  color: var(--mainText);
 }
 
 tbody {
-  background-color: var(--tabella);
+  background-color: var(--table);
 }
 
 th,
@@ -96,16 +96,16 @@ table td:nth-child(7) {
 
 /* Bottone non confermato (giallo) */
 .confirm-button.not-confirmed {
-  background-color: var(--giallo);
+  background-color: var(--text);
 }
 
 /* Bottone confermato (verde) */
 .confirm-button.confirmed {
-  background-color: var(--verde);
+  background-color: var(--mainText);
 }
 
 .confirm-button:hover {
-  background-color: var(--verde);
+  background-color: var(--mainText);
   width: 25px;
   height: 25px;
 }

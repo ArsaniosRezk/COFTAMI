@@ -17,8 +17,8 @@ CLASSIFICA SQUADRE
   font-family: "roboto", sans-serif;
   font-size: 0.55rem;
 
-  background-color: var(--tabella);
-  color: var(--testo);
+  background-color: var(--table);
+  color: var(--text);
 
   border-radius: 10px;
 }
@@ -43,11 +43,11 @@ CLASSIFICA SQUADRE
   font-size: 1rem;
   font-weight: 500;
   font-family: "Bebas Neue", sans-serif;
-  color: var(--giallo);
+  color: var(--mainText);
 }
 
 .custom-table thead {
-  background-color: var(--blu3);
+  background-color: var(--tertiary);
 }
 
 .custom-table th:nth-child(2),
@@ -82,14 +82,14 @@ CLASSIFICA SQUADRE
 .custom-table tbody tr:nth-child(2),
 .custom-table tbody tr:nth-child(3),
 .custom-table tbody tr:nth-child(4) {
-  background-color: var(--squadreChePassano);
+  background-color: var(--finalsTeams);
 }
 
 .custom-table tr:nth-child(1) td:nth-child(1),
 .custom-table tr:nth-child(2) td:nth-child(1),
 .custom-table tr:nth-child(3) td:nth-child(1),
 .custom-table tr:nth-child(4) td:nth-child(1) {
-  background-color: var(--squadreChePassano);
+  background-color: var(--finalsTeams);
 }
 
 .custom-table tbody tr:last-child {
@@ -201,7 +201,7 @@ PROSSIMA GIORNATA
   align-items: center;
   padding: 15px;
 
-  background-color: var(--blu2);
+  background-color: var(--secondary);
   width: 100%;
 
   border-radius: 10px;
@@ -229,19 +229,12 @@ PROSSIMA GIORNATA
 
   border-radius: 10px;
 
-  background: linear-gradient(
-    90deg,
-    #3063f0 0%,
-
-    #669af2 50%,
-
-    #3063f0 100%
-  );
+  background: var(--matchesGradient);
 }
 
 .partita-div:hover {
-  background: var(--blu1);
-  border: 1px solid var(--giallo);
+  background: var(--primary);
+  border: var(--interaction);
 }
 
 .partita {
@@ -306,7 +299,7 @@ PROSSIMA GIORNATA
 }
 
 .partita-venue p {
-  color: var(--testo);
+  color: var(--text);
   font-size: 0.4rem;
   font-weight: 500;
 }

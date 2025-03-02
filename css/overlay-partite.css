@@ -6,11 +6,11 @@
   bottom: -100%;
   width: 100%;
   height: 100%;
-  background-color: var(--blu1);
+  background-color: var(--primary);
   text-align: center;
   transition: all 0.5s ease;
 
-  color: var(--testo);
+  color: var(--text);
   z-index: 2000;
 }
 
@@ -55,7 +55,7 @@
   font-size: 1rem;
   text-align: center;
   font-weight: bold;
-  color: var(--giallo);
+  color: var(--mainText);
 }
 
 #team-logo {
@@ -76,7 +76,7 @@
 
 .gol-number {
   font-size: 5rem;
-  color: var(--giallo);
+  color: var(--mainText);
   font-weight: bold;
 }
 
@@ -110,7 +110,7 @@
 .close-team-info {
   float: right;
   padding: 35px;
-  color: var(--testo);
+  color: var(--text);
   font-size: 1.5rem;
   cursor: pointer;
 }

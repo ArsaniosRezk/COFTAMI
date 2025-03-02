@@ -9,7 +9,7 @@ TEMPORANEO FINO A QUANDO CHIUDIAMO ISCRIZIONI
   top: 0;
   right: 0;
   width: 100%;
-  background-color: var(--blu1);
+  background-color: var(--primary);
 }
 
 .section-title {
@@ -115,7 +115,7 @@ th {
 }
 
 .form {
-  color: var(--giallo);
+  color: var(--mainText);
   text-decoration: underline;
   font-weight: bold;
 }

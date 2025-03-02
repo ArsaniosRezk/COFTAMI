@@ -1,18 +1,25 @@
 :root {
-  --sfondo: #ffffff;
-  --testo: #ffffff;
+  --background: #ffffff;
+  --text: #ffffff;
   --testoTrasparente: #ffffff80;
-  --nero: #000000;
-  --blu1: #000957;
-  --blu2: #0011a7;
-  --blu3: #144f8f;
-  --blu4: #262f3e;
-  --tabella: #0d287f;
-  --verde: #4dbb54;
-  --arancione: #ffa500;
-  --giallo: #ffeb00;
-  --bordoGiallo: 1px solid var(--giallo);
-  --squadreChePassano: rgba(255, 255, 0, 0.3);
+  --darkText: #262f3e;
+  /* --primary: #19392a; */
+  /* --primary: #3f7360; */
+  /* --primary: #40916c; */
+  --primary: #2e684e;
+  --secondary: #377d5d;
+  --tertiary: #295a44;
+  --table: var(--secondary);
+  --orange: #f26a1b;
+  --mainText: #fceb00;
+  --interaction: 1px solid var(--mainText);
+  --finalsTeams: rgba(13, 3, 78, 0.1);
+  --matchesGradient: linear-gradient(
+    90deg,
+    var(--tertiary) 0%,
+    var(--primary) 50%,
+    var(--tertiary) 100%
+  );
   --ombra1: 0px -2px 5px 0px rgba(0, 0, 0, 0.2),
     2px 0px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 5px 0px rgba(0, 0, 0, 0.2),
     -2px 0px 5px 0px rgba(0, 0, 0, 0.2);
