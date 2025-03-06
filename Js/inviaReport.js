@@ -1,7 +1,7 @@
 import { getData, setData } from "./firebase.js";
 
 function getPaths() {
-  const edition = "2024";
+  const edition = "2025";
   const selectedDivision = document.getElementById("division").value;
   const teamsPath = `Calcio/${edition}/${selectedDivision}/Squadre`;
   const calendarPath = `Calcio/${edition}/${selectedDivision}/Calendario`;

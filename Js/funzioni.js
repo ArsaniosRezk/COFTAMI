@@ -2798,7 +2798,7 @@ function calcolaPosizioniGlobali(rankingArray) {
 }
 
 // async function getAllMatchReports(division) {
-//   const edition = "2024";
+//   const edition = "2025";
 //   const matchReportsPath = `Calcio/${edition}/${division}/Referti`;
 //   const matchReportsSnapshot = await getData(matchReportsPath);
 //   return matchReportsSnapshot;

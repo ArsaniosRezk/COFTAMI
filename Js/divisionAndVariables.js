@@ -1,5 +1,5 @@
 // Edizione Torneo/Anno
-const edition = "2024";
+const edition = "2025";
 
 // Definizione variabile e funzioni per gestione divisione
 let selectedDivision;
