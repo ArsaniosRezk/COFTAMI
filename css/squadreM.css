@@ -51,7 +51,7 @@
 #add-team-button:hover {
   background-color: var(--orange);
 
-  color: var(--darkText);
+  /* color: var(--darkText); */
   border: none;
 }
 
