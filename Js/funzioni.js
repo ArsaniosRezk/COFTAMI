@@ -2339,13 +2339,16 @@ export async function classificaGirone(targetDiv) {
     // Itera attraverso le giornate per recuperare tutte le partite
     const giornate = await getData(matchesPath);
 
-    if (!giornate) {
-      console.log(`Nessuna partita trovata`);
-      return;
+    if (!giornate || Object.keys(giornate).length === 0) {
+      console.log(
+        "Nessuna partita trovata, la classifica verrà generata comunque."
+      );
     }
 
     // Filtra solo le giornate numeriche
-    const numeriGiornate = Object.keys(giornate).filter((key) => !isNaN(key));
+    const numeriGiornate = giornate
+      ? Object.keys(giornate).filter((key) => !isNaN(key))
+      : [];
 
     for (const giornata of numeriGiornate) {
       const matches = giornate[giornata];
