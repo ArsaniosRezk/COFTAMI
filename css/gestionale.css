@@ -118,6 +118,10 @@ select {
   margin-left: 30px;
 }
 
+option {
+  background-color: var(--primary);
+}
+
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
 * {
