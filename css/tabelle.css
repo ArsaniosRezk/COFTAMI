@@ -78,14 +78,14 @@ table tbody tr:last-child {
 .ranking-table tbody tr:nth-child(2),
 .ranking-table tbody tr:nth-child(3),
 .ranking-table tbody tr:nth-child(4) {
-  background-color: var(--finalsTeams);
+  /* background-color: var(--finalsTeams); */
 }
 
 .ranking-table tr:nth-child(1) td:nth-child(1),
 .ranking-table tr:nth-child(2) td:nth-child(1),
 .ranking-table tr:nth-child(3) td:nth-child(1),
 .ranking-table tr:nth-child(4) td:nth-child(1) {
-  background-color: var(--finalsTeams);
+  /* background-color: var(--finalsTeams); */
 }
 
 .ranking-table th:nth-child(7),
