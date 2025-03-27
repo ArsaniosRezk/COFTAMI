@@ -16,9 +16,9 @@
   --finalsTeams: rgba(13, 3, 78, 0.1);
   --matchesGradient: linear-gradient(
     90deg,
-    var(--tertiary) 0%,
-    var(--primary) 50%,
-    var(--tertiary) 100%
+    #366f56 0%,
+    var(--secondary) 50%,
+    #366f56 100%
   );
   --ombra1: 0px -2px 5px 0px rgba(0, 0, 0, 0.2),
     2px 0px 5px 0px rgba(0, 0, 0, 0.2), 0px 2px 5px 0px rgba(0, 0, 0, 0.2),

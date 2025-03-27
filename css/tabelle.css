@@ -102,6 +102,15 @@ table tbody tr:last-child {
   padding-left: 8px;
 }
 
+.girone-section {
+  margin-bottom: 20px;
+}
+
+.girone-section h3 {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
 /*
   ===================================
   TABELLA MARCATORI
@@ -177,6 +186,11 @@ table tbody tr:last-child {
   .ranking-table td:nth-child(2),
   .ranking-table td:nth-child(10) {
     font-weight: 600;
+  }
+
+  .girone-section h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
   }
 
   /* Classifica Marcatori  */

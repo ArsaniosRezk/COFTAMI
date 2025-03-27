@@ -2325,57 +2325,89 @@ export async function classificaGirone(targetDiv) {
   const { teamsPath, matchesPath } = getPaths();
 
   try {
-    // Recupera le squadre
     const teams = await getData(teamsPath);
-
     if (!teams) {
-      console.log(`Nessuna squadra trovata`);
+      console.log("Nessuna squadra trovata");
       return;
     }
 
-    // Inizializza i punteggi per le squadre
-    const scores = inizializzaPunteggi(teams);
-
-    // Itera attraverso le giornate per recuperare tutte le partite
     const giornate = await getData(matchesPath);
-
-    if (!giornate || Object.keys(giornate).length === 0) {
-      console.log(
-        "Nessuna partita trovata, la classifica verrà generata comunque."
-      );
-    }
-
-    // Filtra solo le giornate numeriche
     const numeriGiornate = giornate
       ? Object.keys(giornate).filter((key) => !isNaN(key))
       : [];
+    // Raggruppa le squadre per girone
+    const gironi = {};
+    let almenoUnGirone = false;
 
-    for (const giornata of numeriGiornate) {
-      const matches = giornate[giornata];
+    for (const teamKey in teams) {
+      const girone = teams[teamKey].Girone || "";
 
-      for (const matchKey in matches) {
-        const match = matches[matchKey];
-
-        aggiornaPunteggi(
-          scores,
-          match.SquadraCasa,
-          match.GolSquadraCasa,
-          match.GolSquadraOspite,
-          match.SquadraOspite
-        );
-
-        aggiornaPunteggi(
-          scores,
-          match.SquadraOspite,
-          match.GolSquadraOspite,
-          match.GolSquadraCasa,
-          match.SquadraCasa
-        );
+      if (girone !== "") {
+        almenoUnGirone = true;
+        if (!gironi[girone]) gironi[girone] = {};
+        gironi[girone][teamKey] = teams[teamKey];
       }
     }
 
-    const rankingArray = ordinaClassifica(scores);
-    rappresentaClassifica(containerId, rankingArray);
+    // Se nessuna squadra ha un girone, raggruppale tutte in un unico girone "unico"
+    if (!almenoUnGirone) {
+      gironi["unico"] = teams;
+    }
+
+    const container = document.getElementById(containerId);
+    container.innerHTML = ""; // Pulisce il contenuto precedente
+
+    // Per ogni girone, calcola e mostra la classifica
+    for (const girone in gironi) {
+      const gironeTeams = gironi[girone];
+      const scores = inizializzaPunteggi(gironeTeams);
+
+      // Calcola punteggi solo delle partite tra squadre dello stesso girone
+      for (const giornata of numeriGiornate) {
+        const matches = giornate[giornata];
+        for (const matchKey in matches) {
+          const match = matches[matchKey];
+          if (
+            gironeTeams[match.SquadraCasa] &&
+            gironeTeams[match.SquadraOspite]
+          ) {
+            aggiornaPunteggi(
+              scores,
+              match.SquadraCasa,
+              match.GolSquadraCasa,
+              match.GolSquadraOspite,
+              match.SquadraOspite
+            );
+            aggiornaPunteggi(
+              scores,
+              match.SquadraOspite,
+              match.GolSquadraOspite,
+              match.GolSquadraCasa,
+              match.SquadraCasa
+            );
+          }
+        }
+      }
+
+      const rankingArray = ordinaClassifica(scores);
+
+      // Aggiungi un titolo per il girone
+      // Aggiungi un contenitore specifico per ogni girone
+      const gironeSection = document.createElement("div");
+      gironeSection.classList.add("girone-section");
+
+      if (girone !== "unico") {
+        const title = document.createElement("h3");
+        title.innerText = `Girone ${girone}`;
+        gironeSection.appendChild(title);
+      }
+
+      // Appendiamo la classifica lì dentro
+      rappresentaClassifica(containerId, rankingArray, gironeSection);
+
+      // Infine, aggiungiamo questa sezione al contenitore principale
+      container.appendChild(gironeSection);
+    }
   } catch (error) {
     console.error(
       `Errore nel recupero delle partite o squadre da Firebase: ${error.message}`,
@@ -2499,10 +2531,14 @@ export function ordinaClassifica(scores) {
   });
 }
 
-export function rappresentaClassifica(containerId, rankingArray) {
-  const rankingDiv = document.getElementById(containerId);
+export function rappresentaClassifica(
+  containerId,
+  rankingArray,
+  target = null
+) {
+  const rankingDiv = target || document.getElementById(containerId);
 
-  rankingDiv.innerHTML = "";
+  // rankingDiv.innerHTML = "";
   const table = document.createElement("table");
   table.classList.add("ranking-table");
 
@@ -2712,6 +2748,12 @@ async function rappresentaClassificaMarcatori(
 ) {
   const rankingDiv = document.getElementById(containerId);
   rankingDiv.innerHTML = "";
+
+  // Se non ci sono marcatori, mostra un messaggio e interrompi
+  if (rankingArray.length === 0) {
+    rankingDiv.innerHTML = "";
+    return;
+  }
 
   // Calcola le posizioni globali una volta sola
   const rankingWithPositions = calcolaPosizioniGlobali(rankingArray);
