@@ -129,6 +129,15 @@ table tbody tr:last-child {
   /* background-color: var(--finalsTeams); */
 }
 
+.girone-section {
+  margin-bottom: 10px;
+}
+
+.girone-section h3 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
 /* TABELLA MARCATORI  */
 
 .scorers-table th:nth-child(2),
