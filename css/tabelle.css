@@ -111,6 +111,11 @@ table tbody tr:last-child {
   font-size: 1rem;
 }
 
+.classifica-avviso {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
 /*
   ===================================
   TABELLA MARCATORI
@@ -206,6 +211,11 @@ table tbody tr:last-child {
   .scorers-table td:nth-child(2),
   .scorers-table td:nth-child(4) {
     font-weight: 600;
+  }
+
+  .classifica-avviso {
+    font-size: 1rem;
+    font-weight: bold;
   }
 }
 
