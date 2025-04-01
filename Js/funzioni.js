@@ -863,6 +863,56 @@ export async function prossimaGiornata() {
 }
 
 function rappresentaGiornata(matchday, matches, teamsSnapshot, calendarDiv) {
+  const descrizioneCalendario = document.getElementById(
+    "descrizione-calendario"
+  );
+  const selectDesktop = document.getElementById("division");
+  const selectMobile = document.getElementById("division-smartphone");
+
+  function aggiornaTestoDivisione(value) {
+    if (value === "Superiori") {
+      descrizioneCalendario.innerHTML = `
+  Dopo aver svolto tutte le partite del girone di andata, ogni squadra farà 3 partite extra a seconda della propria posizione in classifica, secondo il seguente schema:<br><br>
+  <table style="margin: 0 auto; border-spacing: 8px 4px; text-align: left;">
+    <tr><td>A (1ª)</td><td>D, E, F</td></tr>
+    <tr><td>B (2ª)</td><td>C, E, F</td></tr>
+    <tr><td>C (3ª)</td><td>B, D, F</td></tr>
+    <tr><td>D (4ª)</td><td>A, C, E</td></tr>
+    <tr><td>E (5ª)</td><td>A, B, D</td></tr>
+    <tr><td>F (6ª)</td><td>A, B, C</td></tr>
+  </table><br>
+  Le prime <strong>4</strong> in classifica al termine di queste partite passeranno alla fase finale.
+`;
+    } else if (value === "Giovani") {
+      descrizioneCalendario.innerHTML = `
+  Dopo aver svolto tutte le partite del girone di andata, ogni squadra farà 2 partite extra a seconda della propria posizione in classifica, secondo il seguente schema:<br><br>
+  <table style="margin: 0 auto; border-spacing: 8px 4px; text-align: left;">
+    <tr><td>A (1ª)</td><td>F, G</td></tr>
+    <tr><td>B (2ª)</td><td>E, G</td></tr>
+    <tr><td>C (3ª)</td><td>D, F</td></tr>
+    <tr><td>D (4ª)</td><td>C, E</td></tr>
+    <tr><td>E (5ª)</td><td>B, D</td></tr>
+    <tr><td>F (6ª)</td><td>A, C</td></tr>
+    <tr><td>G (7ª)</td><td>A, B</td></tr>
+  </table><br>
+  Le prime <strong>4</strong> in classifica di ogni girone passeranno alla fase finale.
+`;
+    } else {
+      descrizioneCalendario.textContent = "";
+    }
+  }
+
+  selectDesktop.addEventListener("change", (e) => {
+    aggiornaTestoDivisione(e.target.value);
+  });
+
+  selectMobile.addEventListener("change", (e) => {
+    aggiornaTestoDivisione(e.target.value);
+  });
+
+  // Imposta il testo iniziale in base al valore selezionato all'avvio
+  aggiornaTestoDivisione(selectDesktop.value || selectMobile.value);
+
   const matchdayDiv = document.createElement("div");
   matchdayDiv.classList.add("giornata");
 
@@ -2358,7 +2408,7 @@ export async function classificaGirone(targetDiv) {
     container.innerHTML = ""; // Pulisce il contenuto precedente
 
     // Per ogni girone, calcola e mostra la classifica
-    for (const girone in gironi) {
+    for (const girone of Object.keys(gironi).sort()) {
       const gironeTeams = gironi[girone];
       const scores = inizializzaPunteggi(gironeTeams);
 
@@ -2398,6 +2448,7 @@ export async function classificaGirone(targetDiv) {
 
       if (girone !== "unico") {
         const title = document.createElement("h3");
+        title.classList.add("titolo-girone");
         title.innerText = `Girone ${girone}`;
         gironeSection.appendChild(title);
       }
@@ -2408,6 +2459,27 @@ export async function classificaGirone(targetDiv) {
       // Infine, aggiungiamo questa sezione al contenitore principale
       container.appendChild(gironeSection);
     }
+
+    // Dopo il ciclo for (const girone of Object.keys(gironi).sort()) { ... }
+
+    // // Cerca il valore selezionato nel select (mobile o desktop)
+    // const selectElement =
+    //   document.getElementById("division-smartphone") ||
+    //   document.getElementById("division");
+
+    // const categoria = selectElement?.value || "";
+    // const avviso = document.createElement("p");
+    // avviso.classList.add("classifica-avviso");
+
+    // if (categoria === "Superiori") {
+    //   avviso.innerText = "NB: Ogni squadra farà 3 partite extra";
+    // } else if (categoria === "Giovani") {
+    //   avviso.innerText = "NB: Ogni squadra farà 2 partite extra";
+    // } else {
+    //   avviso.innerText = "";
+    // }
+
+    // container.appendChild(avviso);
   } catch (error) {
     console.error(
       `Errore nel recupero delle partite o squadre da Firebase: ${error.message}`,

@@ -160,3 +160,13 @@ break points
   max-width: 600px; /* Limite massimo */
   height: auto;
 }
+
+#descrizione-calendario {
+  font-size: 0.8rem;
+}
+
+@media (min-width: 992px) {
+  #descrizione-calendario {
+    font-size: 1rem;
+  }
+}
