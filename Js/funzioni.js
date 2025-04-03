@@ -863,13 +863,14 @@ export async function prossimaGiornata() {
 }
 
 function rappresentaGiornata(matchday, matches, teamsSnapshot, calendarDiv) {
-  const descrizioneCalendario = document.getElementById(
-    "descrizione-calendario"
-  );
+  const descrizioneCalendario =
+    document.getElementById("descrizione-calendario") || null;
   const selectDesktop = document.getElementById("division");
   const selectMobile = document.getElementById("division-smartphone");
 
   function aggiornaTestoDivisione(value) {
+    if (!descrizioneCalendario) return;
+
     if (value === "Superiori") {
       descrizioneCalendario.innerHTML = `
   Dopo aver svolto tutte le partite del girone di andata, ogni squadra farà 3 partite extra a seconda della propria posizione in classifica, secondo il seguente schema:<br><br>
