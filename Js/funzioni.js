@@ -859,6 +859,21 @@ export async function prossimaGiornata() {
       const matches = calendarSnapshot;
       rappresentaGiornata(matchdayToShow, matches, teamsSnapshot, calendarDiv);
     }
+
+    const instructionElement = document.querySelector(".instruction");
+
+    // Controlla se almeno una partita ha un risultato valido
+    const hasResults = Object.values(calendarSnapshot).some(
+      (match) =>
+        match.Risultato &&
+        match.Risultato.trim() !== "VS" &&
+        match.Risultato.trim() !== ""
+    );
+
+    // Mostra o nasconde il paragrafo in base ai risultati
+    if (instructionElement) {
+      instructionElement.style.display = hasResults ? "block" : "none";
+    }
   }
 }
 
