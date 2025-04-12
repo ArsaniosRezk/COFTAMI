@@ -901,17 +901,16 @@ function rappresentaGiornata(matchday, matches, teamsSnapshot, calendarDiv) {
 `;
     } else if (value === "Giovani") {
       descrizioneCalendario.innerHTML = `
-  Dopo aver svolto tutte le partite del girone di andata, ogni squadra farà 2 partite extra a seconda della propria posizione in classifica, secondo il seguente schema:<br><br>
+ Dopo aver svolto tutte le partite del girone di andata, ogni squadra farà 3 partite extra a seconda della propria posizione in classifica, secondo il seguente schema:<br><br>
   <table style="margin: 0 auto; border-spacing: 8px 4px; text-align: left;">
-    <tr><td>A (1ª)</td><td>F, G</td></tr>
-    <tr><td>B (2ª)</td><td>E, G</td></tr>
-    <tr><td>C (3ª)</td><td>D, F</td></tr>
-    <tr><td>D (4ª)</td><td>C, E</td></tr>
-    <tr><td>E (5ª)</td><td>B, D</td></tr>
-    <tr><td>F (6ª)</td><td>A, C</td></tr>
-    <tr><td>G (7ª)</td><td>A, B</td></tr>
+    <tr><td>A (1ª)</td><td>D, E, F</td></tr>
+    <tr><td>B (2ª)</td><td>C, E, F</td></tr>
+    <tr><td>C (3ª)</td><td>B, D, F</td></tr>
+    <tr><td>D (4ª)</td><td>A, C, E</td></tr>
+    <tr><td>E (5ª)</td><td>A, B, D</td></tr>
+    <tr><td>F (6ª)</td><td>A, B, C</td></tr>
   </table><br>
-  Le prime <strong>4</strong> in classifica di ogni girone passeranno alla fase finale.
+  Le prime <strong>4</strong> in classifica al termine di queste partite passeranno alla fase finale.
 `;
     } else {
       descrizioneCalendario.textContent = "";
