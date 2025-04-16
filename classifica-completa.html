@@ -38,6 +38,18 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="css/classifica-completa.css" />
+
+    <style>
+      .titolo-girone {
+        font-size: 0.8rem;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .ranking-table {
+        margin-bottom: 10px;
+      }
+    </style>
   </head>
   <body>
     <h2>CLASSIFICA</h2>
@@ -50,84 +62,9 @@
       <div class="table-container" id="giovani"></div>
     </div>
 
-    <script type="module">
-      classificaGirone("superiori", "Superiori");
-      classificaGirone("giovani", "Giovani");
-
-      import { getData, getPaths } from "./Js/firebase.js";
-      import {
-        inizializzaPunteggi,
-        aggiornaPunteggi,
-        aggiornaScontriDiretti,
-        ordinaClassifica,
-        rappresentaClassifica,
-      } from "./Js/funzioni.js";
-
-      async function classificaGirone(targetDiv, division) {
-        const containerId = targetDiv;
-        const chosenDivision = division;
-        const edition = "2025";
-        const teamsPath = `Calcio/${edition}/${chosenDivision}/Squadre`;
-        const matchesPath = `Calcio/${edition}/${chosenDivision}/Partite`;
-
-        try {
-          // Recupera le squadre
-          const teams = await getData(teamsPath);
-
-          if (!teams) {
-            console.log(`Nessuna squadra trovata`);
-            return;
-          }
-
-          // Inizializza i punteggi per le squadre
-          const scores = inizializzaPunteggi(teams);
-
-          // Itera attraverso le giornate per recuperare tutte le partite
-          const giornate = await getData(matchesPath);
-
-          if (!giornate) {
-            console.log(`Nessuna partita trovata`);
-            return;
-          }
-
-          // Filtra solo le giornate numeriche
-          const numeriGiornate = Object.keys(giornate).filter(
-            (key) => !isNaN(key)
-          );
-
-          for (const giornata of numeriGiornate) {
-            const matches = giornate[giornata];
-
-            for (const matchKey in matches) {
-              const match = matches[matchKey];
-
-              aggiornaPunteggi(
-                scores,
-                match.SquadraCasa,
-                match.GolSquadraCasa,
-                match.GolSquadraOspite,
-                match.SquadraOspite
-              );
-
-              aggiornaPunteggi(
-                scores,
-                match.SquadraOspite,
-                match.GolSquadraOspite,
-                match.GolSquadraCasa,
-                match.SquadraCasa
-              );
-            }
-          }
-
-          const rankingArray = ordinaClassifica(scores);
-          rappresentaClassifica(containerId, rankingArray);
-        } catch (error) {
-          console.error(
-            `Errore nel recupero delle partite o squadre da Firebase: ${error.message}`,
-            error
-          );
-        }
-      }
-    </script>
+    <script type="module" src="Js/firebase.js"></script>
+    <script type="module" src="Js/divisionAndVariables.js"></script>
+    <script type="module" src="Js/funzioni.js"></script>
+    <script type="module" src="Js/classificaCompleta.js"></script>
   </body>
 </html>
