@@ -366,3 +366,21 @@ table tbody tr:last-child {
 
 @media (min-width: 1440px) {
 }
+
+.posizione-indicatore {
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 100%;
+  /* border-radius: 10px; */
+}
+
+/* Colori diversi per posizione */
+.posizione-1,
+.posizione-2,
+.posizione-3,
+.posizione-4 {
+  background-color: var(--mainText);
+}
