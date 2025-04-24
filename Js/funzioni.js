@@ -2669,6 +2669,16 @@ export function rappresentaClassifica(
     ];
 
     const row = creaRigaTabella(rowData);
+
+    // Aggiunge classe speciale alla cella posizione (solo primi 4)
+    if (index < 10) {
+      const posCell = row.children[0];
+      const indicator = document.createElement("span");
+      indicator.classList.add("posizione-indicatore", `posizione-${index + 1}`);
+      posCell.style.position = "relative";
+      posCell.prepend(indicator);
+    }
+
     tbody.appendChild(row);
   });
 
