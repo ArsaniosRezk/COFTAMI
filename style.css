@@ -33,7 +33,7 @@ p {
 
 a {
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: var(--darkText);
   cursor: pointer;
 }
@@ -147,6 +147,9 @@ break points
 */
 
 @media (min-width: 576px) {
+  a {
+    font-size: 1rem;
+  }
 }
 
 @media (min-width: 992px) {
