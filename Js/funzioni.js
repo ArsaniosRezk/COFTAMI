@@ -901,7 +901,7 @@ function rappresentaGiornata(matchday, matches, teamsSnapshot, calendarDiv) {
 `;
     } else if (value === "Giovani") {
       descrizioneCalendario.innerHTML = `
- Dopo aver svolto tutte le partite del girone di andata, ogni squadra farà 3 partite extra a seconda della propria posizione in classifica, secondo il seguente schema:<br><br>
+ Dopo aver svolto tutte le partite del girone di andata, ogni squadra farà 3 partite extra a seconda della propria posizione in classifica, contro le squadre dell'altro girone, secondo il seguente schema:<br><br>
   <table style="margin: 0 auto; border-spacing: 8px 4px; text-align: left;">
     <tr><td>A (1ª)</td><td>D, E, F</td></tr>
     <tr><td>B (2ª)</td><td>C, E, F</td></tr>
