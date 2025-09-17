@@ -2432,10 +2432,12 @@ export async function classificaGirone(targetDiv) {
         const matches = giornate[giornata];
         for (const matchKey in matches) {
           const match = matches[matchKey];
-          if (
-            gironeTeams[match.SquadraCasa] &&
-            gironeTeams[match.SquadraOspite]
-          ) {
+          // DOPO — “inclusiva”
+          // Se almeno una delle due è del girone, aggiorniamo quella (o entrambe se intra-girone)
+          const casaIn = !!gironeTeams[match.SquadraCasa];
+          const trasIn = !!gironeTeams[match.SquadraOspite];
+
+          if (casaIn) {
             aggiornaPunteggi(
               scores,
               match.SquadraCasa,
@@ -2443,6 +2445,8 @@ export async function classificaGirone(targetDiv) {
               match.GolSquadraOspite,
               match.SquadraOspite
             );
+          }
+          if (trasIn) {
             aggiornaPunteggi(
               scores,
               match.SquadraOspite,
@@ -2556,6 +2560,9 @@ export function aggiornaScontriDiretti(
   concededGoals,
   opponent
 ) {
+  // NUOVO: se l’avversaria non è nel girone corrente, niente H2H
+  if (!scores[opponent]) return;
+
   if (!scores[team].headToHead[opponent]) {
     scores[team].headToHead[opponent] = {
       playedMatches: 0,
