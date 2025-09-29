@@ -2292,6 +2292,21 @@ async function saveEditedMatch(match, selectedGiornata) {
   const updatedHomeScorers = {};
   const updatedAwayScorers = {};
 
+  // dopo aver costruito updatedHomeScorers / updatedAwayScorers
+  match.Marcatori = match.Marcatori || {};
+
+  if (Object.keys(updatedHomeScorers).length > 0) {
+    match.Marcatori.MarcatoriCasa = updatedHomeScorers;
+  } else {
+    delete match.Marcatori.MarcatoriCasa; // niente nodo se zero gol
+  }
+
+  if (Object.keys(updatedAwayScorers).length > 0) {
+    match.Marcatori.MarcatoriOspite = updatedAwayScorers;
+  } else {
+    delete match.Marcatori.MarcatoriOspite; // niente nodo se zero gol
+  }
+
   let autogolOspite = 0;
   let autogolCasa = 0;
 
@@ -2748,13 +2763,35 @@ export async function classificaMarcatori(targetDiv) {
     const giornateSnapshot = await getData(matchesPath);
 
     if (giornateSnapshot) {
-      for (const giornataKey in giornateSnapshot) {
-        const giornata = giornateSnapshot[giornataKey];
+      // Normalizza eventuali chiavi "08" -> "8" e rimuovi spazi accidentali
+      const giornateKeys = Object.keys(giornateSnapshot).map((k) => {
+        const t = String(k).trim();
+        return !isNaN(t) ? String(parseInt(t, 10)) : t;
+      });
+      const giornateNorm = {};
+      for (const originalKey in giornateSnapshot) {
+        const t = String(originalKey).trim();
+        const norm = !isNaN(t) ? String(parseInt(t, 10)) : t;
+        giornateNorm[norm] = giornateSnapshot[originalKey];
+      }
 
+      for (const giornataKey of giornateKeys) {
+        const giornata = giornateNorm[giornataKey];
         for (const matchKey in giornata) {
           const match = giornata[matchKey];
-          aggiornaClassifica(scorers, match.Marcatori.MarcatoriCasa);
-          aggiornaClassifica(scorers, match.Marcatori.MarcatoriOspite);
+          const casa = match?.Marcatori?.MarcatoriCasa ?? null;
+          const ospite = match?.Marcatori?.MarcatoriOspite ?? null;
+
+          if (!casa || !ospite) {
+            console.warn("Partita senza Marcatori completi:", {
+              giornata: giornataKey,
+              match: matchKey,
+              marcatori: match?.Marcatori,
+            });
+          }
+          // prima: match.Marcatori.MarcatoriCasa
+          aggiornaClassifica(scorers, match?.Marcatori?.MarcatoriCasa || {});
+          aggiornaClassifica(scorers, match?.Marcatori?.MarcatoriOspite || {});
         }
       }
     } else {
@@ -2933,14 +2970,13 @@ async function caricaSquadre() {
 }
 
 function aggiornaClassifica(ranking, players) {
-  if (players) {
-    Object.keys(players).forEach((player) => {
-      if (player === "AutogolCasa" || player === "AutogolOspite") {
-        return; // Salta questo marcatore
-      }
-      ranking[player] = (ranking[player] || 0) + players[player];
-    });
-  }
+  if (!players || typeof players !== "object") return;
+  Object.keys(players).forEach((player) => {
+    if (player === "AutogolCasa" || player === "AutogolOspite") return;
+    const gol = Number(players[player]) || 0;
+    if (gol <= 0) return;
+    ranking[player] = (ranking[player] || 0) + gol;
+  });
 }
 
 function calcolaPosizioniGlobali(rankingArray) {
