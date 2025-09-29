@@ -1444,15 +1444,12 @@ async function loadMatchReports() {
   const reportsDiv = document.getElementById("report-content");
   reportsDiv.innerHTML = "";
 
-  // Crea il contenitore per la tabella
   const scrollContainer = document.createElement("div");
   scrollContainer.id = "scroll-container";
   reportsDiv.appendChild(scrollContainer);
 
-  // Crea la tabella
   const table = document.createElement("table");
 
-  // Intestazioni delle colonne
   const headers = [
     "Data Ricezione",
     "Nome Arbitro",
@@ -1475,120 +1472,97 @@ async function loadMatchReports() {
 
   const tbody = document.createElement("tbody");
 
-  // Percorso dei referti
   const reportsPath = `Calcio/${edition}/`;
-
   const allReports = [];
 
-  // Itera sulle divisioni
   const divisions = ["Superiori", "Giovani"];
   for (let division of divisions) {
     const divisionRefPath = `${reportsPath}${division}/Referti`;
-
-    // Ottieni tutte le giornate
     const giornateSnapshot = await getData(divisionRefPath);
+    if (!giornateSnapshot) continue;
 
     for (let giornata in giornateSnapshot) {
-      const matchesSnapshot = giornateSnapshot[giornata];
-
-      // Itera su tutte le partite di una giornata
+      const matchesSnapshot = giornateSnapshot[giornata] || {};
       for (let match in matchesSnapshot) {
         const report = matchesSnapshot[match];
-        // Aggiungi ogni report all'array allReports con alcune informazioni aggiuntive
         allReports.push({ report, division, giornata, match });
       }
     }
   }
 
-  // Ordina i report per data di invio decrescente (dal più recente al meno recente)
   allReports.sort(
-    (a, b) => new Date(b.report.OraInvio) - new Date(a.report.OraInvio)
+    (a, b) =>
+      new Date(b.report?.OraInvio || 0) - new Date(a.report?.OraInvio || 0)
   );
 
-  // Popola la tabella con i report ordinati
-  for (let { report, division, giornata, match } of allReports) {
+  for (let { report, division, giornata } of allReports) {
     const row = document.createElement("tr");
 
-    // Data Ricezione
     const dataRicezione = document.createElement("td");
-    dataRicezione.textContent = formatDateTime(report.OraInvio);
+    dataRicezione.textContent = formatDateTime(
+      report?.OraInvio || new Date(0).toISOString()
+    );
     row.appendChild(dataRicezione);
 
-    // Nome Arbitro
     const nomeArbitro = document.createElement("td");
-    nomeArbitro.textContent = report.NomeArbitro;
+    nomeArbitro.textContent = report?.NomeArbitro || "";
     row.appendChild(nomeArbitro);
 
-    // Partita
     const partita = document.createElement("td");
-    const squadraCasa = report.SquadraCasa.replace(/_/g, ".");
-    const squadraOspite = report.SquadraOspite.replace(/_/g, ".");
+    const squadraCasa = (report?.SquadraCasa || "").replace(/_/g, ".");
+    const squadraOspite = (report?.SquadraOspite || "").replace(/_/g, ".");
+    const golCasa = report?.GolSquadraCasa ?? "";
+    const golOspite = report?.GolSquadraOspite ?? "";
     partita.innerHTML = `
-          <div>${squadraCasa}: ${report.GolSquadraCasa}</div>
-          <div>${squadraOspite}: ${report.GolSquadraOspite}</div>
+          <div>${squadraCasa}: ${golCasa}</div>
+          <div>${squadraOspite}: ${golOspite}</div>
           <br>
-          <div>D: ${report.Divisione} - G: ${giornata}</div>
+          <div>D: ${report?.Divisione || division} - G: ${giornata}</div>
       `;
     row.appendChild(partita);
 
-    // Marcatori
+    // Marcatori (con fallback sicuri)
     const marcatori = document.createElement("td");
+    const marcatoriCasaObj = report?.Marcatori?.MarcatoriCasa || {};
+    const marcatoriOspiteObj = report?.Marcatori?.MarcatoriOspite || {};
 
-    // Dividi i marcatori in casa e ospite
-    const marcatoriCasa = report.Marcatori.MarcatoriCasa || {};
-    const marcatoriOspite = report.Marcatori.MarcatoriOspite || {};
-
-    // Funzione per generare l'HTML dei marcatori
-    const generateMarcatoriHTML = (squadra, marcatori) => {
+    const generateMarcatoriHTML = (squadra, obj) => {
       let html = `<strong>${squadra}</strong><br>`;
-      for (let [nome, gol] of Object.entries(marcatori)) {
-        if (nome.startsWith("Autogol")) {
-          continue; // Saltare gli autogol nella lista principale
-        }
+      for (let [nome, gol] of Object.entries(obj)) {
+        if (String(nome).startsWith("Autogol")) continue;
         html += `${nome}: ${gol}<br>`;
       }
       return html;
     };
 
-    // Funzione per generare l'HTML degli autogol
-    const generateAutogolHTML = (marcatori) => {
-      let html = "";
+    const generateAutogolHTML = (obj) => {
       let autogolTotale = 0;
-      for (let [nome, gol] of Object.entries(marcatori)) {
-        if (nome.startsWith("Autogol")) {
-          autogolTotale += gol;
-        }
+      for (let [nome, gol] of Object.entries(obj)) {
+        if (String(nome).startsWith("Autogol")) autogolTotale += gol;
       }
-      if (autogolTotale > 0) {
-        html += `Autogol: ${autogolTotale}<br>`;
-      }
-      return html;
+      return autogolTotale > 0 ? `Autogol: ${autogolTotale}<br>` : "";
     };
 
-    // Crea il contenuto per i marcatori della squadra di casa
-    let marcatoriCasaHTML = generateMarcatoriHTML(squadraCasa, marcatoriCasa);
-    // Crea il contenuto per i marcatori della squadra ospite
+    let marcatoriCasaHTML = generateMarcatoriHTML(
+      squadraCasa,
+      marcatoriCasaObj
+    );
     let marcatoriOspiteHTML = generateMarcatoriHTML(
       squadraOspite,
-      marcatoriOspite
+      marcatoriOspiteObj
     );
+    marcatoriCasaHTML += generateAutogolHTML(marcatoriCasaObj);
+    marcatoriOspiteHTML += generateAutogolHTML(marcatoriOspiteObj);
 
-    // Aggiungi gli autogol alla fine
-    marcatoriCasaHTML += generateAutogolHTML(marcatoriCasa);
-    marcatoriOspiteHTML += generateAutogolHTML(marcatoriOspite);
-
-    // Combina i due contenuti
     marcatori.innerHTML = `${marcatoriCasaHTML}<br>${marcatoriOspiteHTML}`;
     row.appendChild(marcatori);
 
-    // MVP
     const mvp = document.createElement("td");
-    mvp.textContent = report.MVP;
+    mvp.textContent = report?.MVP || "";
     row.appendChild(mvp);
 
-    // Commenti/Espulsioni
     const commenti = document.createElement("td");
-    commenti.textContent = report.Commenti;
+    commenti.textContent = report?.Commenti || "";
     row.appendChild(commenti);
 
     // Conferma
@@ -1596,20 +1570,19 @@ async function loadMatchReports() {
     const confermaButton = document.createElement("button");
     confermaButton.classList.add("confirm-button");
 
-    // Verifica se il report è già nel database
-    const matchKey = `${report.SquadraCasa}:${report.SquadraOspite}`;
+    const matchKey = `${report?.SquadraCasa || ""}:${
+      report?.SquadraOspite || ""
+    }`;
     const matchPath = `Calcio/${edition}/${division}/Partite/${giornata}/${matchKey}`;
     const existingMatchData = await getData(matchPath);
 
-    // Assegna la classe in base alla presenza del report nel database
     if (existingMatchData) {
       confermaButton.classList.add("confirmed");
     } else {
       confermaButton.classList.add("not-confirmed");
     }
 
-    confermaButton.innerHTML = "✔"; // Check mark
-
+    confermaButton.innerHTML = "✔";
     confermaButton.onclick = () => confermaReport(giornata, report);
     conferma.appendChild(confermaButton);
     row.appendChild(conferma);
@@ -1773,73 +1746,60 @@ export async function loadMatchReports2() {
 
 //PADRI
 function openOverlay(report, division, giornata) {
-  // Funzione per generare l'HTML dei marcatori
-  const generateMarcatoriHTML = (squadra, marcatori) => {
+  const generateMarcatoriHTML = (squadra, obj = {}) => {
     let html = `<strong>${squadra}</strong><br>`;
-    for (let [nome, gol] of Object.entries(marcatori)) {
-      if (nome.startsWith("Autogol")) {
-        continue; // Saltare gli autogol nella lista principale
-      }
+    for (let [nome, gol] of Object.entries(obj)) {
+      if (String(nome).startsWith("Autogol")) continue;
       html += `${nome}: ${gol}<br>`;
     }
     return html;
   };
 
-  // Funzione per generare l'HTML degli autogol
-  const generateAutogolHTML = (marcatori) => {
-    let html = "";
+  const generateAutogolHTML = (obj = {}) => {
     let autogolTotale = 0;
-    for (let [nome, gol] of Object.entries(marcatori)) {
-      if (nome.startsWith("Autogol")) {
-        autogolTotale += gol;
-      }
+    for (let [nome, gol] of Object.entries(obj)) {
+      if (String(nome).startsWith("Autogol")) autogolTotale += gol;
     }
-    if (autogolTotale > 0) {
-      html += `Autogol: ${autogolTotale}<br>`;
-    }
-    return html;
+    return autogolTotale > 0 ? `Autogol: ${autogolTotale}<br>` : "";
   };
 
-  // Crea l'overlay
   const overlay = document.createElement("div");
   overlay.classList.add("overlay");
 
-  // Crea il contenuto dell'overlay
   const overlayContent = document.createElement("div");
   overlayContent.classList.add("overlay-content");
 
-  // Popola il contenuto dell'overlay con i dati della partita
+  const squadraCasa = (report?.SquadraCasa || "").replace(/_/g, ".");
+  const squadraOspite = (report?.SquadraOspite || "").replace(/_/g, ".");
+  const golCasa = report?.GolSquadraCasa ?? "";
+  const golOspite = report?.GolSquadraOspite ?? "";
+
+  const marcatoriCasaObj = report?.Marcatori?.MarcatoriCasa || {};
+  const marcatoriOspiteObj = report?.Marcatori?.MarcatoriOspite || {};
+
   overlayContent.innerHTML = `
     <i class="fa-solid fa-xmark close-overlay"></i>
     <h2>Referto</h2>
-    <p><strong>Arbitro:</strong> ${report.NomeArbitro}</p>
-    <p><strong>Divisione:</strong> ${division} <strong>Giornata:</strong> ${giornata}</p>  
+    <p><strong>Arbitro:</strong> ${report?.NomeArbitro || ""}</p>
+    <p><strong>Divisione:</strong> ${division} <strong>Giornata:</strong> ${giornata}</p>
     <h3><strong>Partita</strong></h3>
-    <p>${report.SquadraCasa.replace(/_/g, ".")}: ${report.GolSquadraCasa}</p>
-    <p>${report.SquadraOspite.replace(/_/g, ".")}: ${
-    report.GolSquadraOspite
-  }</p>
-   
+    <p>${squadraCasa}: ${golCasa}</p>
+    <p>${squadraOspite}: ${golOspite}</p>
+
     <h3><strong>Marcatori e MVP</strong></h3>
-    <p>${generateMarcatoriHTML(
-      report.SquadraCasa.replace(/_/g, "."),
-      report.Marcatori.MarcatoriCasa || ""
-    )}</p>
-    <p>${generateMarcatoriHTML(
-      report.SquadraOspite.replace(/_/g, "."),
-      report.Marcatori.MarcatoriOspite || ""
-    )} ${generateAutogolHTML(
-    report.Marcatori.MarcatoriCasa || {}
-  )}${generateAutogolHTML(report.Marcatori.MarcatoriOspite || {})}</p>
-    <p><strong>MVP:</strong> ${report.MVP}</p>
+    <p>${generateMarcatoriHTML(squadraCasa, marcatoriCasaObj)}</p>
+    <p>${generateMarcatoriHTML(squadraOspite, marcatoriOspiteObj)}
+       ${generateAutogolHTML(marcatoriCasaObj)}${generateAutogolHTML(
+    marcatoriOspiteObj
+  )}</p>
+    <p><strong>MVP:</strong> ${report?.MVP || ""}</p>
     <h3><strong>Commenti/Espulsioni:</strong></h3>
-    <p>${report.Commenti}</p>    
+    <p>${report?.Commenti || ""}</p>
   `;
 
   overlay.appendChild(overlayContent);
   document.body.appendChild(overlay);
 
-  // Aggiungi il gestore di eventi per il bottone di chiusura
   const closeButton = overlayContent.querySelector(".close-overlay");
   closeButton.addEventListener("click", () => {
     document.body.removeChild(overlay);
@@ -1848,71 +1808,54 @@ function openOverlay(report, division, giornata) {
 
 //SOCIAL
 function openOverlay2(report, division, giornata) {
-  // Funzione per generare l'HTML dei marcatori
-  const generateMarcatoriHTML = (squadra, marcatori) => {
+  const generateMarcatoriHTML = (squadra, obj = {}) => {
     let html = `<strong>${squadra}</strong><br>`;
-    for (let [nome, gol] of Object.entries(marcatori)) {
-      if (nome.startsWith("Autogol")) {
-        continue; // Saltare gli autogol nella lista principale
-      }
+    for (let [nome, gol] of Object.entries(obj)) {
+      if (String(nome).startsWith("Autogol")) continue;
       html += `${nome}: ${gol}<br>`;
     }
     return html;
   };
 
-  // Funzione per generare l'HTML degli autogol
-  const generateAutogolHTML = (marcatori) => {
-    let html = "";
+  const generateAutogolHTML = (obj = {}) => {
     let autogolTotale = 0;
-    for (let [nome, gol] of Object.entries(marcatori)) {
-      if (nome.startsWith("Autogol")) {
-        autogolTotale += gol;
-      }
+    for (let [nome, gol] of Object.entries(obj)) {
+      if (String(nome).startsWith("Autogol")) autogolTotale += gol;
     }
-    if (autogolTotale > 0) {
-      html += `Autogol: ${autogolTotale}<br>`;
-    }
-    return html;
+    return autogolTotale > 0 ? `Autogol: ${autogolTotale}<br>` : "";
   };
 
-  // Crea l'overlay
   const overlay = document.createElement("div");
   overlay.classList.add("overlay");
 
-  // Crea il contenuto dell'overlay
   const overlayContent = document.createElement("div");
   overlayContent.classList.add("overlay-content");
 
-  // Popola il contenuto dell'overlay con i dati della partita
+  const squadraCasa = (report?.SquadraCasa || "").replace(/_/g, ".");
+  const squadraOspite = (report?.SquadraOspite || "").replace(/_/g, ".");
+  const golCasa = report?.GolSquadraCasa ?? "";
+  const golOspite = report?.GolSquadraOspite ?? "";
+
+  const marcatoriCasaObj = report?.Marcatori?.MarcatoriCasa || {};
+  const marcatoriOspiteObj = report?.Marcatori?.MarcatoriOspite || {};
+
   overlayContent.innerHTML = `
     <i class="fa-solid fa-xmark close-overlay"></i>
     <h3>Referto Partita</h3>
     <p><strong>Divisione:</strong> ${division} <strong>Giornata:</strong> ${giornata}</p>  
-    <p><strong>${report.SquadraCasa.replace(/_/g, ".")}: ${
-    report.GolSquadraCasa
-  }</strong></p>
-    <p><strong>${report.SquadraOspite.replace(/_/g, ".")}: ${
-    report.GolSquadraOspite
-  }</strong></p>
-   
+    <p><strong>${squadraCasa}: ${golCasa}</strong></p>
+    <p><strong>${squadraOspite}: ${golOspite}</strong></p>
     <h3><strong>Marcatori</strong></h3>
-    <p>${generateMarcatoriHTML(
-      report.SquadraCasa.replace(/_/g, "."),
-      report.Marcatori.MarcatoriCasa || ""
-    )}</p>
-    <p>${generateMarcatoriHTML(
-      report.SquadraOspite.replace(/_/g, "."),
-      report.Marcatori.MarcatoriOspite || ""
-    )} ${generateAutogolHTML(
-    report.Marcatori.MarcatoriCasa || {}
-  )}${generateAutogolHTML(report.Marcatori.MarcatoriOspite || {})}</p>
-
+    <p>${generateMarcatoriHTML(squadraCasa, marcatoriCasaObj)}</p>
+    <p>${generateMarcatoriHTML(squadraOspite, marcatoriOspiteObj)}
+       ${generateAutogolHTML(marcatoriCasaObj)}${generateAutogolHTML(
+    marcatoriOspiteObj
+  )}</p>
   `;
 
   overlay.appendChild(overlayContent);
   document.body.appendChild(overlay);
 
-  // Aggiungi il gestore di eventi per il bottone di chiusura
   const closeButton = overlayContent.querySelector(".close-overlay");
   closeButton.addEventListener("click", () => {
     document.body.removeChild(overlay);
@@ -2091,28 +2034,26 @@ async function showMatches(selectedGiornata) {
 }
 
 async function showMatchDetails(match, selectedGiornata) {
-  // Div della sezione Partite
   const matchesContent = document.getElementById("matches-content");
   matchesContent.style.alignItems = "start";
 
-  // Creazione del div che conterrà i dettagli della partita
   let matchDetailsDiv = document.getElementById("match-details-div");
   if (!matchDetailsDiv) {
     matchDetailsDiv = document.createElement("div");
     matchDetailsDiv.id = "match-details-div";
     matchesContent.appendChild(matchDetailsDiv);
   } else {
-    matchDetailsDiv.innerHTML = ""; // Pulisce il div se esiste già
+    matchDetailsDiv.innerHTML = "";
   }
 
   const matchInfoDiV = document.createElement("div");
   matchInfoDiV.id = "match-info-div";
   matchDetailsDiv.appendChild(matchInfoDiV);
 
-  const homeTeam = match.SquadraCasa.replace(/_/g, ".");
-  const awayTeam = match.SquadraOspite.replace(/_/g, ".");
-  const homeGoals = match.GolSquadraCasa;
-  const awayGoals = match.GolSquadraOspite;
+  const homeTeam = (match?.SquadraCasa || "").replace(/_/g, ".");
+  const awayTeam = (match?.SquadraOspite || "").replace(/_/g, ".");
+  const homeGoals = match?.GolSquadraCasa ?? 0;
+  const awayGoals = match?.GolSquadraOspite ?? 0;
 
   const matchTitle = document.createElement("div");
   matchTitle.id = "match-title-div";
@@ -2142,60 +2083,55 @@ async function showMatchDetails(match, selectedGiornata) {
   matchTitle.appendChild(homeSection);
   matchTitle.appendChild(awaySection);
 
-  // Creazione del div per i marcatori
   const matchScorersDiv = document.createElement("div");
   matchScorersDiv.id = "match-scorers-div";
   matchInfoDiV.appendChild(matchScorersDiv);
 
-  // Div per i marcatori della squadra di casa
   const homeScorersDiv = document.createElement("div");
   homeScorersDiv.id = "match-home-scorers-div";
   matchScorersDiv.appendChild(homeScorersDiv);
 
-  // Div per i marcatori della squadra ospite
   const awayScorersDiv = document.createElement("div");
   awayScorersDiv.id = "match-away-scorers-div";
   matchScorersDiv.appendChild(awayScorersDiv);
 
-  // Recupera i dati delle squadre dal database
   const { teamsPath } = getPaths();
-
   const homeTeamData = await getData(`${teamsPath}/${match.SquadraCasa}`);
   const awayTeamData = await getData(`${teamsPath}/${match.SquadraOspite}`);
 
-  // Estrai i giocatori dalle rispettive chiavi "Giocatori"
-  const homePlayers = Object.keys(homeTeamData.Giocatori);
-  const awayPlayers = Object.keys(awayTeamData.Giocatori);
+  const homePlayers = Object.keys(homeTeamData?.Giocatori || {});
+  const awayPlayers = Object.keys(awayTeamData?.Giocatori || {});
 
-  // Popola i giocatori e l'MVP
+  // ↓↓↓ PASSA SEMPRE UN OGGETTO (mai undefined)
+  const homeScorersObj = match?.Marcatori?.MarcatoriCasa || {};
+  const awayScorersObj = match?.Marcatori?.MarcatoriOspite || {};
+
   populatePlayers(
     homeScorersDiv,
     homePlayers,
     match.SquadraOspite,
-    match.Marcatori.MarcatoriCasa
+    homeScorersObj
   );
   populatePlayers(
     awayScorersDiv,
     awayPlayers,
     match.SquadraCasa,
-    match.Marcatori.MarcatoriOspite
+    awayScorersObj
   );
 
-  // Aggiungi un pulsante per tornare alla lista delle partite
   const backButton = document.createElement("button");
   backButton.innerText = "⮪";
   backButton.classList.add("back-button");
   backButton.addEventListener("click", () => {
-    matchDetailsDiv.remove(); // Rimuovi i dettagli della partita
-    matchesContent.style.alignItems = "center"; // Resetta lo stile align-items
-    showMatches(selectedGiornata); // Torna alla lista delle partite
+    matchDetailsDiv.remove();
+    matchesContent.style.alignItems = "center";
+    showMatches(selectedGiornata);
   });
 
   const buttonsDiv = document.createElement("div");
   buttonsDiv.id = "buttons-div";
   buttonsDiv.appendChild(backButton);
 
-  // Bottone per salvare le modifiche
   const saveButton = document.createElement("button");
   saveButton.classList.add("custom-button");
   saveButton.textContent = "Salva Modifiche";
@@ -2204,15 +2140,13 @@ async function showMatchDetails(match, selectedGiornata) {
   );
 
   buttonsDiv.appendChild(saveButton);
-
   matchDetailsDiv.appendChild(buttonsDiv);
 }
 
 // Funzione per popolare i giocatori e i gol segnati
-function populatePlayers(container, players, opponentTeamName, scorers) {
+function populatePlayers(container, players, opponentTeamName, scorers = {}) {
   container.innerHTML = "";
 
-  // Aggiungi i giocatori e i gol segnati
   players.forEach((player) => {
     const playerDiv = document.createElement("div");
     playerDiv.className = "player-div";
@@ -2224,40 +2158,37 @@ function populatePlayers(container, players, opponentTeamName, scorers) {
     goalsInput.type = "number";
     goalsInput.min = "0";
     goalsInput.placeholder = "G";
-    goalsInput.value = scorers[player] || ""; // Imposta il numero di gol se esiste
+    goalsInput.value = scorers[player] || "";
     playerDiv.appendChild(playerName);
     playerDiv.appendChild(goalsInput);
     container.appendChild(playerDiv);
   });
 
-  // Aggiungi campo autogol
   const ownGoalDiv = document.createElement("div");
   ownGoalDiv.className = "player-div";
   const ownGoal = document.createElement("span");
   ownGoal.className = "player-name";
 
   if (container.id === "match-home-scorers-div") {
-    ownGoal.innerHTML = `<span>Autogol di ${opponentTeamName.replace(
-      /_/g,
-      "."
-    )}</span>`;
+    ownGoal.innerHTML = `<span>Autogol di ${String(
+      opponentTeamName || ""
+    ).replace(/_/g, ".")}</span>`;
     const ownGoalsInput = document.createElement("input");
     ownGoalsInput.type = "number";
     ownGoalsInput.min = "0";
     ownGoalsInput.placeholder = "A";
-    ownGoalsInput.value = scorers.AutogolOspite || ""; // Imposta l'autogol se esiste
+    ownGoalsInput.value = scorers.AutogolOspite || "";
     ownGoalDiv.appendChild(ownGoal);
     ownGoalDiv.appendChild(ownGoalsInput);
   } else if (container.id === "match-away-scorers-div") {
-    ownGoal.innerHTML = `<span>Autogol di ${opponentTeamName.replace(
-      /_/g,
-      "."
-    )}</span>`;
+    ownGoal.innerHTML = `<span>Autogol di ${String(
+      opponentTeamName || ""
+    ).replace(/_/g, ".")}</span>`;
     const ownGoalsInput = document.createElement("input");
     ownGoalsInput.type = "number";
     ownGoalsInput.min = "0";
     ownGoalsInput.placeholder = "A";
-    ownGoalsInput.value = scorers.AutogolCasa || ""; // Imposta l'autogol se esiste
+    ownGoalsInput.value = scorers.AutogolCasa || "";
     ownGoalDiv.appendChild(ownGoal);
     ownGoalDiv.appendChild(ownGoalsInput);
   }
@@ -2267,20 +2198,14 @@ function populatePlayers(container, players, opponentTeamName, scorers) {
 
 // Funzione per gestire la conferma del referto
 async function saveEditedMatch(match, selectedGiornata) {
-  // Div della sezione Partite
-  const matchDetailsDiv = document.getElementById("match-details-div");
-
-  // Estrai i nuovi valori dei gol dalle input fields
   const homeTeamGoalsInput = document.querySelector("#home-section input");
   const awayTeamGoalsInput = document.querySelector("#away-section input");
   const newHomeGoals = parseInt(homeTeamGoalsInput.value) || 0;
   const newAwayGoals = parseInt(awayTeamGoalsInput.value) || 0;
 
-  // Aggiorna i gol della squadra di casa e ospite nel match object
   match.GolSquadraCasa = newHomeGoals;
   match.GolSquadraOspite = newAwayGoals;
 
-  // Estrai i marcatori aggiornati dalle input fields
   const homeScorersInputs = document.querySelectorAll(
     "#match-home-scorers-div input"
   );
@@ -2288,86 +2213,62 @@ async function saveEditedMatch(match, selectedGiornata) {
     "#match-away-scorers-div input"
   );
 
-  // Aggiorna i marcatori
   const updatedHomeScorers = {};
   const updatedAwayScorers = {};
-
-  // dopo aver costruito updatedHomeScorers / updatedAwayScorers
-  match.Marcatori = match.Marcatori || {};
-
-  if (Object.keys(updatedHomeScorers).length > 0) {
-    match.Marcatori.MarcatoriCasa = updatedHomeScorers;
-  } else {
-    delete match.Marcatori.MarcatoriCasa; // niente nodo se zero gol
-  }
-
-  if (Object.keys(updatedAwayScorers).length > 0) {
-    match.Marcatori.MarcatoriOspite = updatedAwayScorers;
-  } else {
-    delete match.Marcatori.MarcatoriOspite; // niente nodo se zero gol
-  }
 
   let autogolOspite = 0;
   let autogolCasa = 0;
 
-  // Popola i gol della squadra di casa e autogol ospite
   homeScorersInputs.forEach((input) => {
     const playerName = input.parentNode.querySelector(".player-name").innerText;
     const goals = parseInt(input.value) || 0;
-
     if (playerName.includes("Autogol di")) {
-      autogolOspite = goals; // Salva autogol ospite
+      autogolOspite = goals;
     } else if (goals > 0) {
       updatedHomeScorers[playerName] = goals;
     }
   });
 
-  // Popola i gol della squadra ospite e autogol casa
   awayScorersInputs.forEach((input) => {
     const playerName = input.parentNode.querySelector(".player-name").innerText;
     const goals = parseInt(input.value) || 0;
-
     if (playerName.includes("Autogol di")) {
-      autogolCasa = goals; // Salva autogol casa
+      autogolCasa = goals;
     } else if (goals > 0) {
       updatedAwayScorers[playerName] = goals;
     }
   });
 
-  // Aggiorna i marcatori nel match object
-  match.Marcatori.MarcatoriCasa = updatedHomeScorers;
-  match.Marcatori.MarcatoriOspite = updatedAwayScorers;
+  // Assicura l'esistenza del ramo Marcatori
+  match.Marcatori = match.Marcatori || {};
 
-  // Solo se ci sono autogol, li aggiungiamo ai rispettivi marcatori
-  if (autogolCasa > 0) {
-    match.Marcatori.MarcatoriOspite.AutogolCasa = autogolCasa;
+  // Scrivi solo se ci sono valori; altrimenti rimuovi il ramo per evitare `{}` che il DB può potare
+  if (Object.keys(updatedHomeScorers).length > 0 || autogolOspite > 0) {
+    match.Marcatori.MarcatoriCasa = { ...updatedHomeScorers };
+    if (autogolOspite > 0)
+      match.Marcatori.MarcatoriCasa.AutogolOspite = autogolOspite;
   } else {
-    delete match.Marcatori.MarcatoriOspite.AutogolCasa; // Rimuove chiave se non ci sono autogol
+    delete match.Marcatori.MarcatoriCasa;
   }
 
-  if (autogolOspite > 0) {
-    match.Marcatori.MarcatoriCasa.AutogolOspite = autogolOspite;
+  if (Object.keys(updatedAwayScorers).length > 0 || autogolCasa > 0) {
+    match.Marcatori.MarcatoriOspite = { ...updatedAwayScorers };
+    if (autogolCasa > 0)
+      match.Marcatori.MarcatoriOspite.AutogolCasa = autogolCasa;
   } else {
-    delete match.Marcatori.MarcatoriCasa.AutogolOspite; // Rimuove chiave se non ci sono autogol
+    delete match.Marcatori.MarcatoriOspite;
   }
 
-  // Prepara i dati per l'aggiornamento nel database
   const { matchesPath } = getPaths();
   const matchPath = `${matchesPath}/${selectedGiornata}/${match.SquadraCasa}:${match.SquadraOspite}`;
 
-  // Prepara il risultato nel formato "GolCasa:GolOspite"
   const risultato = `${match.GolSquadraCasa}:${match.GolSquadraOspite}`;
   const selectedDivision = document.getElementById("division").value;
-
-  // Ottieni il percorso della chiave specifica nel database per il calendario
   const calendarioPath = `Calcio/${edition}/${selectedDivision}/Calendario/${selectedGiornata}/${match.SquadraCasa}:${match.SquadraOspite}`;
 
-  // Aggiorna il database
   try {
     await updateData(matchPath, match);
-    // Aggiorna il risultato nel calendario
     await updateData(calendarioPath, { Risultato: risultato });
-
     alert("Modifiche salvate con successo!");
   } catch (error) {
     console.error("Errore durante il salvataggio delle modifiche:", error);
@@ -2757,39 +2658,15 @@ export async function classificaMarcatori(targetDiv) {
   const { matchesPath } = getPaths();
 
   try {
-    // Carica la cache delle squadre una volta
     teamsCache = await caricaSquadre();
 
     const giornateSnapshot = await getData(matchesPath);
 
     if (giornateSnapshot) {
-      // Normalizza eventuali chiavi "08" -> "8" e rimuovi spazi accidentali
-      const giornateKeys = Object.keys(giornateSnapshot).map((k) => {
-        const t = String(k).trim();
-        return !isNaN(t) ? String(parseInt(t, 10)) : t;
-      });
-      const giornateNorm = {};
-      for (const originalKey in giornateSnapshot) {
-        const t = String(originalKey).trim();
-        const norm = !isNaN(t) ? String(parseInt(t, 10)) : t;
-        giornateNorm[norm] = giornateSnapshot[originalKey];
-      }
-
-      for (const giornataKey of giornateKeys) {
-        const giornata = giornateNorm[giornataKey];
+      for (const giornataKey in giornateSnapshot) {
+        const giornata = giornateSnapshot[giornataKey] || {};
         for (const matchKey in giornata) {
-          const match = giornata[matchKey];
-          const casa = match?.Marcatori?.MarcatoriCasa ?? null;
-          const ospite = match?.Marcatori?.MarcatoriOspite ?? null;
-
-          if (!casa || !ospite) {
-            console.warn("Partita senza Marcatori completi:", {
-              giornata: giornataKey,
-              match: matchKey,
-              marcatori: match?.Marcatori,
-            });
-          }
-          // prima: match.Marcatori.MarcatoriCasa
+          const match = giornata[matchKey] || {};
           aggiornaClassifica(scorers, match?.Marcatori?.MarcatoriCasa || {});
           aggiornaClassifica(scorers, match?.Marcatori?.MarcatoriOspite || {});
         }
@@ -2802,17 +2679,9 @@ export async function classificaMarcatori(targetDiv) {
   }
 
   const scorersArray = Object.entries(scorers);
+  scorersArray.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 
-  scorersArray.sort((a, b) => {
-    const goalsDifference = b[1] - a[1];
-    if (goalsDifference !== 0) {
-      return goalsDifference;
-    } else {
-      return a[0].localeCompare(b[0]);
-    }
-  });
-
-  globalRankingArray = scorersArray; // Assegna la classifica alla variabile globale
+  globalRankingArray = scorersArray;
 
   const rowsPerPage = 10;
   rappresentaClassificaMarcatori(containerId, scorersArray, 1, rowsPerPage);
