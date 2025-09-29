@@ -571,7 +571,7 @@ async function editCalendar() {
   // Ottieni i percorsi per calendario e squadre
   const { calendarPath } = getPaths();
 
-  // Recupera i dati di calendario
+  // Recupera i dati di calendario e squadre in parallelo
   const calendarSnapshot = await getData(calendarPath);
 
   if (calendarSnapshot) {
@@ -598,7 +598,7 @@ async function editCalendar() {
     function createInputField(value, onChange, placeholder, width) {
       const input = document.createElement("input");
       input.type = "text";
-      input.value = value ?? "";
+      input.value = value;
       input.placeholder = placeholder;
       input.style.width = width;
       input.addEventListener("input", onChange);
@@ -621,9 +621,9 @@ async function editCalendar() {
           homeTeam: homeTeamAbbreviated,
           awayTeam: awayTeamAbbreviated,
           dateAndTime: dateAndTime,
-          data: matchInfo.Data ?? "",
-          orario: matchInfo.Orario ?? "",
-          luogo: matchInfo.Luogo ?? "",
+          data: matchInfo.Data,
+          orario: matchInfo.Orario,
+          luogo: matchInfo.Luogo,
         };
       });
 
@@ -731,7 +731,7 @@ async function editCalendar() {
       });
     }
 
-    // Gestione click sulle giornate
+    // Funzione per gestire il click sulle giornate
     document.querySelectorAll(".matchday-btn").forEach((btn) => {
       btn.addEventListener("click", (event) => {
         // Rimuovi la classe active da tutti i pulsanti
@@ -747,16 +747,13 @@ async function editCalendar() {
       });
     });
 
-    // Seleziona la giornata di default (per-divisione con fallback globale)
-    const { matchdayToShowPath } = getPaths(); // globale
-    const division = document.getElementById("division")?.value || "Superiori";
-    const perDivisionPath = `Calcio/${edition}/${division}/GiornataDaMostrare`;
-    const matchdayToShow =
-      (await getData(perDivisionPath)) ?? (await getData(matchdayToShowPath));
+    // Seleziona la giornata di default
+    const { matchdayToShowPath } = getPaths();
 
+    const matchdayToShow = await getData(matchdayToShowPath);
     document
       .querySelector(`.matchday-btn[matchday-number="${matchdayToShow}"]`)
-      ?.click();
+      .click();
   } else {
     console.log("Nessun calendario trovato nel database.");
   }
@@ -766,17 +763,12 @@ export async function editMatchdayToShow() {
   // Div prossima giornata
   const matchdayToShowDiv = document.getElementById("match-to-show-div");
 
-  const { matchdayToShowPath } = getPaths(); // path globale (retro-compatibilità)
-  const division = document.getElementById("division")?.value || "Superiori";
-  const perDivisionPath = `Calcio/${edition}/${division}/GiornataDaMostrare`;
+  const { matchdayToShowPath } = getPaths();
 
-  // leggi: prima per-divisione, se mancante usa il globale
-  let matchdayToShow =
-    (await getData(perDivisionPath)) ?? (await getData(matchdayToShowPath));
+  let matchdayToShow = await getData(matchdayToShowPath);
 
-  if (matchdayToShow !== undefined && matchdayToShow !== null) {
+  if (matchdayToShow) {
     const inputContainer = document.createElement("div");
-
     const matchdayToShowLabel = document.createElement("label");
     matchdayToShowLabel.setAttribute("for", "matchday-to-show-input");
     matchdayToShowLabel.innerText = "Giornata da Mostrare";
@@ -789,26 +781,26 @@ export async function editMatchdayToShow() {
     inputContainer.appendChild(matchdayToShowInput);
     matchdayToShowDiv.appendChild(inputContainer);
 
-    // Bottone per salvare la giornata da mostrare (per-divisione)
+    // Bottone per salvare la giornata da mostrare
     const saveButton = document.createElement("button");
     saveButton.classList.add("custom-button");
     saveButton.textContent = "Salva";
     matchdayToShowDiv.appendChild(saveButton);
 
     saveButton.addEventListener("click", () => {
-      const matchdayToShowRef = ref(db, perDivisionPath);
+      const matchdayToShowRef = ref(db, matchdayToShowPath);
 
       set(matchdayToShowRef, matchdayToShowInput.value)
         .then(() => {
           alert("Modifica Salvata");
+
           // Aggiorna l'interfaccia con i nuovi dati
           matchdayToShow = matchdayToShowInput.value;
 
-          // Nota: se avevi un ref con typo, usa l'ID corretto "nav-dashboard"
-          const navDashboard =
-            document.getElementById("nav-dashboard") ||
-            document.getElementById("nav-dasboard");
-          if (navDashboard) navDashboard.click();
+          const navDashboard = document.getElementById("nav-dasboard");
+          if (navDashboard) {
+            navDashboard.click();
+          }
         })
         .catch((error) => {
           console.error("Errore nel salvataggio delle modifiche:", error);
@@ -849,12 +841,7 @@ export async function recuperaCalendario() {
 export async function prossimaGiornata() {
   const { matchdayToShowPath, teamsPath, calendarPath } = getPaths();
 
-  const division = document.getElementById("division")?.value || "Superiori";
-  const perDivisionPath = `Calcio/${edition}/${division}/GiornataDaMostrare`;
-
-  // leggi giornata per la divisione, altrimenti usa quella globale
-  const matchdayToShow =
-    (await getData(perDivisionPath)) ?? (await getData(matchdayToShowPath));
+  const matchdayToShow = await getData(matchdayToShowPath);
 
   if (matchdayToShow) {
     const [calendarSnapshot, teamsSnapshot] = await Promise.all([
@@ -876,14 +863,12 @@ export async function prossimaGiornata() {
     const instructionElement = document.querySelector(".instruction");
 
     // Controlla se almeno una partita ha un risultato valido
-    const hasResults = calendarSnapshot
-      ? Object.values(calendarSnapshot).some(
-          (match) =>
-            match.Risultato &&
-            match.Risultato.trim() !== "VS" &&
-            match.Risultato.trim() !== ""
-        )
-      : false;
+    const hasResults = Object.values(calendarSnapshot).some(
+      (match) =>
+        match.Risultato &&
+        match.Risultato.trim() !== "VS" &&
+        match.Risultato.trim() !== ""
+    );
 
     // Mostra o nasconde il paragrafo in base ai risultati
     if (instructionElement) {
