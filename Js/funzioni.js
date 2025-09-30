@@ -1637,9 +1637,10 @@ export async function loadMatchReports2() {
   for (let division of divisions) {
     const divisionRefPath = `${reportsPath}${division}/Referti`;
     const giornateSnapshot = await getData(divisionRefPath);
+    if (!giornateSnapshot) continue;
 
     for (let giornata in giornateSnapshot) {
-      const matchesSnapshot = giornateSnapshot[giornata];
+      const matchesSnapshot = giornateSnapshot[giornata] || {};
       for (let match in matchesSnapshot) {
         const report = matchesSnapshot[match];
         allReports.push({ report, division, giornata, match });
@@ -1647,60 +1648,62 @@ export async function loadMatchReports2() {
     }
   }
 
+  // Ordina per data invio (robusto ai valori mancanti)
   allReports.sort(
-    (a, b) => new Date(b.report.OraInvio) - new Date(a.report.OraInvio)
+    (a, b) =>
+      new Date(b.report?.OraInvio || 0) - new Date(a.report?.OraInvio || 0)
   );
 
-  for (let { report, division, giornata, match } of allReports) {
+  // Popola la tabella
+  for (let { report, division, giornata } of allReports) {
     const row = document.createElement("tr");
 
+    // Data Ricezione
     const dataRicezione = document.createElement("td");
-    dataRicezione.textContent = formatDateTime(report.OraInvio);
+    dataRicezione.textContent = formatDateTime(
+      report?.OraInvio || new Date(0).toISOString()
+    );
     row.appendChild(dataRicezione);
 
+    // Nome Arbitro
     const nomeArbitro = document.createElement("td");
-    nomeArbitro.textContent = report.NomeArbitro;
+    nomeArbitro.textContent = report?.NomeArbitro || "";
     row.appendChild(nomeArbitro);
 
+    // Partita
     const partita = document.createElement("td");
-    const squadraCasa = report.SquadraCasa.replace(/_/g, ".");
-    const squadraOspite = report.SquadraOspite.replace(/_/g, ".");
+    const squadraCasa = (report?.SquadraCasa || "").replace(/_/g, ".");
+    const squadraOspite = (report?.SquadraOspite || "").replace(/_/g, ".");
+    const golCasa = report?.GolSquadraCasa ?? "";
+    const golOspite = report?.GolSquadraOspite ?? "";
     partita.innerHTML = `
-          <div>${squadraCasa}: ${report.GolSquadraCasa}</div>
-          <div>${squadraOspite}: ${report.GolSquadraOspite}</div>
+          <div>${squadraCasa}: ${golCasa}</div>
+          <div>${squadraOspite}: ${golOspite}</div>
           <br>
-          <div>D: ${report.Divisione} - G: ${giornata}</div>
+          <div>D: ${report?.Divisione || division} - G: ${giornata}</div>
       `;
     row.appendChild(partita);
 
+    // Marcatori (safe)
     const marcatori = document.createElement("td");
+    const marcatoriCasa = report?.Marcatori?.MarcatoriCasa || {};
+    const marcatoriOspite = report?.Marcatori?.MarcatoriOspite || {};
 
-    const marcatoriCasa = report.Marcatori.MarcatoriCasa || {};
-    const marcatoriOspite = report.Marcatori.MarcatoriOspite || {};
-
-    const generateMarcatoriHTML = (squadra, marcatori) => {
+    const generateMarcatoriHTML = (squadra, obj) => {
       let html = `<strong>${squadra}</strong><br>`;
-      for (let [nome, gol] of Object.entries(marcatori)) {
-        if (nome.startsWith("Autogol")) {
-          continue;
-        }
+      for (let [nome, gol] of Object.entries(obj)) {
+        if (String(nome).startsWith("Autogol")) continue;
         html += `${nome}: ${gol}<br>`;
       }
       return html;
     };
 
-    const generateAutogolHTML = (marcatori) => {
-      let html = "";
+    const generateAutogolHTML = (obj) => {
       let autogolTotale = 0;
-      for (let [nome, gol] of Object.entries(marcatori)) {
-        if (nome.startsWith("Autogol")) {
-          autogolTotale += gol;
-        }
+      for (let [nome, gol] of Object.entries(obj)) {
+        if (String(nome).startsWith("Autogol")) autogolTotale += gol;
       }
-      if (autogolTotale > 0) {
-        html += `Autogol: ${autogolTotale}<br>`;
-      }
-      return html;
+      return autogolTotale > 0 ? `Autogol: ${autogolTotale}<br>` : "";
     };
 
     let marcatoriCasaHTML = generateMarcatoriHTML(squadraCasa, marcatoriCasa);
@@ -1715,24 +1718,24 @@ export async function loadMatchReports2() {
     marcatori.innerHTML = `${marcatoriCasaHTML}<br>${marcatoriOspiteHTML}`;
     row.appendChild(marcatori);
 
+    // MVP
     const mvp = document.createElement("td");
-    mvp.textContent = report.MVP;
+    mvp.textContent = report?.MVP || "";
     row.appendChild(mvp);
 
+    // Commenti/Espulsioni
     const commenti = document.createElement("td");
-    commenti.textContent = report.Commenti;
+    commenti.textContent = report?.Commenti || "";
     row.appendChild(commenti);
 
+    // Click su riga -> overlay (safe)
     row.addEventListener("click", () => {
-      {
-        if (isMobileDevice()) {
-          const currentPage = window.location.pathname;
-
-          if (currentPage === "/referti.html") {
-            openOverlay(report, division, giornata);
-          } else if (currentPage === "/referti-social.html") {
-            openOverlay2(report, division, giornata);
-          }
+      if (isMobileDevice()) {
+        const currentPage = window.location.pathname;
+        if (currentPage === "/referti.html") {
+          openOverlay(report, division, giornata);
+        } else if (currentPage === "/referti-social.html") {
+          openOverlay2(report, division, giornata);
         }
       }
     });
