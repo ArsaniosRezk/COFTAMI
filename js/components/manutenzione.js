@@ -18,7 +18,7 @@ export function manutenzione() {
 
     // Creiamo il testo "AGGIORNAMENTO"
     let text = document.createElement("h1");
-    text.innerText = "AGGIORNAMENTO";
+    text.innerText = "IN AGGIORNAMENTO";
     text.style.color = "#fff";
     text.style.fontFamily = "'Bebas Neue', sans-serif"; // Assicuro il font corretto se caricato
     text.style.fontSize = window.innerWidth > 768 ? "48px" : "35px";
