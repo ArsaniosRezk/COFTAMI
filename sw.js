@@ -28,8 +28,8 @@ const ASSETS_TO_CACHE = [
     "/css/dashboard.css",
     "/css/squadreM.css",
     "/css/tabelle.css",
-    "/Js/firebase.js",
-    "/Js/gestionale.js",
+    "/js/firebase.js",
+    "/js/gestionale.js",
     "/assets/images/favicon.svg",
     "/assets/images/LOGO_COFTA_SITO_2.svg",
     "/assets/fonts/UaCadet-2068.ttf"

@@ -1,5 +1,5 @@
-import { getData, updateData, getPaths } from "../../Js/firebase.js";
-import { edition } from "../../Js/divisionAndVariables.js";
+import { getData, updateData, getPaths } from "../../js/firebase.js";
+import { edition } from "../../js/divisionAndVariables.js";
 
 export async function showMatchesOptions() {
     selectMatchday();
