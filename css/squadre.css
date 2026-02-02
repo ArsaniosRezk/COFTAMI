@@ -129,8 +129,7 @@ break points
 ===================================
 */
 
-@media (min-width: 576px) {
-}
+@media (min-width: 576px) {}
 
 @media (min-width: 992px) {
   #container-squadre {
@@ -209,5 +208,4 @@ break points
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}

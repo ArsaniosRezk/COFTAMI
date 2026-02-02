@@ -88,9 +88,12 @@ option:focus {
 
 #overlay-menu li a {
   display: inline-block;
-  margin: 8px 0px;
-  padding: 7px;
-  font-size: 1.2rem;
+  margin: 15px 0px;
+  /* Increased vertical spacing */
+  padding: 10px 20px;
+  /* Larger tap target */
+  /* Fluid Typography for Menu */
+  font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 600;
   /* transition: all 0.4s ease; */
 }
@@ -120,8 +123,7 @@ break points
 ===================================
 */
 
-@media (min-width: 576px) {
-}
+@media (min-width: 576px) {}
 
 @media (min-width: 992px) {
   #division {
@@ -154,8 +156,7 @@ break points
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}
 
 @media (min-width: 576px) {
   .left-header select {
@@ -171,8 +172,6 @@ break points
   }
 }
 
-@media (min-width: 992px) {
-}
+@media (min-width: 992px) {}
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}

@@ -12,7 +12,7 @@ body {
 
   padding: 20px 10px;
   font-family: "montserrat", sans-serif;
-  color: black;
+  color: var(--black);
 }
 
 #reports {
@@ -26,7 +26,7 @@ body {
 .table-container {
   position: relative;
   width: 100%;
-  border: 3px solid rgb(165, 154, 154);
+  border: 3px solid var(--grey-border);
 }
 
 thead th {
@@ -63,7 +63,7 @@ table {
 }
 
 table tr:nth-child(even) {
-  background-color: rgba(128, 128, 128, 0.3);
+  background-color: var(--grey-row-hover);
 }
 
 thead {
@@ -71,11 +71,11 @@ thead {
   top: 0;
   text-align: left;
   font-weight: bold;
-  background-color: rgb(165, 154, 154);
+  background-color: var(--grey-border);
 }
 
 tbody {
-  background-color: rgba(128, 128, 128, 0.2);
+  background-color: var(--grey-row);
 }
 
 th,
@@ -120,7 +120,7 @@ table tr:nth-child(even):hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,7 +132,7 @@ table tr:nth-child(even):hover {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  background: white;
+  background: var(--white);
   padding: 20px;
   border-radius: 5px;
   max-width: 90%;
@@ -148,6 +148,7 @@ table tr:nth-child(even):hover {
 h3 {
   text-align: center;
 }
+
 h3 {
   margin-top: 10px;
 }
@@ -159,15 +160,14 @@ h3 {
   right: 0;
 
   padding: 10px;
-  color: black;
+  color: var(--black);
   font-size: 1.3rem;
   cursor: pointer;
 }
 
 /* BREAK POINTS */
 
-@media (min-width: 576px) {
-}
+@media (min-width: 576px) {}
 
 @media (min-width: 992px) {
   #scroll-container {
@@ -226,8 +226,7 @@ h3 {
   }
 
   table th:nth-child(5),
-  table td:nth-child(5) {
-  }
+  table td:nth-child(5) {}
 
   table th:nth-child(6),
   table td:nth-child(6) {
@@ -251,27 +250,32 @@ h3 {
   }
 
   table tr:nth-child(even):hover {
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: var(--grey-row-hover);
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}
 
 /* SCROLLBAR */
 /* Per nascondere la barra di scorrimento su tutta la pagina */
 html {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer e Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer e Edge */
 }
 
 body {
-  overflow: -moz-scrollbars-none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer e Edge */
-  scrollbar-width: none; /* Firefox */
+  overflow: -moz-scrollbars-none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer e Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* Per Webkit (Chrome, Safari, Opera) */
 body::-webkit-scrollbar {
-  display: none; /* Nascondi la barra di scorrimento */
+  display: none;
+  /* Nascondi la barra di scorrimento */
 }

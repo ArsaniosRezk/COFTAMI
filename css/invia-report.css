@@ -40,11 +40,11 @@ select {
 }
 
 select:invalid {
-  color: rgba(0, 0, 0, 0.5);
+  color: var(--black-50);
 }
 
 option[hidden] {
-  color: rgba(0, 0, 0, 0.5);
+  color: var(--black-50);
 }
 
 /* --------------------------------- */
@@ -103,7 +103,7 @@ textarea {
 
   text-align: left;
   margin-bottom: 5px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid var(--black-50);
 }
 
 .player-name {

@@ -28,7 +28,7 @@ CLASSIFICA SQUADRE
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid var(--white-50);
 
   text-align: center;
 }
@@ -117,8 +117,7 @@ break points
 ===================================
 */
 
-@media (min-width: 576px) {
-}
+@media (min-width: 576px) {}
 
 @media (min-width: 992px) {
   .container-classifica-gironi {
@@ -170,8 +169,7 @@ break points
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}
 
 /*
 ===================================
@@ -179,10 +177,7 @@ PROSSIMA GIORNATA
 ===================================
 */
 
-@font-face {
-  font-family: nomeSquadra;
-  src: url(/Asset/UA\ Cadet.ttf);
-}
+
 
 #prossima-giornata {
   display: flex;
@@ -292,7 +287,7 @@ PROSSIMA GIORNATA
   justify-content: space-between;
 
   padding: 5px 20px;
-  background-color: rgba(255, 0, 0, 0.3);
+  background-color: var(--venue-red);
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   overflow: hidden;
@@ -424,14 +419,14 @@ PROSSIMA GIORNATA
 }
 
 .form {
-  color: darkblue;
+  color: var(--darkblue);
 
   font-weight: bold;
 }
 
 /* Istruzioni */
 .instruction {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--white-50);
   font-size: 0.6rem;
   width: 100%;
   margin: 10px;
@@ -453,5 +448,4 @@ section .section-title {
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}

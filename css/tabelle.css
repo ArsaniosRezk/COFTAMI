@@ -18,7 +18,7 @@ table {
 }
 
 table tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid var(--white-20);
   text-align: center;
 }
 
@@ -57,8 +57,11 @@ table tbody tr:last-child {
 .ranking-table th:nth-child(2),
 .ranking-table td:nth-child(2) {
   text-align: left;
-  width: 135px;
-  max-width: 135px;
+  width: 40%;
+  /* Liquid width instead of fixed 135px */
+  min-width: 120px;
+  /* Minimum readable width */
+  max-width: 200px;
   /* overflow: hidden; */
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -125,8 +128,9 @@ table tbody tr:last-child {
 .scorers-table th:nth-child(2),
 .scorers-table td:nth-child(2) {
   text-align: left;
-  width: 120px;
-  max-width: 120px;
+  width: 45%;
+  /* Liquid */
+  min-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -152,8 +156,7 @@ table tbody tr:last-child {
   ===================================
 */
 
-@media (min-width: 576px) {
-}
+@media (min-width: 576px) {}
 
 @media (min-width: 992px) {
   table {
@@ -219,8 +222,7 @@ table tbody tr:last-child {
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}
 
 /*
 ===================================
@@ -245,7 +247,7 @@ table tbody tr:last-child {
   text-decoration: none;
   font-size: 0.45rem;
   /* border-right: 1px solid var(--tertiary); */
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid var(--white-20);
   color: var(--testoTrasparente);
 }
 
@@ -258,8 +260,7 @@ table tbody tr:last-child {
   background-color: var(--tertiary);
 }
 
-@media (min-width: 576px) {
-}
+@media (min-width: 576px) {}
 
 @media (min-width: 992px) {
   .pagination {
@@ -272,8 +273,7 @@ table tbody tr:last-child {
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}
 
 /* Penalità */
 
@@ -364,8 +364,7 @@ table tbody tr:last-child {
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}
 
 .posizione-indicatore {
   position: absolute;

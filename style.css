@@ -4,6 +4,12 @@
 ===================================
 */
 
+@font-face {
+  font-family: "nomeSquadra";
+  src: url("/assets/fonts/UaCadet-2068.ttf");
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -14,6 +20,11 @@ body {
   font-family: "montserrat", sans-serif;
   color: var(--text);
   background-color: var(--background);
+  opacity: 0;
+  /* Hides content initially */
+  pointer-events: none;
+  /* Prevents interaction */
+  transition: opacity 0.3s ease-in;
 }
 
 header {
@@ -26,20 +37,30 @@ footer {
   color: var(--text);
 }
 
-p {
-  font-size: 1rem;
-  padding: var(--darkText);
+/* Modern Typography Base */
+html {
+  font-size: 16px;
+  /* Base for rem */
 }
 
 a {
   text-decoration: none;
-  font-size: 0.8rem;
+  /* Fluid font size: 14px mobile -> 16px desktop */
+  font-size: clamp(0.875rem, 1vw + 0.5rem, 1rem);
   color: var(--darkText);
   cursor: pointer;
 }
 
+p {
+  /* Fluid font size: 16px mobile -> 18px desktop */
+  font-size: clamp(1rem, 1.2vw + 0.8rem, 1.125rem);
+  padding: var(--darkText);
+}
+
 .logo {
   max-width: 150px;
+  width: 100%;
+  /* Responsive image */
 }
 
 /*
@@ -51,6 +72,9 @@ GRID
 .grid {
   display: grid;
   height: 100vh;
+  /* Fallback for older browsers */
+  height: 100dvh;
+  /* Dynamic Viewport Height */
   grid-template-rows: auto 1fr auto;
   grid-template-columns: 1fr;
 
@@ -58,6 +82,10 @@ GRID
     "alias-header"
     "alias-main"
     "alias-footer";
+
+  /* Safe Area for iPhone X+ */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 header {
@@ -137,8 +165,7 @@ section .section-title {
   }
 }
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}
 
 /*
 ===================================
@@ -152,15 +179,15 @@ break points
   }
 }
 
-@media (min-width: 992px) {
-}
+@media (min-width: 992px) {}
 
-@media (min-width: 1440px) {
-}
+@media (min-width: 1440px) {}
 
 .full-screen-svg {
-  width: 80vw; /* Adatta alla larghezza dello schermo */
-  max-width: 600px; /* Limite massimo */
+  width: 80vw;
+  /* Adatta alla larghezza dello schermo */
+  max-width: 600px;
+  /* Limite massimo */
   height: auto;
 }
 

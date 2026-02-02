@@ -1,8 +1,5 @@
-import {
-  classificaGirone,
-  classificaMarcatori,
-  faseFinale,
-} from "./funzioni.js";
+import { classificaGirone, classificaMarcatori } from "./components/standings.js";
+import { faseFinale } from "./components/final-phase.js";
 
 // Sequenza esecuzione dei contenuti della pagina
 // Esportata e importata nel header

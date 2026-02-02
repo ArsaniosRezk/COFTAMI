@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+
+  <link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+
+<body>
+  <div id="dashboard-content">
+    <div id="match-to-show-div" class="dashboard-controls-wrapper">
+      <div class="dashboard-controls-card">
+        <!-- Sezione Giornata da Mostrare (Popolata via JS) -->
+        <div id="matchday-selection" class="control-group matchday-group"></div>
+
+        <div class="vertical-divider"></div>
+
+        <!-- Sezione Toggle -->
+        <div class="control-group settings-group">
+
+          <div class="setting-item">
+            <span class="setting-label">Edizione</span>
+            <select id="edition-select" class="dashboard-select">
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+              <option value="2029">2029</option>
+              <option value="2030">2030</option>
+            </select>
+          </div>
+
+          <div class="setting-item">
+            <span class="setting-label">Fase Finale</span>
+            <label class="modern-switch">
+              <input type="checkbox" id="toggle-fase-finale">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <span class="setting-label">Manutenzione</span>
+            <label class="modern-switch">
+              <input type="checkbox" id="toggle-manutenzione">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="rankings">
+      <div id="classifica-squadre"></div>
+
+      <div class="girone-section">
+        <h3>Classifica Marcatori</h3>
+        <div id="classifica-gol"></div>
+      </div>
+
+      <!-- <div><button id="get-mvps-button">MVP</button></div> -->
+    </div>
+  </div>
+  </div>
+</body>
+
+</html>

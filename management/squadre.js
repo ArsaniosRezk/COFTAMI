@@ -1,4 +1,4 @@
-import { showTeams } from "/Js/funzioni.js";
+import { showTeams } from "/js/components/teams.js";
 
 export const initSquadre = () => {
   showTeams();
