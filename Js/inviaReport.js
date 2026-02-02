@@ -1,7 +1,8 @@
 import { getData, setData } from "./firebase.js";
+import { edition } from "./divisionAndVariables.js";
 
 function getPaths() {
-  const edition = "2025";
+  // const edition = "2025"; // Removed hardcoded value
   const selectedDivision = document.getElementById("division").value;
   const teamsPath = `Calcio/${edition}/${selectedDivision}/Squadre`;
   const calendarPath = `Calcio/${edition}/${selectedDivision}/Calendario`;
@@ -236,8 +237,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Verifica che il totale dei gol segnati corrisponda a quello inserito
       if (GolSquadraCasa !== totalGoalsHome + autogolCasa) {
         alert(
-          `Errore: Il totale dei gol segnati dalla squadra di casa (${
-            totalGoalsHome + autogolCasa
+          `Errore: Il totale dei gol segnati dalla squadra di casa (${totalGoalsHome + autogolCasa
           }) non corrisponde al totale dei gol inseriti (${GolSquadraCasa}).`
         );
         return; // Interrompe l'invio del referto
@@ -245,8 +245,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (GolSquadraOspite !== totalGoalsAway + autogolOspite) {
         alert(
-          `Errore: Il totale dei gol segnati dalla squadra ospite (${
-            totalGoalsAway + autogolOspite
+          `Errore: Il totale dei gol segnati dalla squadra ospite (${totalGoalsAway + autogolOspite
           }) non corrisponde al totale dei gol inseriti (${GolSquadraOspite}).`
         );
         return; // Interrompe l'invio del referto

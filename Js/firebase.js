@@ -68,6 +68,40 @@ export async function updateData(refPath, data) {
   }
 }
 
+// Funzione per ottenere dati con caching (per dati pesanti che non cambiano spesso)
+// ttl in minuti (default 60 minuti)
+export async function getDataCached(refPath, ttl = 60) {
+  const cacheKey = `cache_${refPath}`;
+  const cached = localStorage.getItem(cacheKey);
+
+  if (cached) {
+    const { data, timestamp } = JSON.parse(cached);
+    const now = new Date().getTime();
+    const ageMinutes = (now - timestamp) / (1000 * 60);
+
+    if (ageMinutes < ttl) {
+      console.log(`Recupero dati da cache per: ${refPath}`);
+      return data;
+    }
+  }
+
+  // Se non c'è cache o è scaduta, scarica di nuovo
+  const data = await getData(refPath);
+
+  if (data) {
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify({
+        data: data,
+        timestamp: new Date().getTime()
+      }));
+    } catch (e) {
+      console.warn(" localStorage full or disabled, skipping cache save", e);
+    }
+  }
+
+  return data;
+}
+
 import {
   getSelectedDivision,
   loadSavedOption,

@@ -76,7 +76,8 @@ nav ul li {
 nav ul li a {
   text-decoration: none;
   color: var(--text);
-  padding: 10px 20px; /* Aumenta il padding per rendere l'area cliccabile più grande */
+  padding: 10px 20px;
+  /* Aumenta il padding per rendere l'area cliccabile più grande */
 }
 
 .active {
@@ -96,8 +97,7 @@ nav ul li a {
   color: var(--mainText);
 }
 
-#division {
-}
+#division {}
 
 select:focus,
 option:focus {
@@ -141,7 +141,7 @@ option {
 *::-webkit-scrollbar-thumb {
   background-color: var(--primary);
   border-radius: 10px;
-  border: 3px none #ffffff;
+  border: 3px none var(--white);
 }
 
 /* SHARED CSS */
@@ -193,4 +193,204 @@ button:hover {
   color: var(--darkText);
   background-color: var(--orange);
   border: 1px solid transparent;
+}
+
+/* =========================================
+   RESPONSIVE / MOBILE LAYOUT
+   ========================================= */
+
+/* DESKTOP DEFAULTS */
+.hamburger-menu {
+  display: none;
+  font-size: 1.8rem;
+  /* Larger icon */
+  color: var(--mainText);
+  cursor: pointer;
+  margin-right: 20px;
+  padding: 10px;
+  /* Touch target */
+  transition: transform 0.2s ease;
+}
+
+.hamburger-menu:active {
+  transform: scale(0.95);
+}
+
+/* OVERLAY (for Sidebar on Mobile) */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  /* Darker overlay */
+  z-index: 1098;
+  /* Higher than sticky headers */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* TABLET & MOBILE (< 1024px) */
+@media (max-width: 1024px) {
+  .grid {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* Sticky Header */
+  header {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    /* Ensure header is on top of content */
+    padding: 0 15px;
+    height: 70px;
+    /* Slightly smaller header on mobile */
+  }
+
+  /* Show Hamburger */
+  .hamburger-menu {
+    display: block;
+  }
+
+  #current-section {
+    font-size: 1.4rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* SLIDE-OUT DRAWER NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    /* Hidden off-screen */
+    width: 260px;
+    height: 100vh;
+    z-index: 1099;
+    /* Highest z-index */
+    background-color: var(--tertiary);
+    /* Ensure bg color */
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transform: translateX(0);
+    /* Logic change: use transform instead of left? left is easier for now */
+
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+  }
+
+  nav.active {
+    left: 0;
+  }
+
+  .box-logo {
+    height: 100px;
+    margin-bottom: 20px;
+  }
+
+  nav ul li {
+    margin: 20px 10px;
+    /* Compact spacing */
+  }
+
+  select {
+    margin-left: 20px;
+  }
+
+  /* MAIN CONTENT SCROLL */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  /* Enable Overlay on Mobile */
+  .overlay {
+    display: block;
+  }
+}
+
+/* ====================
+   AUTH OVERLAY
+   ==================== */
+#auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary);
+  /* Solid background to hide content */
+  z-index: 99999;
+  /* Top level */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.auth-card {
+  background-color: var(--secondary);
+  padding: 40px;
+  border-radius: 15px;
+  border: var(--bordoGiallo);
+  box-shadow: var(--ombra2);
+  text-align: center;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.auth-card h2 {
+  margin: 0;
+  color: var(--highlight);
+}
+
+.auth-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+#auth-pin-input {
+  padding: 15px;
+  font-size: 1.2rem;
+  text-align: center;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  letter-spacing: 5px;
+  font-weight: bold;
+}
+
+#auth-btn {
+  padding: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: var(--orange);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+#auth-btn:active {
+  transform: scale(0.95);
 }

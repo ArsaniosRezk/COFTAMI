@@ -1,4 +1,4 @@
-import { showCalendarOptions } from "/Js/funzioni.js";
+import { showCalendarOptions } from "/js/components/calendar.js";
 
 export const initCalendario = () => {
   showCalendarOptions();

@@ -239,3 +239,88 @@
   font-weight: bold;
   text-align: center;
 }
+
+/* =========================================
+   RESPONSIVE / MOBILE LAYOUT
+   ========================================= */
+
+@media (max-width: 1024px) {
+
+  /* Matchday Selector */
+  #matchday-selector-div {
+    width: 100%;
+    padding: 20px;
+    gap: 15px;
+  }
+
+  .matchday-btn {
+    width: 80px;
+    height: 80px;
+    font-size: 1rem;
+  }
+
+  /* Match List */
+  #matches-selector-div {
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .match-div {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+
+  /* Match Details (Editor) */
+  #match-details-div {
+    margin: 10px 0;
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  #match-title-div {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  #home-section,
+  #away-section {
+    flex-direction: row;
+    /* Keep row for Team Name + Score */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  #away-section {
+    flex-direction: row;
+    /* reset reverse */
+  }
+
+  /* Scorers Lists */
+  #match-scorers-div {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  #match-home-scorers-div,
+  #match-away-scorers-div {
+    width: 100%;
+    height: auto;
+    /* Remove fixed height */
+    max-height: 300px;
+    /* Optional internal scroll */
+    overflow-y: auto;
+  }
+
+  /* Player Item in Scorer List */
+  .player-div {
+    width: 100%;
+    /* Full width */
+    margin-bottom: 8px;
+  }
+
+  .player-name {
+    max-width: 200px;
+  }
+}

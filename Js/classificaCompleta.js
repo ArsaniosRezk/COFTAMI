@@ -1,4 +1,4 @@
-import { classificaGirone } from "./funzioni.js";
+import { classificaGirone } from "./components/standings.js";
 import { setSelectedDivision, edition } from "./divisionAndVariables.js";
 
 // Funzione per caricare entrambe le classifiche

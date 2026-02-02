@@ -1,4 +1,4 @@
-import { visualizzaSquadreConMembri } from "./funzioni.js";
+import { visualizzaSquadreConMembri } from "./components/teams.js";
 
 // Sequenza esecuzione dei contenuti della pagina
 // Esportata e importata nel header

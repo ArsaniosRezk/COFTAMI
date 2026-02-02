@@ -1,108 +1,279 @@
+/* DASHBOARD LAYOUT */
+
 #dashboard-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px;
-  padding: 30px;
-}
-
-#match-to-show-div {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-  background-color: var(--secondary);
-  height: auto;
-  width: 60%;
-  padding: 10px 20px;
-
-  border: var(--bordoGiallo);
-  border-radius: 10px;
-}
-
-#match-to-show-div div {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-#matchday-to-show-input {
-  width: 40px;
-  font-weight: bold;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 30px;
 }
 
 #rankings {
-  display: flex;
-  gap: 40px;
+    display: flex;
+    gap: 40px;
 }
 
-/*   */
+/* DASHBOARD CONTROLS REDESIGN */
+
+/* Wrapper to center/align card */
+#match-to-show-div.dashboard-controls-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+/* Glassmorphism Card */
+.dashboard-controls-card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 16px;
+    padding: 20px 30px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .dashboard-controls-card {
+        flex-direction: column;
+        gap: 24px;
+        padding: 20px;
+    }
+}
+
+/* Common Control Group */
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Vertical Divider */
+.vertical-divider {
+    width: 1px;
+    height: 40px;
+    background-color: var(--divider-color);
+}
+
+@media (max-width: 768px) {
+    .vertical-divider {
+        display: none;
+        /* Hide on mobile stack */
+    }
+}
+
+/* MATCHDAY SECTION (Left) */
+.matchday-group div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.matchday-group label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+/* Input Styling */
+#matchday-to-show-input {
+    width: 60px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--text);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+#matchday-to-show-input:focus {
+    background: var(--input-focus-bg);
+    border-color: var(--tertiary);
+    box-shadow: 0 0 0 3px rgba(var(--tertiary-rgb), 0.2);
+}
+
+/* Button Styling (Salva) - IMPROVED */
+.custom-button {
+    background-color: var(--mainText);
+    /* Yellow */
+    color: var(--primary);
+    /* Dark green (primary) for contrast */
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--button-shadow);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-button:hover {
+    background-color: var(--button-hover-yellow);
+    color: var(--black);
+    /* Black text on hover */
+    transform: translateY(-2px);
+    box-shadow: var(--button-hover-shadow);
+}
+
+.custom-button:active {
+    transform: translateY(0);
+}
+
+
+/* SETTINGS SECTION (Right) */
+.settings-group {
+    display: flex;
+    gap: 30px;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.setting-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    opacity: 0.9;
+}
+
+/* Modern Switch Toggle (iOS style) */
+.modern-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+}
+
+.modern-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--slider-bg);
+    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 34px;
+    border: 1px solid var(--glass-border);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 2px;
+    background-color: var(--white);
+    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked+.slider {
+    background-color: var(--tertiary);
+    border-color: var(--tertiary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+/* Adjustments for disabled state if needed */
+input:disabled+.slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* TABLES STYLES (Restored) */
+
 caption {
-  letter-spacing: 1.2px;
-  font-weight: 400;
-  font-size: 1.9rem;
-  margin: 10px 0 20px 0;
-
-  color: var(--text);
+    letter-spacing: 1.2px;
+    font-weight: 400;
+    font-size: 1.9rem;
+    margin: 10px 0 20px 0;
+    color: var(--text);
 }
-
-/* TABELLE */
 
 table {
-  width: auto;
-  border-collapse: collapse;
-  font-family: "roboto", sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-
-  background-color: var(--table);
-  color: var(--text);
-
-  border-radius: 10px;
+    width: auto;
+    border-collapse: collapse;
+    font-family: "roboto", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: var(--table);
+    color: var(--text);
+    border-radius: 10px;
 }
 
 table tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  text-align: center;
+    border-bottom: 1px solid var(--white-20);
+    text-align: center;
 }
 
 table th,
 table td {
-  padding: 8px;
-  width: 35px;
+    padding: 8px;
+    width: 35px;
 }
 
 table th {
-  font-size: 1.4rem;
-  font-weight: 500;
-  font-family: "Bebas Neue", sans-serif;
-  color: var(--mainText);
-  background-color: var(--secondary);
+    font-size: 1.4rem;
+    font-weight: 500;
+    font-family: "Bebas Neue", sans-serif;
+    color: var(--mainText);
+    background-color: var(--secondary);
 }
 
 table thead th:first-child {
-  border-top-left-radius: 10px;
+    border-top-left-radius: 10px;
 }
 
 table thead th:last-child {
-  border-top-right-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 table tbody tr:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 /* TABELLA CLASSIFICA SQUADRE  */
 
 .ranking-table th:nth-child(2),
 .ranking-table td:nth-child(2) {
-  text-align: left;
-  width: 200px;
-  max-width: 200px;
-  /* overflow: hidden; */
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    text-align: left;
+    width: 200px;
+    max-width: 200px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .ranking-table td:nth-child(3),
@@ -112,30 +283,16 @@ table tbody tr:last-child {
 .ranking-table td:nth-child(7),
 .ranking-table td:nth-child(8),
 .ranking-table td:nth-child(9) {
-  color: var(--testoTrasparente);
-}
-
-.ranking-table tbody tr:nth-child(1),
-.ranking-table tbody tr:nth-child(2),
-.ranking-table tbody tr:nth-child(3),
-.ranking-table tbody tr:nth-child(4) {
-  /* background-color: var(--finalsTeams); */
-}
-
-.ranking-table tr:nth-child(1) td:nth-child(1),
-.ranking-table tr:nth-child(2) td:nth-child(1),
-.ranking-table tr:nth-child(3) td:nth-child(1),
-.ranking-table tr:nth-child(4) td:nth-child(1) {
-  /* background-color: var(--finalsTeams); */
+    color: var(--testoTrasparente);
 }
 
 .girone-section {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .girone-section h3 {
-  margin-bottom: 10px;
-  font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
 }
 
 /* TABELLA MARCATORI  */
@@ -144,56 +301,204 @@ table tbody tr:last-child {
 .scorers-table td:nth-child(2),
 .scorers-table th:nth-child(3),
 .scorers-table td:nth-child(3) {
-  text-align: left;
-  width: 200px;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    text-align: left;
+    width: 200px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .scorers-table td:nth-child(3) {
-  color: var(--testoTrasparente);
+    color: var(--testoTrasparente);
 }
 
 .pagination {
-  display: flex;
-  justify-content: end;
-  width: fit-content;
-  border-radius: 5px;
-  background-color: var(--secondary);
-  overflow: hidden;
-
-  margin-top: 5px;
+    display: flex;
+    justify-content: end;
+    width: fit-content;
+    border-radius: 5px;
+    background-color: var(--secondary);
+    overflow: hidden;
+    margin-top: 5px;
 }
 
 .pagination a {
-  display: inline-block;
-  padding: 5px 12px;
-  text-decoration: none;
-  font-size: 0.55rem;
-  /* border-right: 1px solid var(--tertiary); */
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--testoTrasparente);
+    display: inline-block;
+    padding: 5px 12px;
+    text-decoration: none;
+    font-size: 0.55rem;
+    border-right: 1px solid var(--white-20);
+    color: var(--testoTrasparente);
 }
 
 .pagination a:last-child {
-  border-right: none;
+    border-right: none;
 }
 
 .pagination a.active {
-  color: var(--text) !important;
-  background-color: var(--tertiary);
+    color: var(--text) !important;
+    background-color: var(--tertiary);
 }
 
-/*
-===================================
-penalità
-===================================
-*/
-
+/* Penalità */
 .penalty-message {
-  margin-top: 10px;
-  text-align: right;
-  font-size: 0.8rem;
+    margin-top: 10px;
+    text-align: right;
+    font-size: 0.8rem;
+}
+
+/* Edition Select */
+.dashboard-select {
+    padding: 2px 10px;
+    height: 26px;
+    /* Match height of modern-switch */
+    border-radius: 20px;
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text);
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+}
+
+.dashboard-select option {
+    color: var(--black);
+    background-color: var(--white);
+}
+
+/* =========================================
+   RESPONSIVE / MOBILE LAYOUT
+   ========================================= */
+
+@media (max-width: 1024px) {
+    #dashboard-content {
+        padding: 10px;
+        gap: 20px;
+    }
+
+    /* 1. CONTROLS CARD */
+    #match-to-show-div.dashboard-controls-wrapper {
+        width: 100%;
+        margin: 0;
+    }
+
+    .dashboard-controls-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        padding: 20px;
+        width: 100%;
+    }
+
+    /* Force each control group to be full width */
+    .control-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+    }
+
+    /* Matchday Selector Row */
+    .matchday-group div {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* Settings Group: Stacked, but each item is a Row (Label - Switch) */
+    .settings-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+    }
+
+    .setting-item {
+        flex-direction: row;
+        /* Horizontal layout for Label + Switch */
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .vertical-divider {
+        display: none;
+    }
+
+    /* Save Button Full Width */
+    .custom-button {
+        width: 100%;
+        padding: 12px;
+    }
+
+    /* 2. RANKINGS & TABLES (Matching tabelle.css) */
+    #rankings {
+        flex-direction: column;
+        width: 100%;
+        gap: 30px;
+    }
+
+    #rankings>div {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    /* EXACT STYLES FROM tabelle.css for Mobile */
+    table {
+        font-size: 0.55rem;
+        /* Matches tabelle.css mobile size */
+        width: 100%;
+        min-width: unset;
+        /* Removing forced min-width to let it behave like valid liquid table */
+    }
+
+    table th {
+        font-size: 1rem;
+        /* Matches tabelle.css mobile */
+        padding: 8px 5px;
+    }
+
+    table td {
+        padding: 8px 5px;
+    }
+
+    /* Classifica Squadre Columns */
+    .ranking-table th:nth-child(2),
+    .ranking-table td:nth-child(2) {
+        width: 40%;
+        min-width: 120px;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Hiding extra columns on mobile like tabelle.css */
+    .ranking-table th:nth-child(7),
+    .ranking-table th:nth-child(8),
+    .ranking-table th:nth-child(9),
+    .ranking-table td:nth-child(7),
+    .ranking-table td:nth-child(8),
+    .ranking-table td:nth-child(9) {
+        display: none;
+    }
+
+    /* Scorer Table Matches */
+    .scorers-table th:nth-child(2),
+    .scorers-table td:nth-child(2) {
+        width: 45%;
+        min-width: 120px;
+        max-width: 150px;
+    }
+
+    .scorers-table th:nth-child(3),
+    .scorers-table td:nth-child(3) {
+        width: 115px;
+        max-width: 115px;
+    }
+
+    /* Pagination Matches tabelle.css */
+    .pagination a {
+        font-size: 0.45rem;
+        padding: 5px 8px;
+    }
 }

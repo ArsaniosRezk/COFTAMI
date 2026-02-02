@@ -1,5 +1,5 @@
 // Edizione Torneo/Anno
-const edition = "2025";
+const edition = localStorage.getItem("site_edition") || "2025";
 
 // Definizione variabile e funzioni per gestione divisione
 let selectedDivision;
@@ -86,11 +86,56 @@ const excludedPaths = [
 ]; // Aggiungi qui la pagina che vuoi escludere
 
 if (!excludedPaths.includes(window.location.pathname)) {
-  window.onload = function () {
+  document.addEventListener("DOMContentLoaded", function () {
     loadSavedOption();
     const selectedDivision = getSelectedDivision();
     updateSelectElement("division", selectedDivision);
     updateSelectElement("division-smartphone", selectedDivision);
+
+    // Codice per gestire il cambiamento dell'opzione selezionata
+    const divisionProps = document.getElementById("division");
+    if (divisionProps) {
+      divisionProps.addEventListener("change", function () {
+        setSelectedDivision(this.value);
+        updateSelectElement("division-smartphone", this.value);
+
+        // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
+        if (sequenzaEsecuzioneModule) {
+          sequenzaEsecuzioneModule.then((module) => {
+            if (module && module.sequenzaEsecuzione) {
+              module.sequenzaEsecuzione();
+            } else {
+              console.error(
+                "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
+              );
+            }
+          });
+        }
+      });
+    }
+
+    const divisionSmartphoneElement = document.getElementById(
+      "division-smartphone"
+    );
+    if (divisionSmartphoneElement) {
+      divisionSmartphoneElement.addEventListener("change", function () {
+        setSelectedDivision(this.value);
+        updateSelectElement("division", this.value);
+
+        // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
+        if (sequenzaEsecuzioneModule) {
+          sequenzaEsecuzioneModule.then((module) => {
+            if (module && module.sequenzaEsecuzione) {
+              module.sequenzaEsecuzione();
+            } else {
+              console.error(
+                "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
+              );
+            }
+          });
+        }
+      });
+    }
 
     // Chiamata alla funzione sequenzaEsecuzione solo se `sequenzaEsecuzioneModule` è definita
     if (sequenzaEsecuzioneModule) {
@@ -104,47 +149,5 @@ if (!excludedPaths.includes(window.location.pathname)) {
         }
       });
     }
-  };
-
-  // Codice per gestire il cambiamento dell'opzione selezionata
-  document.getElementById("division").addEventListener("change", function () {
-    setSelectedDivision(this.value);
-    updateSelectElement("division-smartphone", this.value);
-
-    // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-    if (sequenzaEsecuzioneModule) {
-      sequenzaEsecuzioneModule.then((module) => {
-        if (module && module.sequenzaEsecuzione) {
-          module.sequenzaEsecuzione();
-        } else {
-          console.error(
-            "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-          );
-        }
-      });
-    }
   });
-
-  const divisionSmartphoneElement = document.getElementById(
-    "division-smartphone"
-  );
-  if (divisionSmartphoneElement) {
-    divisionSmartphoneElement.addEventListener("change", function () {
-      setSelectedDivision(this.value);
-      updateSelectElement("division", this.value);
-
-      // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-      if (sequenzaEsecuzioneModule) {
-        sequenzaEsecuzioneModule.then((module) => {
-          if (module && module.sequenzaEsecuzione) {
-            module.sequenzaEsecuzione();
-          } else {
-            console.error(
-              "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-            );
-          }
-        });
-      }
-    });
-  }
 }
