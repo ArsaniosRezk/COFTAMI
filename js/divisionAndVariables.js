@@ -61,8 +61,10 @@ switch (window.location.pathname) {
     sequenzaEsecuzioneModule = import("./funzioniAlboOro.js");
     break;
   case "/regolamento.html":
+  case "/regolamento-test.html":
   case "/invia-report.html":
   case "/iscrizione.html":
+  case "/iscrizione-test.html":
   case "/classifica-completa.html":
   case "/referti.html":
   case "/referti-social.html":

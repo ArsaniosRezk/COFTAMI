@@ -5,9 +5,11 @@ import { ref, db, get } from "./firebase.js";
     TEMPORANEO (fase di test)
     -------------------------
     Pagine raggiungibili anche con la manutenzione attiva.
+    Le pagine pubbliche (regolamento, iscrizione) sono bloccate: restano
+    accessibili solo le rispettive copie di test.
     Svuotare l'array per rimettere il blocco su tutto il sito.
 */
-const PAGINE_ESENTI = ["regolamento", "iscrizione"];
+const PAGINE_ESENTI = ["regolamento-test", "iscrizione-test"];
 
 function paginaEsenteDaManutenzione() {
     // Funziona sia con /iscrizione.html sia con /iscrizione
