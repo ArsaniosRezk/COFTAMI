@@ -1,6 +1,25 @@
 import { manutenzione } from "./components/manutenzione.js";
 import { ref, db, get } from "./firebase.js";
 
+/*
+    TEMPORANEO (fase di test)
+    -------------------------
+    Pagine raggiungibili anche con la manutenzione attiva.
+    Svuotare l'array per rimettere il blocco su tutto il sito.
+*/
+const PAGINE_ESENTI = ["regolamento", "iscrizione"];
+
+function paginaEsenteDaManutenzione() {
+    // Funziona sia con /iscrizione.html sia con /iscrizione
+    const percorso = window.location.pathname
+        .toLowerCase()
+        .replace(/\.html$/, "")
+        .replace(/\/$/, "");
+    const nomePagina = percorso.substring(percorso.lastIndexOf("/") + 1);
+
+    return PAGINE_ESENTI.includes(nomePagina);
+}
+
 /**
  * Checks maintenance status and strictly blocks execution if active.
  * Handles page visibility to prevent flashing.
@@ -12,7 +31,11 @@ export async function maintenanceGuard() {
     try {
         const snapshot = await get(settingsRef);
 
-        if (snapshot.exists() && snapshot.val().manutenzione) {
+        if (
+            snapshot.exists() &&
+            snapshot.val().manutenzione &&
+            !paginaEsenteDaManutenzione()
+        ) {
             // 1. Show Overlay
             manutenzione();
 

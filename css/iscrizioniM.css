@@ -1,0 +1,307 @@
+/*
+===================================
+ ISCRIZIONI (gestionale)
+===================================
+*/
+
+#iscrizioni-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 25px;
+}
+
+/* --------- TOOLBAR --------- */
+#iscrizioni-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+
+  padding: 15px;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background-color: var(--glass-bg);
+}
+
+.iscrizioni-riepilogo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 0.95rem;
+}
+
+.iscrizioni-riepilogo b {
+  color: var(--mainText);
+  font-size: 1.15rem;
+}
+
+.iscrizioni-controlli {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.iscrizioni-controlli .iscrizioni-select {
+  margin: 0;
+  border-bottom: 3px solid var(--mainText);
+}
+
+.iscrizioni-ricerca {
+  min-width: 220px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  font-family: "montserrat", sans-serif;
+  font-size: 0.9rem;
+}
+
+.custom-button.iscrizioni-azione {
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+/* --------- ELENCO --------- */
+#iscrizioni-elenco {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.iscrizioni-gruppo-titolo {
+  margin-top: 10px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 1.5px;
+  color: var(--mainText);
+}
+
+.iscrizioni-vuoto {
+  padding: 30px;
+  text-align: center;
+  color: var(--white-50);
+}
+
+/* --------- CARD --------- */
+.iscrizione-card {
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background-color: var(--secondary);
+  overflow: hidden;
+}
+
+.iscrizione-card.aperta {
+  border-color: var(--mainText);
+}
+
+.iscrizione-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.iscrizione-header:hover {
+  background-color: var(--tertiary);
+}
+
+.iscrizione-titolo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.iscrizione-titolo .freccia {
+  color: var(--mainText);
+  transition: transform 0.2s ease;
+}
+
+.iscrizione-card.aperta .freccia {
+  transform: rotate(90deg);
+}
+
+.nome-squadra {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.badge-divisione {
+  background-color: var(--tertiary);
+  border: 1px solid var(--white-20);
+  color: var(--text);
+}
+
+.badge-nuova {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+.badge-convertita {
+  background-color: var(--mainText);
+  color: var(--darkText);
+}
+
+.iscrizione-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.85rem;
+  color: var(--white-50);
+}
+
+.iscrizione-meta i {
+  margin-right: 4px;
+  color: var(--mainText);
+}
+
+.iscrizione-meta .data-invio {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------- DETTAGLIO --------- */
+.iscrizione-dettaglio {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+
+  padding: 18px 16px;
+  border-top: 1px solid var(--glass-border);
+  background-color: var(--primary);
+}
+
+.iscrizione-dettaglio.hidden {
+  display: none;
+}
+
+.dettaglio-sezione h4 {
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--white-20);
+  color: var(--mainText);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dettaglio-lista {
+  list-style: none;
+  counter-reset: persona;
+  font-size: 0.9rem;
+}
+
+.dettaglio-lista li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--white-20);
+}
+
+/* Il marker nativo sparisce con display:flex: lo ricreo con un counter */
+.dettaglio-lista li::before {
+  counter-increment: persona;
+  content: counter(persona) ".";
+  min-width: 20px;
+  color: var(--white-50);
+  font-variant-numeric: tabular-nums;
+}
+
+.dettaglio-lista li:last-child {
+  border-bottom: none;
+}
+
+.persona-nome {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.persona-tel {
+  color: var(--mainText);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.persona-tel:hover {
+  text-decoration: underline;
+}
+
+.dettaglio-vuoto {
+  font-size: 0.85rem;
+  color: var(--white-50);
+}
+
+/* --------- AZIONI --------- */
+.iscrizione-azioni {
+  grid-column: 1 / -1;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+
+  padding-top: 15px;
+  border-top: 1px solid var(--white-20);
+}
+
+.iscrizione-azioni .custom-button {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.button-elimina {
+  margin-left: auto;
+  color: var(--white-50);
+  border-color: var(--white-20);
+  background-color: transparent;
+}
+
+.iscrizione-info-conversione {
+  font-size: 0.8rem;
+  color: var(--white-50);
+}
+
+/* --------- MOBILE --------- */
+@media (max-width: 1024px) {
+  #iscrizioni-content {
+    padding: 15px;
+  }
+
+  .iscrizioni-controlli {
+    width: 100%;
+  }
+
+  .iscrizioni-ricerca {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .iscrizione-meta {
+    font-size: 0.78rem;
+    gap: 10px;
+  }
+
+  .button-elimina {
+    margin-left: 0;
+  }
+}

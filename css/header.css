@@ -144,8 +144,9 @@ break points
   }
 
   .nav-link {
-    font-size: 1.1rem;
-    padding-left: 25px;
+    font-size: 1rem;
+    padding-left: 18px;
+    white-space: nowrap;
     color: var(--darkText);
     opacity: 0.8;
     font-weight: 500;
@@ -153,6 +154,13 @@ break points
 
   .hide-hamb {
     display: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  .nav-link {
+    font-size: 1.1rem;
+    padding-left: 25px;
   }
 }
 

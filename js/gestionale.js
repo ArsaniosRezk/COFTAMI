@@ -37,7 +37,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  const sections = ["dashboard", "squadre", "calendario", "partite", "report"];
+  const sections = [
+    "dashboard",
+    "iscrizioni",
+    "squadre",
+    "calendario",
+    "partite",
+    "report",
+  ];
   let currentSection = "dashboard"; // Traccia la sezione corrente
 
   const setActiveLink = (section) => {

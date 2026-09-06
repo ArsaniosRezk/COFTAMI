@@ -1,0 +1,362 @@
+/*
+===================================
+ ISCRIZIONE SQUADRA (pagina pubblica)
+===================================
+*/
+
+:root {
+  /* Palette locale della pagina: piu' contrasto rispetto ai verdi di base */
+  --isc-panel: #24543f;
+  --isc-border: rgba(255, 255, 255, 0.16);
+  --isc-text: #f3f7f5;
+  --isc-hint: rgba(255, 255, 255, 0.85);
+  --isc-required: #ffb454;
+  --isc-alert: #ffa578;
+  --isc-input-text: #22303f;
+  --isc-placeholder: #78838f;
+}
+
+/* --------- FORM --------- */
+#iscrizione-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+
+  width: 100%;
+  color: var(--isc-text);
+  text-align: left;
+}
+
+.form-intro {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--isc-text);
+  text-align: center;
+}
+
+fieldset.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  padding: 16px 20px 22px;
+  border: 1px solid var(--isc-border);
+  border-radius: 12px;
+  background-color: var(--isc-panel);
+}
+
+fieldset.form-group legend {
+  padding: 0 10px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 1.5px;
+  color: var(--mainText);
+}
+
+.req-mark {
+  color: var(--isc-required);
+  font-weight: 700;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field label {
+  color: var(--mainText);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* I due campi della squadra affiancati quando c'è spazio */
+.campi-squadra {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px 28px;
+  align-items: start;
+}
+
+.field input,
+.field select {
+  max-width: 560px;
+}
+
+/* --------- INPUT --------- */
+#iscrizione-form input,
+#iscrizione-form select {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-color: var(--white);
+
+  font-family: "montserrat", sans-serif;
+  font-size: 1rem;
+  color: var(--isc-input-text);
+}
+
+#iscrizione-form input::placeholder {
+  color: var(--isc-placeholder);
+}
+
+#iscrizione-form input:focus,
+#iscrizione-form select:focus {
+  outline: none;
+  border-color: var(--mainText);
+  box-shadow: 0 0 0 3px rgba(252, 235, 0, 0.25);
+}
+
+#iscrizione-form input.invalid,
+#iscrizione-form select.invalid {
+  border-color: var(--isc-alert);
+  box-shadow: 0 0 0 3px rgba(255, 165, 120, 0.25);
+}
+
+#iscrizione-form select:invalid {
+  color: var(--isc-placeholder);
+}
+
+/* --------- RIGHE PERSONA --------- */
+.persone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.persona-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 135px) 38px;
+  gap: 8px;
+  align-items: center;
+}
+
+.row-remove {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--isc-border);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--isc-text);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.row-remove:hover {
+  background-color: var(--orange);
+  border-color: transparent;
+  color: var(--white);
+}
+
+.row-remove.placeholder {
+  visibility: hidden;
+  cursor: default;
+}
+
+.row-error {
+  grid-column: 1 / -1;
+  margin-top: -4px;
+  color: var(--isc-alert);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.row-error:empty {
+  display: none;
+}
+
+/* --------- BOTTONI --------- */
+.add-row-btn {
+  align-self: flex-start;
+
+  padding: 9px 18px;
+  border: 1px solid var(--mainText);
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--mainText);
+
+  font-family: "montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.add-row-btn:hover {
+  background-color: var(--orange);
+  border-color: transparent;
+  color: var(--white);
+}
+
+.btn {
+  width: 100%;
+  padding: 15px 30px;
+
+  background-color: var(--mainText);
+  color: var(--darkText);
+  border: none;
+  border-radius: 8px;
+
+  font-family: "montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* --------- HINT E ERRORI --------- */
+.hint {
+  color: var(--isc-hint);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.hint b {
+  color: var(--white);
+}
+
+/* Avviso generale: riquadro evidenziato, non testo sbiadito */
+.hint-global {
+  padding: 13px 16px;
+  border-left: 4px solid var(--mainText);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+  font-size: 0.92rem;
+  text-align: left;
+}
+
+.hint-global:empty {
+  display: none;
+}
+
+.hint-global i {
+  margin-right: 6px;
+  color: var(--mainText);
+}
+
+.field-error,
+.group-error {
+  color: var(--isc-alert);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.field-error:empty,
+.group-error:empty,
+.form-error:empty {
+  display: none;
+}
+
+.form-error {
+  padding: 13px;
+  border: 1px solid var(--isc-alert);
+  border-radius: 8px;
+  background-color: rgba(255, 165, 120, 0.12);
+
+  color: var(--isc-alert);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* --------- ESITO / CHIUSURA --------- */
+#iscrizione-inviata,
+#iscrizioni-chiuse {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+
+  width: 100%;
+  padding: 35px 20px;
+  border: 1px solid var(--isc-border);
+  border-radius: 12px;
+  background-color: var(--isc-panel);
+  color: var(--isc-text);
+  text-align: center;
+}
+
+#iscrizione-inviata i,
+#iscrizioni-chiuse i {
+  font-size: 3rem;
+  color: var(--mainText);
+}
+
+#iscrizione-inviata h3,
+#iscrizioni-chiuse h3 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2rem;
+  letter-spacing: 1.5px;
+  color: var(--mainText);
+}
+
+#iscrizione-inviata p,
+#iscrizioni-chiuse p {
+  max-width: 560px;
+  line-height: 1.6;
+}
+
+#iscrizione-inviata .btn {
+  max-width: 320px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --------- DESKTOP: righe affiancate per sfruttare la larghezza --------- */
+@media (min-width: 800px) {
+  .persone-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 14px 28px;
+    align-items: start;
+  }
+
+  fieldset.form-group {
+    padding: 18px 25px 25px;
+  }
+}
+
+/* --------- MOBILE --------- */
+@media (max-width: 600px) {
+  .persona-row {
+    grid-template-columns: minmax(0, 1fr) 38px;
+    gap: 6px 8px;
+  }
+
+  .persona-row .p-nome {
+    grid-column: 1 / 2;
+  }
+
+  .persona-row .p-tel {
+    grid-column: 1 / 2;
+  }
+
+  .persona-row .row-remove {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+    height: 100%;
+  }
+
+  fieldset.form-group {
+    padding: 14px 15px 20px;
+  }
+
+  fieldset.form-group legend {
+    font-size: 1.4rem;
+  }
+}

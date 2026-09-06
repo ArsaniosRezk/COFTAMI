@@ -42,6 +42,9 @@ class MyHeader extends HTMLElement {
             <li>
               <a class="nav-link" href="/albo-d'oro.html">Albo d'Oro</a>
             </li>
+            <li>
+              <a class="nav-link" href="/iscrizione.html">Iscrizioni</a>
+            </li>
           </ul>
         </nav>
         <i class="fa-solid fa-bars menu-icon hide-hamb" onclick="openMenu()"></i>
@@ -71,6 +74,9 @@ class MyHeader extends HTMLElement {
             </li>
             <li>
               <a href="/albo-d'oro.html">Albo d'Oro</a>
+            </li>
+            <li>
+              <a href="/iscrizione.html">Iscrizioni</a>
             </li>
           </ul>
         </div>
@@ -105,6 +111,9 @@ class MyFooter extends HTMLElement {
             </li>
             <li>
               <a href="/albo-d'oro.html">Albo d'Oro</a>
+            </li>
+            <li>
+              <a href="/iscrizione.html">Iscrizioni</a>
             </li>
           </ul>
         </div>
