@@ -9,7 +9,7 @@
     di CACHE_NAME (es. da "v1" a "v2").
 */
 
-const CACHE_NAME = "v1";
+const CACHE_NAME = "v2";
 
 // Lista dei file da scaricare subito (Core)
 const ASSETS_TO_CACHE = [
@@ -19,17 +19,21 @@ const ASSETS_TO_CACHE = [
     "/squadre.html",
     "/calendario.html",
     "/gestionale.html",
+    "/iscrizione.html",
     "/style.css",
     "/css/home.css",
     "/css/header.css",
     "/css/footer.css",
     "/css/colors.css",
     "/css/gestionale.css",
+    "/css/iscrizione.css",
+    "/css/iscrizioniM.css",
     "/css/dashboard.css",
     "/css/squadreM.css",
     "/css/tabelle.css",
     "/js/firebase.js",
     "/js/gestionale.js",
+    "/js/iscrizione.js",
     "/assets/images/favicon.svg",
     "/assets/images/LOGO_COFTA_SITO_2.svg",
     "/assets/fonts/UaCadet-2068.ttf"

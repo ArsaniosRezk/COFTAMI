@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHN9QNCZV6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-LHN9QNCZV6");
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modulo di iscrizione al torneo Cofta Milano: iscrivi la tua squadra parrocchiale." />
+  <title>Cofta - Iscrizione Squadra</title>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/colors.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/footer.css" />
+  <link rel="stylesheet" href="css/iscrizione.css" />
+</head>
+
+<body>
+  <div class="grid">
+    <my-header></my-header>
+
+    <main>
+      <section>
+        <p class="section-title">Iscrizione Squadra</p>
+
+        <!-- Messaggio iscrizioni chiuse (mostrato via JS) -->
+        <div id="iscrizioni-chiuse" class="hidden">
+          <i class="fa-solid fa-lock"></i>
+          <h3>Iscrizioni chiuse</h3>
+          <p>Le iscrizioni al torneo non sono al momento aperte.<br />
+            Per informazioni scrivi a <b>info@coftamilano.com</b></p>
+        </div>
+
+        <!-- Messaggio di conferma (mostrato via JS) -->
+        <div id="iscrizione-inviata" class="hidden">
+          <i class="fa-solid fa-circle-check"></i>
+          <h3>Iscrizione inviata!</h3>
+          <p id="conferma-testo"></p>
+          <button type="button" class="btn" id="nuova-iscrizione-btn">Invia un'altra iscrizione</button>
+        </div>
+
+        <form id="iscrizione-form" novalidate>
+
+          <p class="form-intro">
+            Compila il modulo per iscrivere la tua squadra al torneo.<br />
+            I campi contrassegnati con <span class="req-mark">*</span> sono obbligatori.
+          </p>
+
+          <!-- ============ SQUADRA ============ -->
+          <fieldset class="form-group">
+            <legend>Squadra</legend>
+
+            <div class="campi-squadra">
+              <div class="field">
+                <label for="isc-divisione">Divisione <span class="req-mark">*</span></label>
+                <select id="isc-divisione">
+                  <option value="" disabled selected hidden>- Seleziona divisione -</option>
+                  <option value="Superiori">Superiori</option>
+                  <option value="Giovani">Giovani</option>
+                </select>
+                <p class="field-error" id="err-divisione"></p>
+              </div>
+
+              <div class="field">
+                <label for="isc-chiesa">Nome della chiesa <span class="req-mark">*</span></label>
+                <input type="text" id="isc-chiesa" placeholder="Es. San Giorgio" spellcheck="false"
+                  autocomplete="organization" />
+                <p class="hint">
+                  Se iscrivi più di una squadra per la stessa divisione, aggiungi la lettera
+                  <b>A</b>, <b>B</b>, <b>C</b>… alla fine del nome (es. <i>San Giorgio A</i>, <i>San Giorgio B</i>).
+                </p>
+                <p class="field-error" id="err-chiesa"></p>
+              </div>
+            </div>
+          </fieldset>
+
+          <p class="hint hint-global">
+            <i class="fa-solid fa-circle-info"></i>
+            Tutti i nomi vanno inseriti con <b>nome e cognome per esteso</b>: niente soprannomi, diminutivi o solo nome.
+            Se inserisci un nome, il <b>numero di telefono diventa obbligatorio</b>.
+          </p>
+
+          <!-- ============ RESPONSABILI ============ -->
+          <fieldset class="form-group">
+            <legend>Responsabili <span class="req-mark">*</span></legend>
+            <p class="hint">Almeno <b>1 responsabile</b> è obbligatorio.</p>
+            <div class="persone-list" id="lista-responsabili"></div>
+            <p class="group-error" id="err-responsabili"></p>
+          </fieldset>
+
+          <!-- ============ ALLENATORI ============ -->
+          <fieldset class="form-group">
+            <legend>Allenatori <span class="req-mark">*</span></legend>
+            <p class="hint">Almeno <b>1 allenatore</b> è obbligatorio.</p>
+            <div class="persone-list" id="lista-allenatori"></div>
+            <p class="group-error" id="err-allenatori"></p>
+          </fieldset>
+
+          <!-- ============ GIOCATORI ============ -->
+          <fieldset class="form-group">
+            <legend>Giocatori <span class="req-mark">*</span></legend>
+            <p class="hint">Inserisci nome, cognome e numero di telefono di <b>ogni giocatore</b>.
+              Servono <b>almeno 7 giocatori</b>.</p>
+            <div class="persone-list" id="lista-giocatori"></div>
+            <button type="button" class="add-row-btn" id="add-giocatore">
+              <i class="fa-solid fa-plus"></i> Aggiungi giocatore
+            </button>
+            <p class="group-error" id="err-giocatori"></p>
+          </fieldset>
+
+          <!-- ============ ARBITRI ============ -->
+          <fieldset class="form-group">
+            <legend>Arbitri</legend>
+            <div class="persone-list" id="lista-arbitri"></div>
+            <button type="button" class="add-row-btn" id="add-arbitro">
+              <i class="fa-solid fa-plus"></i> Aggiungi arbitro
+            </button>
+            <p class="hint">
+              In mancanza di arbitri per il torneo saremo costretti a giocare senza. In quel caso i due responsabili
+              presenti al campo dovranno scegliere un arbitro tra i presenti.
+            </p>
+            <p class="group-error" id="err-arbitri"></p>
+          </fieldset>
+
+          <p class="form-error" id="form-error"></p>
+
+          <button type="submit" class="btn" id="submit-btn">Invia iscrizione</button>
+          <p class="hint hint-global" id="draft-info"></p>
+        </form>
+      </section>
+    </main>
+
+    <my-footer></my-footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script type="module" src="js/headerFooterManager.js"></script>
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/divisionAndVariables.js"></script>
+  <script type="module" src="js/iscrizione.js"></script>
+</body>
+
+</html>

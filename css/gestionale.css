@@ -27,6 +27,7 @@ nav {
   grid-area: alias-nav;
   background-color: var(--tertiary);
   width: 220px;
+  overflow-y: auto;
 }
 
 header {
@@ -69,7 +70,7 @@ nav ul {
 nav ul li {
   font-size: 1.2rem;
   font-weight: bold;
-  margin: 50px 10px;
+  margin: 35px 10px;
   text-decoration: none;
 }
 

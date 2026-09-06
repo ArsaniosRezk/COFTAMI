@@ -62,6 +62,7 @@ switch (window.location.pathname) {
     break;
   case "/regolamento.html":
   case "/invia-report.html":
+  case "/iscrizione.html":
   case "/classifica-completa.html":
   case "/referti.html":
   case "/referti-social.html":

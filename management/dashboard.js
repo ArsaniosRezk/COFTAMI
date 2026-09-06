@@ -14,8 +14,12 @@ export const initDashboard = async () => {
   const settingsRef = ref(db, "Impostazioni");
   const faseFinaleCheckbox = document.getElementById("toggle-fase-finale");
   const manutenzioneCheckbox = document.getElementById("toggle-manutenzione");
+  const iscrizioniCheckbox = document.getElementById("toggle-iscrizioni");
 
   const editionSelect = document.getElementById("edition-select");
+
+  // Le iscrizioni sono considerate aperte finché non vengono chiuse esplicitamente
+  iscrizioniCheckbox.checked = true;
 
   // Recupera stato iniziale
   try {
@@ -24,6 +28,9 @@ export const initDashboard = async () => {
       const data = snapshot.val();
       faseFinaleCheckbox.checked = data.faseFinale || false;
       manutenzioneCheckbox.checked = data.manutenzione || false;
+
+      // Iscrizioni aperte di default: si chiudono solo esplicitamente
+      iscrizioniCheckbox.checked = data.iscrizioniAperte !== false;
 
       // Set Edition (Default 2025)
       if (editionSelect) {
@@ -47,6 +54,10 @@ export const initDashboard = async () => {
 
   manutenzioneCheckbox.addEventListener("change", () => {
     update(settingsRef, { manutenzione: manutenzioneCheckbox.checked });
+  });
+
+  iscrizioniCheckbox.addEventListener("change", () => {
+    update(settingsRef, { iscrizioniAperte: iscrizioniCheckbox.checked });
   });
 
   if (editionSelect) {
