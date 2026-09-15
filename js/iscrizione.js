@@ -1,4 +1,4 @@
-import { getData, setData } from "./firebase.js";
+import { getData, setData, uploadFile } from "./firebase.js";
 import { edition } from "./divisionAndVariables.js";
 import { capitalize } from "./utils/formatters.js";
 
@@ -12,7 +12,7 @@ Salva su: Calcio/{edizione}/Iscrizioni/{Divisione}-{NomeSquadra}
 // Numero di righe mostrate all'apertura del modulo
 const RIGHE_INIZIALI = {
   responsabili: 2,
-  allenatori: 2,
+  allenatori: 3,
   giocatori: 10,
   arbitri: 1,
 };
@@ -31,6 +31,16 @@ const NOME_REGEX =
 
 // Telefono: 8-15 cifre, prefisso internazionale opzionale
 const TELEFONO_REGEX = /^\+?\d{8,15}$/;
+
+// Modulo di Partecipazione firmato: è obbligatorio per poter inviare l'iscrizione
+const MODULO_MAX_BYTE = 10 * 1024 * 1024;
+
+// Tipo MIME accettato -> estensione usata per il file su Storage
+const MODULO_TIPI = {
+  "application/pdf": "pdf",
+  "image/jpeg": "jpg",
+  "image/png": "png",
+};
 
 const BOZZA_KEY = `cofta_iscrizione_bozza_${edition}`;
 
@@ -77,6 +87,59 @@ function chiaveSicura(valore) {
   return normalizzaSpazi(valore)
     .replace(/[.#$/[\]]/g, "_")
     .replace(/\s/g, "_");
+}
+
+/*
+-----------------------------------
+MODULO DI PARTECIPAZIONE FIRMATO
+-----------------------------------
+*/
+
+// Il file caricato e' leggibile da chi ne conosce l'URL: il percorso
+// non deve essere indovinabile partendo dal nome della squadra
+function codiceCasuale() {
+  const valori = new Uint8Array(8);
+  crypto.getRandomValues(valori);
+  return [...valori].map((v) => v.toString(16).padStart(2, "0")).join("");
+}
+
+function fileModulo() {
+  return document.getElementById("isc-modulo").files[0] || null;
+}
+
+function formattaDimensione(byte) {
+  const mega = byte / (1024 * 1024);
+  return mega >= 1 ? `${mega.toFixed(1)} MB` : `${Math.ceil(byte / 1024)} KB`;
+}
+
+// Aggiorna l'etichetta del selettore con il file scelto
+function mostraFileScelto() {
+  const etichetta = document.getElementById("modulo-nome");
+  const selettore = document.querySelector(".file-picker");
+  const file = fileModulo();
+
+  if (!file) {
+    etichetta.textContent = "Allega il modulo firmato";
+    selettore.classList.remove("pieno");
+    return;
+  }
+
+  etichetta.textContent = `${file.name} (${formattaDimensione(file.size)})`;
+  selettore.classList.add("pieno");
+}
+
+// Restituisce il messaggio di errore, oppure "" se il file va bene
+function erroreModulo(file) {
+  if (!file) {
+    return "Allega il Modulo di Partecipazione firmato: senza non possiamo accettare l'iscrizione.";
+  }
+  if (!MODULO_TIPI[file.type]) {
+    return "Formato non valido: allega il modulo in PDF, JPG o PNG.";
+  }
+  if (file.size > MODULO_MAX_BYTE) {
+    return `Il file pesa ${formattaDimensione(file.size)}: il limite è 10 MB.`;
+  }
+  return "";
 }
 
 /*
@@ -359,6 +422,14 @@ async function inviaIscrizione(event) {
     errori++;
   }
 
+  const modulo = fileModulo();
+  const problemaModulo = erroreModulo(modulo);
+  if (problemaModulo) {
+    document.getElementById("err-modulo").textContent = problemaModulo;
+    document.querySelector(".file-picker").classList.add("invalid");
+    errori++;
+  }
+
   const raccolte = {};
   SEZIONI.forEach((sezione) => {
     raccolte[sezione] = raccogliSezione(sezione);
@@ -402,6 +473,31 @@ async function inviaIscrizione(event) {
       }
     }
 
+    // Il modulo firmato viene caricato solo ora: se l'iscrizione non parte
+    // non lasciamo file orfani su Storage
+    submitBtn.textContent = "Caricamento del modulo...";
+
+    const estensione = MODULO_TIPI[modulo.type];
+    const percorsoModulo = `Moduli/${edition}/${chiave}-${codiceCasuale()}.${estensione}`;
+
+    let urlModulo;
+    try {
+      urlModulo = await uploadFile(percorsoModulo, modulo);
+    } catch (error) {
+      console.error("Errore durante il caricamento del modulo:", error);
+      document.getElementById("err-modulo").textContent =
+        "Non siamo riusciti a caricare l'allegato. Riprova, oppure scrivi a info@coftamilano.com.";
+      document.querySelector(".file-picker").classList.add("invalid");
+      document.getElementById("form-error").textContent =
+        "Iscrizione non inviata: il modulo firmato non è stato caricato.";
+      document
+        .querySelector(".file-picker")
+        .scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    submitBtn.textContent = "Invio in corso...";
+
     const iscrizione = {
       Divisione: divisione,
       NomeSquadra: nomeSquadra,
@@ -409,6 +505,11 @@ async function inviaIscrizione(event) {
       Allenatori: raccolte.allenatori.persone,
       Giocatori: raccolte.giocatori.persone,
       Arbitri: raccolte.arbitri.persone,
+      ModuloFirmato: {
+        Url: urlModulo,
+        NomeFile: modulo.name,
+        Percorso: percorsoModulo,
+      },
       OraInvio: new Date().toISOString(),
       Stato: "Nuova",
     };
@@ -419,8 +520,8 @@ async function inviaIscrizione(event) {
 
     const confermaEl = document.getElementById("conferma-testo");
     confermaEl.textContent =
-      `Per completare l'iscrizione, riceverai istruzioni per versare la quota entro il ---------.`+
-      "Per qualsiasi modifica scrivi a info@coftamilano.com.";
+      `Per completare l'iscrizione, riceverai istruzioni per versare la quota entro data da decidere.`+
+      " Per qualsiasi modifica scrivi a info@coftamilano.com.";
 
     document.getElementById("iscrizione-form").classList.add("hidden");
     document.getElementById("iscrizione-inviata").classList.remove("hidden");
@@ -447,12 +548,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Il modulo viene costruito subito: se la rete è lenta l'utente vede comunque i campi
   costruisciModulo(caricaBozza());
 
+  // Alcuni browser ripristinano il file scelto tornando indietro: riallineo l'etichetta
+  mostraFileScelto();
+
   document.getElementById("add-giocatore").addEventListener("click", () => {
     aggiungiRiga("giocatori").querySelector(".p-nome").focus();
   });
 
   document.getElementById("add-arbitro").addEventListener("click", () => {
     aggiungiRiga("arbitri").querySelector(".p-nome").focus();
+  });
+
+  // Formato e dimensione si controllano subito: inutile far compilare
+  // tutto il modulo per poi rifiutare l'allegato all'invio
+  document.getElementById("isc-modulo").addEventListener("change", () => {
+    mostraFileScelto();
+    const problema = fileModulo() ? erroreModulo(fileModulo()) : "";
+    document.getElementById("err-modulo").textContent = problema;
+    document
+      .querySelector(".file-picker")
+      .classList.toggle("invalid", Boolean(problema));
   });
 
   form.addEventListener("submit", inviaIscrizione);
@@ -471,6 +586,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       form.classList.remove("hidden");
       form.reset();
       pulisciErrori();
+      mostraFileScelto();
       costruisciModulo(null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     });

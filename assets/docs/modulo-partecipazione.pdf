@@ -6,35 +6,48 @@ endobj
 << /Type /Pages /Kids [3 0 R] /Count 1 >>
 endobj
 3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /FR 4 0 R /FB 5 0 R >> >> /Contents 6 0 R >>
 endobj
 4 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
 endobj
 5 0 obj
-<< /Length 620 >>
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Length 1023 >>
 stream
-BT /F1 24 Tf 72 720 Td (Modulo di Partecipazione) Tj ET
-BT /F1 14 Tf 72 680 Td (COFTA - Torneo di calcio) Tj ET
-BT /F1 12 Tf 72 640 Td (DOCUMENTO PLACEHOLDER) Tj ET
-BT /F1 12 Tf 72 615 Td (Il modulo definitivo sara' caricato a breve.) Tj ET
-BT /F1 12 Tf 72 560 Td (Chiesa: ____________________________________) Tj ET
-BT /F1 12 Tf 72 530 Td (Squadra: ___________________________________) Tj ET
-BT /F1 12 Tf 72 500 Td (Responsabile sportivo: _____________________) Tj ET
-BT /F1 12 Tf 72 450 Td (Firma del padre della chiesa: ______________) Tj ET
-BT /F1 12 Tf 72 420 Td (Data: ______________________________________) Tj ET
+BT 0 g /FB 22 Tf 134.3 762 Td (MODULO DI PARTECIPAZIONE) Tj ET
+BT 0 g /FB 15 Tf 271.7 734 Td (COFTA) Tj ET
+1.2 w 0 G 70 716 m 525 716 l S
+BT 0 g /FB 12 Tf 70.0 650 Td (Chiesa:) Tj ET
+0.8 w 0 G 121.344 647 m 525 647 l S
+BT 0 g /FB 12 Tf 70.0 580 Td (Divisione:) Tj ET
+0.8 w 0 G 135.348 577 m 525 577 l S
+BT 0.35 g /FR 7 Tf 70.0 563 Td (Scrivere "Superiori" oppure "Giovani") Tj ET
+BT 0 g /FB 12 Tf 70.0 505 Td (Nome squadra:) Tj ET
+0.8 w 0 G 165.348 502 m 525 502 l S
+BT 0.35 g /FR 7 Tf 70.0 488 Td (Se una chiesa iscrive pi� squadre nella stessa divisione, va aggiunta la lettera A, B, C... alla fine del nome (es. San Giorgio A, San Giorgio B)) Tj ET
+BT 0 g /FB 12 Tf 70.0 415 Td (Responsabile 1:) Tj ET
+0.8 w 0 G 170.02800000000002 412 m 525 412 l S
+BT 0.35 g /FR 7 Tf 70.0 398 Td (Scrivere almeno un responsabile) Tj ET
+BT 0 g /FB 12 Tf 70.0 355 Td (Responsabile 2:) Tj ET
+0.8 w 0 G 170.02800000000002 352 m 525 352 l S
+BT 0 g /FB 12 Tf 70.0 250 Td (Firma del padre della chiesa:) Tj ET
+0.8 w 0 G 70 210 m 330 210 l S
 endstream
 endobj
 xref
-0 6
+0 7
 0000000000 65535 f 
 0000000009 00000 n 
 0000000058 00000 n 
 0000000115 00000 n 
-0000000241 00000 n 
-0000000311 00000 n 
+0000000251 00000 n 
+0000000348 00000 n 
+0000000450 00000 n 
 trailer
-<< /Size 6 /Root 1 0 R >>
+<< /Size 7 /Root 1 0 R >>
 startxref
-982
+1525
 %%EOF
