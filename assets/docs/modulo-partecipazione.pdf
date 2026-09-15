@@ -15,7 +15,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
 endobj
 6 0 obj
-<< /Length 1902 >>
+<< /Length 1799 >>
 stream
 BT 0.000 g /FB 22 Tf 134.33 762.00 Td (MODULO DI PARTECIPAZIONE) Tj ET
 BT 0.000 g /FB 15 Tf 271.67 736.00 Td (COFTA) Tj ET
@@ -41,8 +41,7 @@ BT 0.000 g /FB 12 Tf 70.00 436.00 Td (2.) Tj ET
 BT 0.000 g /FB 12 Tf 70.00 394.00 Td (3.) Tj ET
 0.80 w 0.000 G 88.00 391.00 m 318.00 391.00 l S
 0.80 w 0.000 G 340.00 391.00 m 525.00 391.00 l S
-BT 0.000 g /FB 13 Tf 70.00 330.00 Td (Padre della chiesa) Tj ET
-BT 0.350 g /FR 7 Tf 70.00 316.00 Td (Con la sua firma il padre della chiesa autorizza l’iscrizione della squadra al torneo.) Tj ET
+BT 0.000 g /FB 13 Tf 70.00 330.00 Td (Padre che autorizza l’iscrizione della squadra) Tj ET
 BT 0.000 g /FB 12 Tf 70.00 280.00 Td (Nome del padre:) Tj ET
 0.80 w 0.000 G 171.02 277.00 m 525.00 277.00 l S
 BT 0.000 g /FB 12 Tf 70.00 226.00 Td (Firma del padre:) Tj ET
@@ -61,5 +60,5 @@ xref
 trailer
 << /Size 7 /Root 1 0 R >>
 startxref
-2403
+2300
 %%EOF
