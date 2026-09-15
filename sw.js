@@ -9,7 +9,7 @@
     di CACHE_NAME (es. da "v1" a "v2").
 */
 
-const CACHE_NAME = "v2";
+const CACHE_NAME = "v3";
 
 // Lista dei file da scaricare subito (Core)
 const ASSETS_TO_CACHE = [

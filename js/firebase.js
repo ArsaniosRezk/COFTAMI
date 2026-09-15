@@ -1,6 +1,12 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+import {
   getDatabase,
   ref,
   get,
@@ -31,8 +37,16 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const storage = getStorage(app);
 
-export { db, ref, update, get, set, child, remove, onValue };
+export { db, storage, ref, update, get, set, child, remove, onValue };
+
+// Carica un file su Firebase Storage e restituisce l'URL da cui scaricarlo
+export async function uploadFile(path, file) {
+  const fileRef = storageRef(storage, path);
+  await uploadBytes(fileRef, file, { contentType: file.type });
+  return getDownloadURL(fileRef);
+}
 
 // Funzione per ottenere i dati da Firebase
 export async function getData(refPath) {

@@ -1,0 +1,10 @@
+# Questi file NON devono subire la conversione dei fine riga di Git:
+# su un PDF scritto a mano un CRLF in piu' sposta gli offset della tabella
+# xref e rende il file illeggibile.
+*.pdf binary
+*.xlsx binary
+*.ttf binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.ico binary

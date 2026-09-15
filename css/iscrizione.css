@@ -120,6 +120,65 @@ fieldset.form-group legend {
   color: var(--isc-placeholder);
 }
 
+/* --------- ALLEGATO (modulo firmato) --------- */
+/* L'input nativo resta accessibile ma invisibile: il click passa dall'etichetta */
+#iscrizione-form input.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  max-width: 100%;
+
+  padding: 14px 20px;
+  border: 2px dashed var(--mainText);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.06);
+
+  color: var(--mainText);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.file-picker:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+/* File scelto: il tratteggio diventa pieno, cosi' si vede a colpo d'occhio */
+.file-picker.pieno {
+  border-style: solid;
+  border-color: var(--mainText);
+  background-color: rgba(255, 255, 255, 0.16);
+  color: var(--white);
+}
+
+.file-picker.invalid {
+  border-style: solid;
+  border-color: var(--isc-alert);
+  color: var(--isc-alert);
+}
+
+#iscrizione-form input.file-input:focus-visible + .file-picker {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(252, 235, 0, 0.35);
+}
+
+.hint a {
+  color: var(--mainText);
+  font-weight: 700;
+}
+
 /* --------- RIGHE PERSONA --------- */
 .persone-list {
   display: flex;

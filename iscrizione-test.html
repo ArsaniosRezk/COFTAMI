@@ -97,6 +97,31 @@
             </div>
           </fieldset>
 
+          <!-- ============ MODULO DI PARTECIPAZIONE ============ -->
+          <fieldset class="form-group">
+            <legend>Modulo di Partecipazione <span class="req-mark">*</span></legend>
+            <p class="hint">
+              Scarica il
+              <a href="/assets/docs/modulo-partecipazione.pdf" download>Modulo di Partecipazione</a>,
+              stampalo, compilalo e fallo firmare dal padre della tua chiesa. Poi allega qui la scansione
+              o una foto del foglio firmato: <b>senza allegato l'iscrizione non può essere inviata</b>.
+            </p>
+
+            <div class="field">
+              <input type="file" id="isc-modulo" class="file-input"
+                accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" />
+              <label class="file-picker" for="isc-modulo">
+                <i class="fa-solid fa-paperclip"></i>
+                <span id="modulo-nome">Allega il modulo firmato</span>
+              </label>
+              <p class="hint">
+                Formati accettati: <b>PDF, JPG o PNG</b>, fino a <b>10 MB</b>.
+                L'allegato non resta salvato nella bozza: se ricarichi la pagina dovrai ricaricarlo.
+              </p>
+              <p class="field-error" id="err-modulo"></p>
+            </div>
+          </fieldset>
+
           <p class="hint hint-global">
             <i class="fa-solid fa-circle-info"></i>
             Tutti i nomi vanno inseriti con <b>nome e cognome per esteso</b>: niente soprannomi, diminutivi o solo nome.
@@ -114,7 +139,7 @@
           <!-- ============ ALLENATORI ============ -->
           <fieldset class="form-group">
             <legend>Allenatori <span class="req-mark">*</span></legend>
-            <p class="hint">Almeno <b>1 allenatore</b> è obbligatorio.</p>
+            <p class="hint">Almeno <b>1 allenatore</b> è obbligatorio: gli altri due sono facoltativi.</p>
             <div class="persone-list" id="lista-allenatori"></div>
             <p class="group-error" id="err-allenatori"></p>
           </fieldset>

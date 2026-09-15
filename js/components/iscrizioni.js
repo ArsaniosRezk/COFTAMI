@@ -46,6 +46,19 @@ function mappaNomi(persone) {
   }, {});
 }
 
+// L'URL arriva da un modulo pubblico: accettiamo solo veri link http(s)
+function linkSicuro(url) {
+  if (typeof url !== "string") return null;
+  try {
+    const analizzato = new URL(url);
+    return analizzato.protocol === "https:" || analizzato.protocol === "http:"
+      ? url
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 function conteggioPersone(iscrizione) {
   return {
     responsabili: comeLista(iscrizione.Responsabili).length,
@@ -282,6 +295,9 @@ function creaCard(iscrizione) {
     `<span title="Allenatori"><i class="fa-solid fa-clipboard-user"></i> ${conteggi.allenatori} all.</span>` +
     `<span title="Giocatori"><i class="fa-solid fa-futbol"></i> ${conteggi.giocatori} giocatori</span>` +
     `<span title="Arbitri"><i class="fa-solid fa-flag"></i> ${conteggi.arbitri} arbitri</span>` +
+    (linkSicuro(iscrizione.ModuloFirmato?.Url)
+      ? '<span title="Modulo di Partecipazione allegato"><i class="fa-solid fa-paperclip"></i> modulo</span>'
+      : '<span class="modulo-mancante" title="Modulo di Partecipazione mancante"><i class="fa-solid fa-triangle-exclamation"></i> modulo mancante</span>') +
     `<span class="data-invio">${iscrizione.OraInvio ? formatDateTime(iscrizione.OraInvio) : ""}</span>`;
 
   intestazione.appendChild(titolo);
@@ -304,6 +320,7 @@ function creaCard(iscrizione) {
   dettaglio.appendChild(
     creaTabellaPersone("Arbitri", comeLista(iscrizione.Arbitri))
   );
+  dettaglio.appendChild(creaSezioneModulo(iscrizione.ModuloFirmato));
 
   const azioni = document.createElement("div");
   azioni.className = "iscrizione-azioni";
@@ -338,6 +355,39 @@ function creaCard(iscrizione) {
   });
 
   return card;
+}
+
+function creaSezioneModulo(modulo) {
+  const sezione = document.createElement("div");
+  sezione.className = "dettaglio-sezione";
+
+  const intestazione = document.createElement("h4");
+  intestazione.textContent = "Modulo di Partecipazione";
+  sezione.appendChild(intestazione);
+
+  const url = linkSicuro(modulo?.Url);
+
+  if (!url) {
+    const vuoto = document.createElement("p");
+    vuoto.className = "dettaglio-vuoto";
+    vuoto.textContent = "Nessun modulo firmato allegato.";
+    sezione.appendChild(vuoto);
+    return sezione;
+  }
+
+  const link = document.createElement("a");
+  link.className = "modulo-link";
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.innerHTML = '<i class="fa-solid fa-file-arrow-down"></i>';
+
+  const nome = document.createElement("span");
+  nome.textContent = modulo.NomeFile || "Scarica il modulo firmato";
+  link.appendChild(nome);
+
+  sezione.appendChild(link);
+  return sezione;
 }
 
 function creaTabellaPersone(titolo, persone) {
