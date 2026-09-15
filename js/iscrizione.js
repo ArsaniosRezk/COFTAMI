@@ -520,7 +520,7 @@ async function inviaIscrizione(event) {
 
     const confermaEl = document.getElementById("conferma-testo");
     confermaEl.textContent =
-      `Per completare l'iscrizione, riceverai istruzioni per versare la quota entro data da decidere.`+
+      `Per completare l'iscrizione, riceverai istruzioni per versare la quota entro data da definirsi.`+
       " Per qualsiasi modifica scrivi a info@coftamilano.com.";
 
     document.getElementById("iscrizione-form").classList.add("hidden");
