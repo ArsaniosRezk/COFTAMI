@@ -103,9 +103,7 @@ async function showMatches(selectedGiornata) {
     }
 
     // Aggiungi un pulsante per tornare alla lista delle partite
-    const backButton = document.createElement("button");
-    backButton.innerText = "⮪";
-    backButton.classList.add("back-button");
+    const backButton = createBackButton();
     backButton.addEventListener("click", () => {
         matchesDiv.remove(); // Rimuovi i dettagli della partita
         selectMatchday();
@@ -150,16 +148,20 @@ async function showMatchDetails(match, selectedGiornata) {
     homeSection.appendChild(homeTeamNameEl);
     const homeTeamGoalsInput = document.createElement("input");
     homeTeamGoalsInput.type = "number";
+    homeTeamGoalsInput.inputMode = "numeric";
     homeTeamGoalsInput.value = homeGoals;
     homeSection.appendChild(homeTeamGoalsInput);
+    addStepper(homeTeamGoalsInput, "0");
 
     const awayTeamNameEl = document.createElement("span");
     awayTeamNameEl.innerText = awayTeam;
     awaySection.appendChild(awayTeamNameEl);
     const awayTeamGoalsInput = document.createElement("input");
     awayTeamGoalsInput.type = "number";
+    awayTeamGoalsInput.inputMode = "numeric";
     awayTeamGoalsInput.value = awayGoals;
     awaySection.appendChild(awayTeamGoalsInput);
+    addStepper(awayTeamGoalsInput, "0");
 
     matchTitle.appendChild(homeSection);
     matchTitle.appendChild(awaySection);
@@ -200,9 +202,7 @@ async function showMatchDetails(match, selectedGiornata) {
         awayScorersObj
     );
 
-    const backButton = document.createElement("button");
-    backButton.innerText = "⮪";
-    backButton.classList.add("back-button");
+    const backButton = createBackButton();
     backButton.addEventListener("click", () => {
         matchDetailsDiv.remove();
         matchesContent.style.alignItems = "center";
@@ -224,6 +224,35 @@ async function showMatchDetails(match, selectedGiornata) {
     matchDetailsDiv.appendChild(buttonsDiv);
 }
 
+function createBackButton() {
+    const backButton = document.createElement("button");
+    backButton.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+    backButton.setAttribute("aria-label", "Indietro");
+    backButton.classList.add("back-button");
+    return backButton;
+}
+
+// Pulsanti − e + attorno a un campo gol (visibili solo su smartphone, vedi partiteM.css).
+// Restano fratelli dell'input: saveEditedMatch legge il nome da input.parentNode
+function addStepper(input, emptyValue = "") {
+    const createStep = (label, text, delta) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "stepper-btn";
+        button.textContent = text;
+        button.setAttribute("aria-label", label);
+        button.addEventListener("click", () => {
+            const value = Math.max(0, (parseInt(input.value) || 0) + delta);
+            // Senza gol il campo torna vuoto, così resta visibile il placeholder
+            input.value = value === 0 ? emptyValue : value;
+        });
+        return button;
+    };
+
+    input.before(createStep("Togli un gol", "−", -1));
+    input.after(createStep("Aggiungi un gol", "+", 1));
+}
+
 // Funzione per popolare i giocatori e i gol segnati
 function populatePlayers(container, players, opponentTeamName, scorers = {}) {
     container.innerHTML = "";
@@ -237,11 +266,13 @@ function populatePlayers(container, players, opponentTeamName, scorers = {}) {
 
         const goalsInput = document.createElement("input");
         goalsInput.type = "number";
+        goalsInput.inputMode = "numeric";
         goalsInput.min = "0";
         goalsInput.placeholder = "G";
         goalsInput.value = scorers[player] || "";
         playerDiv.appendChild(playerName);
         playerDiv.appendChild(goalsInput);
+        addStepper(goalsInput);
         container.appendChild(playerDiv);
     });
 
@@ -258,9 +289,11 @@ function populatePlayers(container, players, opponentTeamName, scorers = {}) {
         ownGoalsInput.type = "number";
         ownGoalsInput.min = "0";
         ownGoalsInput.placeholder = "A";
+        ownGoalsInput.inputMode = "numeric";
         ownGoalsInput.value = scorers.AutogolOspite || "";
         ownGoalDiv.appendChild(ownGoal);
         ownGoalDiv.appendChild(ownGoalsInput);
+        addStepper(ownGoalsInput);
     } else if (container.id === "match-away-scorers-div") {
         ownGoal.innerHTML = `<span>Autogol di ${String(
             opponentTeamName || ""
@@ -269,9 +302,11 @@ function populatePlayers(container, players, opponentTeamName, scorers = {}) {
         ownGoalsInput.type = "number";
         ownGoalsInput.min = "0";
         ownGoalsInput.placeholder = "A";
+        ownGoalsInput.inputMode = "numeric";
         ownGoalsInput.value = scorers.AutogolCasa || "";
         ownGoalDiv.appendChild(ownGoal);
         ownGoalDiv.appendChild(ownGoalsInput);
+        addStepper(ownGoalsInput);
     }
 
     container.appendChild(ownGoalDiv);

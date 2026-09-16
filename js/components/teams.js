@@ -220,6 +220,19 @@ function showTeamInfo(teamName, teamData) {
     }
     teamInfoContainer.innerHTML = "";
 
+    // Torna all'elenco delle squadre
+    const toolbar = document.createElement("div");
+    toolbar.id = "team-info-toolbar";
+
+    const backButton = document.createElement("button");
+    backButton.classList.add("back-button");
+    backButton.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Squadre';
+    backButton.addEventListener("click", () =>
+        document.getElementById("nav-squadre")?.click()
+    );
+    toolbar.appendChild(backButton);
+    teamInfoContainer.appendChild(toolbar);
+
     // INFO SQUADRA
     const abbreviatedTeamName = teamName.replace(/_/g, ".");
     const coaches = teamData.Allenatori || {};
@@ -418,6 +431,9 @@ function editTeamInfo(teamName, teamData) {
     editContainer.appendChild(saveButton);
 
     teamInfoContainer.appendChild(editContainer);
+
+    // Su smartphone il modulo compare sotto la scheda, fuori dallo schermo
+    editContainer.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // Funzione per salvare le modifiche della squadra su Firebase

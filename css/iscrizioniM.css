@@ -306,21 +306,146 @@
 /* --------- MOBILE --------- */
 @media (max-width: 1024px) {
   #iscrizioni-content {
-    padding: 15px;
+    gap: 14px;
+    padding: 16px;
   }
 
-  .iscrizioni-controlli {
+  #iscrizioni-toolbar {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  /* Riepilogo come tre contatori affiancati */
+  .iscrizioni-riepilogo {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
     width: 100%;
+    font-size: 0.72rem;
+    text-align: center;
+  }
+
+  .iscrizioni-riepilogo span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    background-color: var(--tertiary);
+    color: var(--white-50);
+  }
+
+  .iscrizioni-riepilogo b {
+    font-size: 1.2rem;
+  }
+
+  /* Riga 1: divisione + ricerca. Riga 2: Esporta, Converti, Ricarica */
+  .iscrizioni-controlli {
+    display: grid;
+    grid-template-columns: 1fr 1fr 48px;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .iscrizioni-controlli .iscrizioni-select {
+    height: 44px;
+    padding: 0 6px;
   }
 
   .iscrizioni-ricerca {
-    flex: 1;
-    min-width: 140px;
+    grid-column: 2 / -1;
+    min-width: 0;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .custom-button.iscrizioni-azione {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 6px;
+    overflow: hidden;
+    font-size: 0.8rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .iscrizioni-gruppo-titolo {
+    margin-top: 6px;
+  }
+
+  .iscrizione-header {
+    padding: 14px;
+    gap: 8px;
+  }
+
+  .iscrizione-header:hover {
+    background-color: transparent;
+  }
+
+  .iscrizione-header:active {
+    background-color: var(--tertiary);
+  }
+
+  .nome-squadra {
+    font-size: 1rem;
   }
 
   .iscrizione-meta {
+    width: 100%;
     font-size: 0.78rem;
+    gap: 6px 12px;
+  }
+
+  .iscrizione-meta .data-invio {
+    margin-left: auto;
+  }
+
+  .iscrizione-dettaglio {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 16px 14px;
+  }
+
+  .dettaglio-lista li {
+    align-items: center;
+    min-height: 44px;
+    padding: 4px 0;
+  }
+
+  /* Il numero diventa un pulsante "chiama" facile da toccare */
+  .persona-tel {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background-color: var(--tertiary);
+  }
+
+  .persona-tel:hover {
+    text-decoration: none;
+  }
+
+  /* Numero mancante: nessun pulsante da premere */
+  .persona-tel[href="tel:"] {
+    background-color: transparent;
+    pointer-events: none;
+  }
+
+  .modulo-link {
+    min-height: 44px;
+  }
+
+  .iscrizione-azioni {
+    flex-direction: column;
+    align-items: stretch;
     gap: 10px;
+  }
+
+  .iscrizione-azioni .custom-button {
+    min-height: 48px;
+    font-size: 0.95rem;
+  }
+
+  .iscrizione-info-conversione {
+    text-align: center;
   }
 
   .button-elimina {

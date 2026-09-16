@@ -375,8 +375,8 @@ table tbody tr:last-child {
 
 @media (max-width: 1024px) {
     #dashboard-content {
-        padding: 10px;
-        gap: 20px;
+        padding: 16px;
+        gap: 24px;
     }
 
     /* 1. CONTROLS CARD */
@@ -388,8 +388,8 @@ table tbody tr:last-child {
     .dashboard-controls-card {
         flex-direction: column;
         align-items: stretch;
-        gap: 15px;
-        padding: 20px;
+        gap: 16px;
+        padding: 16px;
         width: 100%;
     }
 
@@ -397,7 +397,7 @@ table tbody tr:last-child {
     .control-group {
         flex-direction: column;
         width: 100%;
-        gap: 15px;
+        gap: 12px;
     }
 
     /* Matchday Selector Row */
@@ -406,18 +406,57 @@ table tbody tr:last-child {
         justify-content: space-between;
     }
 
-    /* Settings Group: Stacked, but each item is a Row (Label - Switch) */
+    #matchday-to-show-input {
+        width: 72px;
+        height: 48px;
+        font-size: 1.2rem;
+    }
+
+    /* Settings Group: una riga per impostazione, tutta la riga è toccabile */
     .settings-group {
         flex-direction: column;
         width: 100%;
-        gap: 15px;
+        gap: 0;
+        padding-top: 4px;
+        border-top: 1px solid var(--divider-color);
     }
 
     .setting-item {
         flex-direction: row;
-        /* Horizontal layout for Label + Switch */
         justify-content: space-between;
+        align-items: center;
         width: 100%;
+        min-height: 56px;
+        border-bottom: 1px solid var(--divider-color);
+    }
+
+    .setting-item:last-child {
+        border-bottom: none;
+    }
+
+    .setting-label {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .modern-switch {
+        width: 56px;
+        height: 32px;
+    }
+
+    .slider:before {
+        width: 26px;
+        height: 26px;
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(24px);
+    }
+
+    .dashboard-select {
+        height: 40px;
+        padding: 0 16px;
+        font-size: 16px;
     }
 
     .vertical-divider {
@@ -427,10 +466,17 @@ table tbody tr:last-child {
     /* Save Button Full Width */
     .custom-button {
         width: 100%;
+        min-height: 48px;
         padding: 12px;
     }
 
-    /* 2. RANKINGS & TABLES (Matching tabelle.css) */
+    .custom-button:hover {
+        transform: none;
+        color: var(--primary);
+        background-color: var(--mainText);
+    }
+
+    /* 2. RANKINGS & TABLES */
     #rankings {
         flex-direction: column;
         width: 100%;
@@ -442,23 +488,24 @@ table tbody tr:last-child {
         overflow-x: auto;
     }
 
-    /* EXACT STYLES FROM tabelle.css for Mobile */
+    caption {
+        font-size: 1.5rem;
+        margin: 6px 0 12px 0;
+    }
+
     table {
-        font-size: 0.55rem;
-        /* Matches tabelle.css mobile size */
+        font-size: 0.8rem;
         width: 100%;
         min-width: unset;
-        /* Removing forced min-width to let it behave like valid liquid table */
     }
 
     table th {
-        font-size: 1rem;
-        /* Matches tabelle.css mobile */
+        font-size: 1.1rem;
         padding: 8px 5px;
     }
 
     table td {
-        padding: 8px 5px;
+        padding: 10px 5px;
     }
 
     /* Classifica Squadre Columns */
@@ -496,9 +543,11 @@ table tbody tr:last-child {
         max-width: 115px;
     }
 
-    /* Pagination Matches tabelle.css */
+    /* Paginazione: pulsanti grandi abbastanza per il dito */
     .pagination a {
-        font-size: 0.45rem;
-        padding: 5px 8px;
+        min-width: 40px;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        text-align: center;
     }
 }
