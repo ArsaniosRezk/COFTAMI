@@ -1,6 +1,7 @@
 import { classificaGirone } from "./components/standings.js";
 import { faseFinale } from "./components/final-phase.js";
 import { prossimaGiornata } from "./components/calendar.js";
+import { gestisciAttesaTorneo } from "./components/pre-torneo.js";
 import { getData, ref, db, get } from "./firebase.js";
 import { maintenanceGuard } from "./maintenance-guard.js";
 
@@ -9,6 +10,10 @@ import { maintenanceGuard } from "./maintenance-guard.js";
 export async function sequenzaEsecuzione() {
   // 1. Check Guard FIRST. If maintenance is on, this throws and stops everything.
   await maintenanceGuard();
+
+  // 2. Se il torneo dell'edizione corrente non è ancora iniziato mostra
+  // l'avviso d'attesa e non caricare classifica e prossima giornata.
+  if (await gestisciAttesaTorneo()) return;
 
   const settingsRef = ref(db, "Impostazioni");
   try {

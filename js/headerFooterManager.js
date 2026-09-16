@@ -1,4 +1,4 @@
-import { ref, get, db } from "./firebase.js";
+import { paginaCorrente, nomePagina } from "./utils/percorso.js";
 
 // HEADER E FOOTER //
 
@@ -143,16 +143,15 @@ customElements.define("my-header", MyHeader);
 customElements.define("my-footer", MyFooter);
 
 // Active Page //
+// Confronto sui nomi normalizzati: l'evidenziazione funziona sia su
+// /campionato.html sia su /campionato.
 const navLinkEls = document.querySelectorAll(".nav-link");
-const windowPathname = window.location.pathname;
+const paginaAttiva = paginaCorrente();
 
 navLinkEls.forEach((navLinkEl) => {
-  const navLinkPathname = new URL(navLinkEl.href).pathname;
+  const paginaLink = nomePagina(new URL(navLinkEl.href).pathname);
 
-  if (
-    windowPathname === navLinkPathname ||
-    (windowPathname === "/" && navLinkPathname === "/")
-  ) {
+  if (paginaAttiva === paginaLink || (paginaAttiva === "" && paginaLink === "")) {
     navLinkEl.classList.add("active");
   }
 });
@@ -174,35 +173,9 @@ import { maintenanceGuard } from "./maintenance-guard.js";
 })();
 
 // EDITION SYNC CHECK (Runs on every page load)
-(async function syncEdition() {
-  try {
-    const settingsRef = ref(db, "Impostazioni");
-    const snapshot = await get(settingsRef);
+import { sincronizzaEdizione } from "./edition-sync.js";
 
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      // Ensure it's a string for comparison
-      const serverEdition = String(data.edizioneCorrente || "2025");
-      const localEdition = localStorage.getItem("site_edition");
-
-      console.log(`[EditionSync] Server: ${serverEdition} (${typeof serverEdition}), Local: ${localEdition} (${typeof localEdition})`);
-
-      // If local is missing or different, update and reload
-      if (localEdition !== serverEdition) {
-        console.log(`[EditionSync] Updating: ${localEdition} -> ${serverEdition}`);
-        localStorage.setItem("site_edition", serverEdition);
-
-        // Reload to apply changes (unless we are just initializing for the first time?)
-        // If it's the very first visit, we don't want to loop if the logic uses defaults.
-        // But here we are explicit. 
-        // Reload to apply changes immediately
-        location.reload();
-      }
-    }
-  } catch (error) {
-    console.error("Edition Sync Failed:", error);
-  }
-})();
+sincronizzaEdizione();
 
 // SERVICE WORKER REGISTRATION (Cache)
 document.addEventListener("DOMContentLoaded", () => {

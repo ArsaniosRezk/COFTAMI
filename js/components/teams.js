@@ -8,6 +8,7 @@ import {
 } from "../firebase.js";
 import { isMobileDevice } from "../utils/device.js";
 import { capitalize } from "../utils/formatters.js";
+import { mostraAvvisoVuoto } from "./pre-torneo.js";
 
 /*
 ===================================
@@ -95,6 +96,10 @@ export async function visualizzaSquadreConMembri() {
         }
     } else {
         console.log("Nessuna squadra trovata nel database.");
+        mostraAvvisoVuoto(
+            "teams-container",
+            "Le squadre iscritte saranno pubblicate qui a breve."
+        );
     }
 }
 

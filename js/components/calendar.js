@@ -10,6 +10,13 @@ import {
 import { edition } from "../divisionAndVariables.js";
 import { convertiDataOra } from "../utils/formatters.js";
 import { showOverlayMatchResult } from "./match-overlay.js";
+import { mostraAvvisoVuoto } from "./pre-torneo.js";
+
+// Nasconde l'istruzione "Premere su una partita..." quando non c'è nulla da premere
+function nascondiIstruzione() {
+    const istruzione = document.querySelector(".instruction");
+    if (istruzione) istruzione.style.display = "none";
+}
 
 /*
 ===================================
@@ -308,6 +315,11 @@ export async function recuperaCalendario() {
         });
     } else {
         console.log("Nessun calendario trovato nel database.");
+        nascondiIstruzione();
+        mostraAvvisoVuoto(
+            "giornate",
+            "Il calendario delle partite non è ancora disponibile."
+        );
     }
 }
 
@@ -350,6 +362,11 @@ export async function prossimaGiornata() {
 
             const matches = calendarSnapshot;
             rappresentaGiornata(matchdayToShow, matches, teamsSnapshot, calendarDiv);
+        } else {
+            mostraAvvisoVuoto(
+                "prossima-giornata",
+                "Le partite della prossima giornata non sono ancora state pubblicate."
+            );
         }
 
         const instructionElement = document.querySelector(".instruction");
@@ -368,6 +385,13 @@ export async function prossimaGiornata() {
         if (instructionElement) {
             instructionElement.style.display = hasResults ? "block" : "none";
         }
+    } else {
+        // Nessuna giornata impostata: lo scheletro resterebbe appeso
+        nascondiIstruzione();
+        mostraAvvisoVuoto(
+            "prossima-giornata",
+            "Le partite della prossima giornata non sono ancora state pubblicate."
+        );
     }
 }
 

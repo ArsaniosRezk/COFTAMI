@@ -3,6 +3,7 @@ import { classificaGirone, classificaMarcatori } from "/js/components/standings.
 import { faseFinale } from "/js/components/final-phase.js";
 import { visualizzaSquadreConMembri } from "/js/components/teams.js";
 import { ref, get, update, db } from "/js/firebase.js";
+import { impostaEdizioneLocale } from "/js/edition-sync.js";
 
 export const initDashboard = async () => {
   // Codice di inizializzazione per la sezione dashboard
@@ -61,8 +62,13 @@ export const initDashboard = async () => {
   });
 
   if (editionSelect) {
-    editionSelect.addEventListener("change", () => {
-      update(settingsRef, { edizioneCorrente: editionSelect.value });
+    editionSelect.addEventListener("change", async () => {
+      await update(settingsRef, { edizioneCorrente: editionSelect.value });
+
+      // I moduli già caricati hanno letto l'edizione vecchia: senza ricarica
+      // il gestionale continuerebbe a scrivere sull'annata precedente
+      impostaEdizioneLocale(editionSelect.value);
+      location.reload();
     });
   }
 };
