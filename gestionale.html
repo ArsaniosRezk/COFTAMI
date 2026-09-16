@@ -1,13 +1,16 @@
-<html lang="en">
+<html lang="it">
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#377d5d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="COFTA Gestionale" />
   <title>Gestionale</title>
   <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
-  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="apple-touch-icon" href="/assets/images/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -29,20 +32,24 @@
         <option value="Superiori">Superiori</option>
         <option value="Giovani">Giovani</option>
       </select>
+      <!-- Su smartphone questa lista diventa la barra di navigazione in basso -->
       <ul class="nav-links">
-        <li><a href="#" id="nav-dashboard">Dashboard</a></li>
-        <li><a href="#" id="nav-iscrizioni">Iscrizioni</a></li>
-        <li><a href="#" id="nav-squadre">Squadre</a></li>
-        <li><a href="#" id="nav-calendario">Calendario</a></li>
-        <li><a href="#" id="nav-report">Report</a></li>
-        <li><a href="#" id="nav-partite">Partite</a></li>
+        <li><a href="#dashboard" id="nav-dashboard"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a></li>
+        <li><a href="#iscrizioni" id="nav-iscrizioni"><i class="fa-solid fa-clipboard-list"></i><span>Iscrizioni</span></a></li>
+        <li><a href="#squadre" id="nav-squadre"><i class="fa-solid fa-users"></i><span>Squadre</span></a></li>
+        <li><a href="#calendario" id="nav-calendario"><i class="fa-solid fa-calendar-days"></i><span>Calendario</span></a></li>
+        <li><a href="#report" id="nav-report"><i class="fa-solid fa-file-lines"></i><span>Report</span></a></li>
+        <li><a href="#partite" id="nav-partite"><i class="fa-solid fa-futbol"></i><span>Partite</span></a></li>
       </ul>
     </nav>
     <header>
-      <i class="fa-solid fa-bars hamburger-menu" id="hamburger-menu"></i>
       <h1 id="current-section">Dashboard</h1>
+      <!-- Solo smartphone: comanda il select #division, che resta l'unica fonte del valore -->
+      <div class="division-switch" id="division-switch" role="group" aria-label="Divisione">
+        <button type="button" data-division="Superiori">Superiori</button>
+        <button type="button" data-division="Giovani">Giovani</button>
+      </div>
     </header>
-    <div class="overlay" id="nav-overlay"></div>
     <main>
       <div id="content"></div>
     </main>

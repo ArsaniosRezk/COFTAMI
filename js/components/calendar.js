@@ -212,6 +212,8 @@ async function editCalendar() {
                     .forEach((button) => button.classList.remove("active"));
                 // Aggiungi la classe active al pulsante cliccato
                 event.target.classList.add("active");
+                // Su smartphone le giornate scorrono in orizzontale: porta in vista quella scelta
+                event.target.scrollIntoView({ block: "nearest", inline: "center" });
 
                 const selectedGiornata = event.target.getAttribute("matchday-number");
 

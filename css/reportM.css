@@ -109,3 +109,153 @@ table td:nth-child(7) {
   width: 25px;
   height: 25px;
 }
+
+
+/* =========================================
+   SMARTPHONE: ogni referto diventa una scheda
+   ========================================= */
+
+@media (max-width: 1024px) {
+  #report-content {
+    display: block;
+    padding: 16px;
+  }
+
+  #scroll-container {
+    height: auto;
+    overflow: visible;
+  }
+
+  #scroll-container table,
+  #scroll-container tbody,
+  #scroll-container tr,
+  #scroll-container td {
+    display: block;
+    width: 100%;
+    max-width: none;
+  }
+
+  #scroll-container table {
+    font-size: 0.9rem;
+    background: transparent;
+  }
+
+  #scroll-container thead {
+    display: none;
+  }
+
+  #scroll-container tbody {
+    background: transparent;
+  }
+
+  #scroll-container tr {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+    padding: 12px 14px 4px;
+    border: 1px solid var(--glass-border);
+    border-left: 4px solid var(--mainText);
+    border-radius: 12px;
+    background-color: var(--secondary);
+  }
+
+  /* Referti ancora da confermare: bordo arancione per trovarli a colpo d'occhio */
+  #scroll-container tr:has(.not-confirmed) {
+    border-left-color: var(--orange);
+  }
+
+  #scroll-container td {
+    order: 3;
+    padding: 8px 0;
+    overflow: visible;
+    border-top: 1px solid var(--white-20);
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  #scroll-container td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 3px;
+    color: var(--mainText);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  #scroll-container td:empty {
+    display: none;
+  }
+
+  /* Data in alto, poi la partita, poi l'arbitro */
+  #scroll-container td:nth-child(1) {
+    order: 0;
+    padding: 0 56px 6px 0;
+    border-top: none;
+    color: var(--white-50);
+    font-size: 0.78rem;
+  }
+
+  #scroll-container td:nth-child(3) {
+    order: 1;
+    padding-right: 56px;
+    border-top: none;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  #scroll-container td:nth-child(2) {
+    order: 2;
+  }
+
+  #scroll-container td:nth-child(1)::before,
+  #scroll-container td:nth-child(3)::before,
+  #scroll-container td:nth-child(7)::before {
+    display: none;
+  }
+
+  #scroll-container td:nth-child(3) div:last-child {
+    color: var(--white-50);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  #scroll-container td:nth-child(6) {
+    text-align: left;
+  }
+
+  /* Pulsante di conferma in alto a destra, grande quanto un dito */
+  #scroll-container td:nth-child(7) {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: auto;
+    padding: 0;
+    border: none;
+  }
+
+  .confirm-button,
+  .confirm-button:hover {
+    width: 44px;
+    height: 44px;
+    border: 2px solid transparent;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .confirm-button.not-confirmed,
+  .confirm-button.not-confirmed:hover {
+    border-color: var(--orange);
+    background-color: var(--white);
+    color: var(--orange);
+  }
+
+  .confirm-button.confirmed,
+  .confirm-button.confirmed:hover {
+    background-color: var(--mainText);
+    color: var(--darkText);
+  }
+}

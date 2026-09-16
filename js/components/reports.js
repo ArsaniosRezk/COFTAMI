@@ -162,9 +162,19 @@ async function loadMatchReports() {
         }
 
         confermaButton.innerHTML = "✔";
-        confermaButton.onclick = () => confermaReport(giornata, report);
+        confermaButton.setAttribute("aria-label", "Conferma referto");
+        confermaButton.onclick = async () => {
+            if (await confermaReport(giornata, report)) {
+                confermaButton.classList.replace("not-confirmed", "confirmed");
+            }
+        };
         conferma.appendChild(confermaButton);
         row.appendChild(conferma);
+
+        // Su smartphone ogni riga diventa una scheda: le celle mostrano l'intestazione
+        row.querySelectorAll("td").forEach((cella, indice) => {
+            cella.dataset.label = headers[indice];
+        });
 
         tbody.appendChild(row);
     }
@@ -477,10 +487,12 @@ async function confermaReport(giornata, report) {
         alert(
             `Dati della partita per ${division}, giornata ${giornata}, partita ${matchKey} aggiornati con successo.`
         );
+        return true;
     } catch (error) {
         console.error("Errore nell'aggiornamento dei dati:", error);
         alert(
             "Si è verificato un errore nell'aggiornamento dei dati della partita."
         );
+        return false;
     }
 }

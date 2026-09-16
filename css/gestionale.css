@@ -197,132 +197,212 @@ button:hover {
 }
 
 /* =========================================
-   RESPONSIVE / MOBILE LAYOUT
+   SMARTPHONE E TABLET (< 1024px)
+   Header compatto in alto, contenuto che scorre,
+   barra di navigazione in basso a portata di pollice
    ========================================= */
 
-/* DESKTOP DEFAULTS */
-.hamburger-menu {
+/* Icone del menu e switch divisione: solo su smartphone */
+.nav-links a i,
+.division-switch {
   display: none;
-  font-size: 1.8rem;
-  /* Larger icon */
-  color: var(--mainText);
-  cursor: pointer;
-  margin-right: 20px;
-  padding: 10px;
-  /* Touch target */
-  transition: transform 0.2s ease;
 }
 
-.hamburger-menu:active {
-  transform: scale(0.95);
-}
-
-/* OVERLAY (for Sidebar on Mobile) */
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  /* Darker overlay */
-  z-index: 1098;
-  /* Higher than sticky headers */
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* TABLET & MOBILE (< 1024px) */
 @media (max-width: 1024px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   .grid {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh;
   }
 
-  /* Sticky Header */
+  /* HEADER */
   header {
-    width: 100%;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    /* Ensure header is on top of content */
-    padding: 0 15px;
-    height: 70px;
-    /* Slightly smaller header on mobile */
-  }
-
-  /* Show Hamburger */
-  .hamburger-menu {
-    display: block;
+    order: 1;
+    flex-shrink: 0;
+    gap: 12px;
+    height: auto;
+    min-height: 56px;
+    padding: calc(env(safe-area-inset-top) + 8px) 16px 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
   }
 
   #current-section {
-    font-size: 1.4rem;
+    min-width: 0;
     margin: 0;
+    font-size: 1.3rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  /* SLIDE-OUT DRAWER NAV */
-  nav {
-    position: fixed;
-    top: 0;
-    left: -280px;
-    /* Hidden off-screen */
-    width: 260px;
-    height: 100vh;
-    z-index: 1099;
-    /* Highest z-index */
-    background-color: var(--tertiary);
-    /* Ensure bg color */
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    transform: translateX(0);
-    /* Logic change: use transform instead of left? left is easier for now */
-
+  .division-switch {
     display: flex;
-    flex-direction: column;
-    padding-top: 20px;
+    flex-shrink: 0;
+    padding: 3px;
+    border-radius: 999px;
+    background-color: var(--tertiary);
   }
 
-  nav.active {
-    left: 0;
+  .division-switch button {
+    min-height: 34px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--white-50);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
   }
 
-  .box-logo {
-    height: 100px;
-    margin-bottom: 20px;
+  .division-switch button:hover {
+    border: none;
+    background: transparent;
+    color: var(--white-50);
+  }
+
+  .division-switch button.selected {
+    background-color: var(--mainText);
+    color: var(--darkText);
+  }
+
+  /* CONTENUTO */
+  main {
+    order: 2;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* BARRA DI NAVIGAZIONE IN BASSO */
+  nav {
+    order: 3;
+    flex-shrink: 0;
+    width: 100%;
+    overflow: visible;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+  }
+
+  nav .box-logo,
+  nav #division {
+    display: none;
+  }
+
+  nav ul {
+    display: flex;
   }
 
   nav ul li {
-    margin: 20px 10px;
-    /* Compact spacing */
-  }
-
-  select {
-    margin-left: 20px;
-  }
-
-  /* MAIN CONTENT SCROLL */
-  main {
     flex: 1;
-    overflow-y: auto;
-    width: 100%;
-    padding-top: 0;
+    min-width: 0;
+    margin: 0;
+    font-size: inherit;
   }
 
-  /* Enable Overlay on Mobile */
-  .overlay {
+  nav ul li a {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 9px 0 7px;
+    color: var(--white-50);
+    font-size: 0.62rem;
+    font-weight: 600;
+  }
+
+  nav ul li a span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nav-links a i {
     display: block;
+    font-size: 1.25rem;
+  }
+
+  nav ul li a.active {
+    color: var(--mainText);
+  }
+
+  nav ul li a.active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 25%;
+    right: 25%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background-color: var(--mainText);
+  }
+
+  /* Schermi molto stretti: etichette più piccole per non troncare "Calendario" */
+  @media (max-width: 359px) {
+    header {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    #current-section {
+      font-size: 1.1rem;
+    }
+
+    .division-switch button {
+      padding: 0 9px;
+      font-size: 0.72rem;
+    }
+
+    nav ul li a {
+      font-size: 0.54rem;
+      letter-spacing: -0.2px;
+    }
+  }
+
+  /* Con la tastiera aperta la barra sparisce e lascia spazio ai campi */
+  body.keyboard-open nav {
+    display: none;
+  }
+
+  /* Sotto i 16px iOS ingrandisce la pagina quando si tocca un campo */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Sui touch l'hover arancione resterebbe "incollato" dopo il tocco */
+  button:hover {
+    color: inherit;
+    background-color: inherit;
+  }
+
+  .back-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 1.1rem;
   }
 }
 

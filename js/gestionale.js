@@ -45,7 +45,14 @@ document.addEventListener("DOMContentLoaded", () => {
     "partite",
     "report",
   ];
-  let currentSection = "dashboard"; // Traccia la sezione corrente
+
+  const sezioneDaHash = () => {
+    const section = location.hash.slice(1);
+    return sections.includes(section) ? section : "dashboard";
+  };
+
+  // La sezione sta nell'hash: una ricarica (es. cambio edizione) non riporta alla dashboard
+  let currentSection = sezioneDaHash();
 
   const setActiveLink = (section) => {
     sections.forEach((sec) => {
@@ -58,61 +65,81 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  const showSection = (section) => {
+    currentSection = section;
+    loadContent(section);
+    setActiveLink(section);
+    document.getElementById("current-section").textContent =
+      section.charAt(0).toUpperCase() + section.slice(1);
+    document.querySelector("main").scrollTop = 0;
+  };
+
   sections.forEach((section) => {
     document
       .getElementById(`nav-${section}`)
       .addEventListener("click", (event) => {
         event.preventDefault();
-        currentSection = section;
-        loadContent(section);
-        setActiveLink(section);
-        document.getElementById("current-section").textContent =
-          section.charAt(0).toUpperCase() + section.slice(1);
+        // Una voce di cronologia per sezione: il tasto "indietro" del telefono
+        // torna alla sezione precedente invece di uscire dal gestionale
+        if (section !== currentSection) {
+          history.pushState(null, "", `#${section}`);
+        }
+        showSection(section);
       });
   });
 
-  // Aggiungi un event listener per il select
+  window.addEventListener("popstate", () => showSection(sezioneDaHash()));
+
+  // --- DIVISIONE ---
+  // Su smartphone il select è nascosto: i due pulsanti dell'header lo comandano
   const divisionSelect = document.getElementById("division");
-  if (divisionSelect) {
-    divisionSelect.addEventListener("change", () => {
-      // Ricarica la sezione corrente quando cambia il parametro
-      loadContent(currentSection);
+  const divisionSwitch = document.getElementById("division-switch");
+
+  const updateDivisionSwitch = () => {
+    divisionSwitch.querySelectorAll("button").forEach((button) => {
+      const selected = button.dataset.division === divisionSelect.value;
+      button.classList.toggle("selected", selected);
+      button.setAttribute("aria-pressed", selected);
     });
-  }
+  };
 
-  // Load the default section (Dashboard) when the page loads
-  loadContent(currentSection);
-  setActiveLink(currentSection);
+  divisionSwitch.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-division]");
+    if (!button || button.dataset.division === divisionSelect.value) return;
 
-  // --- MOBILE NAVIGATION LOGIC ---
-  const hamburger = document.getElementById("hamburger-menu");
-  const overlay = document.getElementById("nav-overlay");
-  const nav = document.querySelector("nav");
+    divisionSelect.value = button.dataset.division;
+    divisionSelect.dispatchEvent(new Event("change"));
+  });
 
-  if (hamburger && overlay && nav) {
-    // Toggle Menu
-    hamburger.addEventListener("click", () => {
-      nav.classList.toggle("active");
-      overlay.classList.toggle("active");
-    });
+  divisionSelect.addEventListener("change", () => {
+    updateDivisionSwitch();
+    // Ricarica la sezione corrente quando cambia il parametro
+    loadContent(currentSection);
+  });
 
-    // Close on Overlay Click
-    overlay.addEventListener("click", () => {
-      nav.classList.remove("active");
-      overlay.classList.remove("active");
-    });
+  showSection(currentSection);
+  updateDivisionSwitch();
 
-    // Close on Nav Item Click (Mobile UX)
-    const navLinks = document.querySelectorAll(".nav-links a");
-    navLinks.forEach(link => {
-      link.addEventListener("click", () => {
-        if (window.innerWidth <= 1024) { // Only on mobile/tablet
-          nav.classList.remove("active");
-          overlay.classList.remove("active");
-        }
-      });
-    });
-  }
+  // --- TASTIERA SU SMARTPHONE ---
+  // Con la tastiera aperta la barra in basso ruberebbe spazio ai campi
+  const isTextField = (el) =>
+    el instanceof HTMLElement &&
+    el.matches("textarea, input:not([type=checkbox]):not([type=radio])");
+
+  document.addEventListener("focusin", (event) => {
+    if (isTextField(event.target)) {
+      document.body.classList.add("keyboard-open");
+    }
+  });
+
+  document.addEventListener("focusout", () => {
+    // Passando da un campo all'altro il focus resta su un campo: niente sfarfallio
+    setTimeout(() => {
+      if (!isTextField(document.activeElement)) {
+        document.body.classList.remove("keyboard-open");
+      }
+    }, 100);
+  });
 });
 
 // Active Section //

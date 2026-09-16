@@ -253,100 +253,191 @@ textarea {
   padding: 10px;
 }
 
+/* Barra con il pulsante per tornare all'elenco */
+#team-info-toolbar {
+  flex-basis: 100%;
+}
+
+#team-info-toolbar .back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* =========================================
-   RESPONSIVE / MOBILE LAYOUT
+   SMARTPHONE
    ========================================= */
 
 @media (max-width: 768px) {
+  /* Elenco squadre: griglia a due colonne */
   #teams-container {
-    padding: 15px 10px;
-    gap: 15px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 16px;
   }
 
-  /* Cards sizes */
   .team-card,
   #add-team-button {
-    width: 45%;
-    min-width: 140px;
-    max-width: 180px;
-    height: 200px;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: auto;
+    min-height: 180px;
+    padding: 12px 8px;
+    border-radius: 12px;
   }
 
-  /* Image size inside card */
   .team-card img {
-    height: 120px;
-    margin-top: 5px;
+    width: 100%;
+    height: 110px;
+    margin-top: 0;
+    object-fit: contain;
   }
 
-  /* Name container */
   .team-name-div {
     width: 100%;
     height: auto;
-    padding: 5px;
+    padding: 8px 0 0;
     justify-content: center;
   }
 
   .team-name {
     font-size: 0.9rem;
+    overflow-wrap: anywhere;
   }
 
-  /* Add Button Icon */
+  /* Sui touch l'hover arancione resterebbe acceso dopo il tocco */
+  .team-card:hover,
+  #add-team-button:hover {
+    background-color: var(--secondary);
+  }
+
+  .team-card:hover * {
+    background-color: transparent;
+  }
+
+  .team-card:active,
+  #add-team-button:active {
+    background-color: var(--orange);
+  }
+
+  #add-team-button {
+    border: 2px dashed var(--white-20);
+    box-shadow: none;
+  }
+
   #add-team-button i {
     font-size: 2rem;
   }
 
-  /* Team Info Overlay / Details on Mobile */
-  #team-info-container {
-    flex-direction: column;
-    padding: 10px;
-    gap: 20px;
+  /* Nuova squadra: riga intera sotto la griglia */
+  #new-team-div {
+    grid-column: 1 / -1;
     width: 100%;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 12px;
+    background-color: var(--secondary);
   }
 
-  /* VIEW MODE: Logo Card */
+  #new-team-div input {
+    height: 48px;
+    cursor: text;
+  }
+
+  #new-team-div button {
+    min-height: 48px;
+  }
+
+  /* Dettaglio squadra */
+  #team-info-toolbar {
+    flex-basis: auto;
+  }
+
+  #team-info-container {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 12px;
+    width: 100%;
+    padding: 16px;
+  }
+
   #name-and-logo {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
     width: 100%;
     min-height: auto;
-    padding: 20px;
-    align-items: center;
-    gap: 15px;
+    padding: 12px;
+    border-radius: 12px;
   }
 
   #name-and-logo img {
-    width: 150px;
-    height: 150px;
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
   }
 
   #name-and-logo h2 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    text-align: left;
+    overflow-wrap: anywhere;
   }
 
-  /* VIEW MODE: Details Card */
   #team-details {
     width: 100%;
     min-height: auto;
-    padding: 20px;
-    gap: 15px;
+    padding: 16px;
+    gap: 16px;
+    border-radius: 12px;
   }
 
   .team-details-section {
     width: 100%;
     font-size: 0.95rem;
-    word-wrap: break-word;
+    font-weight: 500;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
   }
 
-  /* EDIT MODE: Container */
+  #group-and-penalty {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  #group-div,
+  #penalty-div {
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background-color: var(--tertiary);
+  }
+
+  #team-details button {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 4px;
+    align-self: stretch;
+  }
+
+  /* Modifica squadra */
   #edit-container {
-    padding: 15px;
     width: 100%;
     height: auto;
+    padding: 16px;
+    gap: 12px;
+    border-radius: 12px;
+    scroll-margin-top: 12px;
   }
 
-  /* Stack Edit Area */
   #edit-area {
     flex-direction: column;
-    gap: 15px;
+    gap: 4px;
     width: 100%;
   }
 
@@ -355,38 +446,57 @@ textarea {
     width: 100%;
   }
 
-  /* Inputs & Textareas */
+  #group-penalty-edit-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 12px;
+  }
+
+  /* Etichette sopra, campi sotto: Penalità | Girone */
+  #group-penalty-edit-container label:nth-of-type(1) {
+    grid-area: 1 / 1;
+  }
+
+  #group-penalty-edit-container input:nth-of-type(1) {
+    grid-area: 2 / 1;
+  }
+
+  #group-penalty-edit-container label:nth-of-type(2) {
+    grid-area: 1 / 2;
+  }
+
+  #group-penalty-edit-container input:nth-of-type(2) {
+    grid-area: 2 / 2;
+  }
+
   textarea,
   #group-penalty-edit-container input {
     width: 100%;
-    font-size: 1rem;
     padding: 10px;
     border-radius: 8px;
+    font-size: 16px;
+  }
+
+  #group-penalty-edit-container input {
+    height: 48px;
+  }
+
+  textarea {
+    overflow: auto;
+    font-family: inherit;
+    line-height: 1.4;
+  }
+
+  #coaches-input {
+    height: 72px;
   }
 
   textarea#players-input {
-    height: 150px;
+    height: 200px;
   }
 
-  /* Buttons */
-  #team-details button,
-  #edit-area button {
+  #edit-container > .custom-button {
     width: 100%;
-    margin-top: 15px;
-    padding: 12px;
-    font-size: 1rem;
-    align-self: center;
-  }
-
-  #group-and-penalty {
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-
-  #group-div,
-  #penalty-div {
-    flex-direction: column;
-    gap: 5px;
+    min-height: 48px;
   }
 }
