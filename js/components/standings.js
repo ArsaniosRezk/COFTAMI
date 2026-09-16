@@ -1,4 +1,5 @@
 import { getData, getPaths } from "../firebase.js";
+import { mostraAvvisoVuoto } from "./pre-torneo.js";
 
 /*
 ===================================
@@ -27,6 +28,10 @@ export async function classificaGirone(targetDiv, showGenericTitle = false) {
         const teams = await getData(teamsPath);
         if (!teams) {
             console.log("Nessuna squadra trovata");
+            mostraAvvisoVuoto(
+                containerId,
+                "La classifica sarà disponibile appena verranno pubblicate le squadre."
+            );
             return;
         }
 
@@ -385,6 +390,11 @@ export async function classificaMarcatori(targetDiv) {
     scorersArray.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 
     globalRankingArray = scorersArray;
+
+    if (scorersArray.length === 0) {
+        mostraAvvisoVuoto(containerId, "Ancora nessun gol segnato.");
+        return;
+    }
 
     const rowsPerPage = 10;
     rappresentaClassificaMarcatori(containerId, scorersArray, 1, rowsPerPage);

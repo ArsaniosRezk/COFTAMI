@@ -1,5 +1,6 @@
 import { manutenzione } from "./components/manutenzione.js";
 import { ref, db, get } from "./firebase.js";
+import { paginaCorrente } from "./utils/percorso.js";
 
 /*
     TEMPORANEO (fase di test)
@@ -13,13 +14,7 @@ const PAGINE_ESENTI = ["regolamento-test", "iscrizione-test"];
 
 function paginaEsenteDaManutenzione() {
     // Funziona sia con /iscrizione.html sia con /iscrizione
-    const percorso = window.location.pathname
-        .toLowerCase()
-        .replace(/\.html$/, "")
-        .replace(/\/$/, "");
-    const nomePagina = percorso.substring(percorso.lastIndexOf("/") + 1);
-
-    return PAGINE_ESENTI.includes(nomePagina);
+    return PAGINE_ESENTI.includes(paginaCorrente());
 }
 
 /**

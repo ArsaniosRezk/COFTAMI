@@ -1,4 +1,8 @@
+import { paginaCorrente } from "./utils/percorso.js";
+
 // Edizione Torneo/Anno
+// Il valore viene tenuto allineato a Impostazioni/edizioneCorrente da
+// edition-sync.js, che gira sia sul sito pubblico sia sul gestionale.
 const edition = localStorage.getItem("site_edition") || "2025";
 
 // Definizione variabile e funzioni per gestione divisione
@@ -39,56 +43,49 @@ export {
 };
 
 // Logica per il caricamento delle funzioni
-let sequenzaEsecuzioneModule;
+// I nomi sono normalizzati da paginaCorrente(), quindi valgono sia per
+// /campionato.html sia per /campionato.
+const moduliPerPagina = {
+  "": "./funzioniHome.js", // vale sia per / sia per /index.html
+  campionato: "./funzioniCampionato.js",
+  squadre: "./funzioniSquadre.js",
+  calendario: "./funzioniCalendario.js",
+  "albo-d'oro": "./funzioniAlboOro.js",
+};
 
-switch (window.location.pathname) {
-  case "/":
-    sequenzaEsecuzioneModule = import("./funzioniHome.js");
-    break;
-  case "/index.html":
-    sequenzaEsecuzioneModule = import("./funzioniHome.js");
-    break;
-  case "/campionato.html":
-    sequenzaEsecuzioneModule = import("./funzioniCampionato.js");
-    break;
-  case "/squadre.html":
-    sequenzaEsecuzioneModule = import("./funzioniSquadre.js");
-    break;
-  case "/calendario.html":
-    sequenzaEsecuzioneModule = import("./funzioniCalendario.js");
-    break;
-  case "/albo-d'oro.html":
-    sequenzaEsecuzioneModule = import("./funzioniAlboOro.js");
-    break;
-  case "/regolamento.html":
-  case "/regolamento-test.html":
-  case "/invia-report.html":
-  case "/iscrizione.html":
-  case "/iscrizione-test.html":
-  case "/classifica-completa.html":
-  case "/referti.html":
-  case "/referti-social.html":
-  case "/gestionale.html":
-    // Per queste pagine, non è necessario definire `sequenzaEsecuzioneModule`
-    sequenzaEsecuzioneModule = null;
-    break;
-  default:
-    console.error(
-      "La pagina corrente non ha una funzione sequenzaEsecuzione definita."
-    );
-    sequenzaEsecuzioneModule = null;
-    break;
+// Pagine che non hanno una sequenzaEsecuzione: si caricano da sole
+const pagineSenzaSequenza = [
+  "regolamento",
+  "regolamento-test",
+  "invia-report",
+  "iscrizione",
+  "iscrizione-test",
+  "classifica-completa",
+  "referti",
+  "referti-social",
+  "gestionale",
+];
+
+const pagina = paginaCorrente();
+let sequenzaEsecuzioneModule = null;
+
+if (moduliPerPagina[pagina]) {
+  sequenzaEsecuzioneModule = import(moduliPerPagina[pagina]);
+} else if (!pagineSenzaSequenza.includes(pagina)) {
+  console.error(
+    "La pagina corrente non ha una funzione sequenzaEsecuzione definita."
+  );
 }
 
-const excludedPaths = [
-  "/invia-report.html",
-  "/inviareport",
-  "/classifica-completa.html",
-  "/referti.html",
-  "/referti-social.html",
+const pagineEscluse = [
+  "invia-report",
+  "inviareport",
+  "classifica-completa",
+  "referti",
+  "referti-social",
 ]; // Aggiungi qui la pagina che vuoi escludere
 
-if (!excludedPaths.includes(window.location.pathname)) {
+if (!pagineEscluse.includes(pagina)) {
   document.addEventListener("DOMContentLoaded", function () {
     loadSavedOption();
     const selectedDivision = getSelectedDivision();

@@ -5,6 +5,7 @@ import {
     getPaths,
 } from "../firebase.js";
 import { edition } from "../divisionAndVariables.js";
+import { paginaCorrente } from "../utils/percorso.js";
 import { formatDateTime } from "../utils/formatters.js";
 import { isMobileDevice } from "../utils/device.js";
 
@@ -309,10 +310,10 @@ export async function loadMatchReports2() {
         // Click su riga -> overlay (safe)
         row.addEventListener("click", () => {
             if (isMobileDevice()) {
-                const currentPage = window.location.pathname;
-                if (currentPage === "/referti.html") {
+                const currentPage = paginaCorrente();
+                if (currentPage === "referti") {
                     openOverlay(report, division, giornata);
-                } else if (currentPage === "/referti-social.html") {
+                } else if (currentPage === "referti-social") {
                     openOverlay2(report, division, giornata);
                 }
             }

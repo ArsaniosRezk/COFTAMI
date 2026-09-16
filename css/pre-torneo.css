@@ -1,0 +1,61 @@
+/*
+===================================
+ AVVISO PRE-TORNEO
+ Mostrato su home, campionato, squadre e calendario
+ finché l'edizione corrente non ha ancora squadre caricate.
+===================================
+*/
+
+#avviso-pre-torneo {
+  gap: 18px;
+}
+
+#avviso-pre-torneo .icona-pre-torneo {
+  font-size: 3rem;
+  color: var(--mainText);
+}
+
+#avviso-pre-torneo .testo-pre-torneo {
+  max-width: 520px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+#avviso-pre-torneo .btn-pre-torneo {
+  display: inline-block;
+  padding: 15px 30px;
+
+  background-color: var(--mainText);
+  color: var(--darkText);
+  border-radius: 8px;
+
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+#avviso-pre-torneo .btn-pre-torneo:hover {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+/*
+ Messaggio ridotto, usato dentro le sezioni quando mancano
+ solo alcuni dati (es. squadre caricate ma calendario non ancora).
+*/
+.avviso-vuoto {
+  width: 100%;
+  padding: 25px 15px;
+  color: var(--testoTrasparente);
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* Il titolo è una frase, non un'etichetta di sezione: va contenuto */
+@media (min-width: 992px) {
+  #avviso-pre-torneo .section-title {
+    font-size: 2.8rem;
+    max-width: 700px;
+  }
+}

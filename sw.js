@@ -9,7 +9,7 @@
     di CACHE_NAME (es. da "v1" a "v2").
 */
 
-const CACHE_NAME = "v4";
+const CACHE_NAME = "v6";
 
 // Lista dei file da scaricare subito (Core)
 const ASSETS_TO_CACHE = [
@@ -29,9 +29,13 @@ const ASSETS_TO_CACHE = [
     "/css/iscrizione.css",
     "/css/iscrizioniM.css",
     "/css/dashboard.css",
+    "/css/pre-torneo.css",
     "/css/squadreM.css",
     "/css/tabelle.css",
     "/js/firebase.js",
+    "/js/edition-sync.js",
+    "/js/utils/percorso.js",
+    "/js/components/pre-torneo.js",
     "/js/gestionale.js",
     "/js/iscrizione.js",
     "/assets/images/favicon.svg",
