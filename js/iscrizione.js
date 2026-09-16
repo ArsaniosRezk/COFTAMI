@@ -32,7 +32,7 @@ const NOME_REGEX =
 // Telefono: 8-15 cifre, prefisso internazionale opzionale
 const TELEFONO_REGEX = /^\+?\d{8,15}$/;
 
-// Modulo di Partecipazione firmato: è obbligatorio per poter inviare l'iscrizione
+// MODULO DI PARTECIPAZIONE firmato: è obbligatorio per poter inviare l'iscrizione
 const MODULO_MAX_BYTE = 10 * 1024 * 1024;
 
 // Tipo MIME accettato -> estensione usata per il file su Storage
@@ -131,7 +131,7 @@ function mostraFileScelto() {
 // Restituisce il messaggio di errore, oppure "" se il file va bene
 function erroreModulo(file) {
   if (!file) {
-    return "Allega il Modulo di Partecipazione firmato: senza non possiamo accettare l'iscrizione.";
+    return "Allega il MODULO DI PARTECIPAZIONE firmato: senza non possiamo accettare l'iscrizione.";
   }
   if (!MODULO_TIPI[file.type]) {
     return "Formato non valido: allega il modulo in PDF, JPG o PNG.";

@@ -296,8 +296,8 @@ function creaCard(iscrizione) {
     `<span title="Giocatori"><i class="fa-solid fa-futbol"></i> ${conteggi.giocatori} giocatori</span>` +
     `<span title="Arbitri"><i class="fa-solid fa-flag"></i> ${conteggi.arbitri} arbitri</span>` +
     (linkSicuro(iscrizione.ModuloFirmato?.Url)
-      ? '<span title="Modulo di Partecipazione allegato"><i class="fa-solid fa-paperclip"></i> modulo</span>'
-      : '<span class="modulo-mancante" title="Modulo di Partecipazione mancante"><i class="fa-solid fa-triangle-exclamation"></i> modulo mancante</span>') +
+      ? '<span title="MODULO DI PARTECIPAZIONE allegato"><i class="fa-solid fa-paperclip"></i> modulo</span>'
+      : '<span class="modulo-mancante" title="MODULO DI PARTECIPAZIONE mancante"><i class="fa-solid fa-triangle-exclamation"></i> modulo mancante</span>') +
     `<span class="data-invio">${iscrizione.OraInvio ? formatDateTime(iscrizione.OraInvio) : ""}</span>`;
 
   intestazione.appendChild(titolo);
@@ -362,7 +362,7 @@ function creaSezioneModulo(modulo) {
   sezione.className = "dettaglio-sezione";
 
   const intestazione = document.createElement("h4");
-  intestazione.textContent = "Modulo di Partecipazione";
+  intestazione.textContent = "MODULO DI PARTECIPAZIONE";
   sezione.appendChild(intestazione);
 
   const url = linkSicuro(modulo?.Url);
