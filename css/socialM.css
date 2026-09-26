@@ -1,0 +1,259 @@
+#social-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 30px 50px;
+  gap: 25px;
+}
+
+/* Le regole display qui sotto vincerebbero sull'attributo hidden */
+#social-content [hidden] {
+  display: none !important;
+}
+
+/* Comandi */
+
+.social-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  max-width: 1000px;
+  padding: 20px 30px;
+  gap: 20px;
+
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+}
+
+.social-giornata {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.social-giornata select {
+  margin: 0;
+  min-width: 70px;
+}
+
+.social-buttons,
+.social-azioni-bottoni {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.social-azioni {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-suggerimento {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.social-buttons .custom-button,
+.social-azioni .custom-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+}
+
+.social-tutte {
+  color: var(--darkText);
+  background-color: var(--mainText);
+}
+
+.custom-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* Messaggi */
+
+.social-stato {
+  width: 100%;
+  max-width: 1000px;
+  padding: 14px 20px;
+
+  border-radius: 10px;
+  background-color: var(--glass-bg);
+  border-left: 4px solid var(--mainText);
+  line-height: 1.5;
+}
+
+.social-stato.errore {
+  border-left-color: var(--orange);
+}
+
+.social-stato code {
+  display: block;
+  margin-top: 8px;
+  padding: 10px;
+  overflow-x: auto;
+
+  border-radius: 6px;
+  background-color: var(--black-50);
+  font-size: 0.85rem;
+  white-space: pre;
+}
+
+/* Anteprime */
+
+.social-anteprime {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  align-items: start;
+
+  width: 100%;
+  max-width: 1000px;
+  gap: 20px;
+}
+
+.social-anteprima {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.social-selettore {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+
+  border: 3px solid transparent;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.social-selettore:hover {
+  border: 3px solid var(--white-50);
+  background: none;
+}
+
+.social-selettore img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.social-spunta {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  background-color: var(--black-50);
+  color: transparent;
+  font-size: 0.9rem;
+}
+
+.social-anteprima.selezionata .social-selettore {
+  border-color: var(--mainText);
+}
+
+.social-anteprima.selezionata .social-spunta {
+  border-color: var(--mainText);
+  background-color: var(--mainText);
+  color: var(--darkText);
+}
+
+.social-scarica-singola {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.social-scarica-singola:hover {
+  color: var(--mainText);
+}
+
+@media (max-width: 1024px) {
+  #social-content {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .social-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .social-giornata {
+    justify-content: space-between;
+  }
+
+  .social-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .social-buttons .social-tutte {
+    grid-column: 1 / -1;
+  }
+
+  .social-buttons .custom-button,
+  .social-azioni .custom-button {
+    justify-content: center;
+    padding: 12px 10px;
+  }
+
+  .social-azioni,
+  .social-azioni-bottoni {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .social-suggerimento {
+    text-align: center;
+  }
+
+  /* Sui touch l'hover resterebbe attivo dopo il tocco */
+  .social-selettore:hover {
+    border-color: transparent;
+  }
+
+  .social-anteprima.selezionata .social-selettore:hover {
+    border-color: var(--mainText);
+  }
+
+  .social-anteprime {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Il "Tutte" giallo non deve perdere il colore dopo il tocco */
+  .social-tutte:hover {
+    color: var(--darkText);
+    background-color: var(--mainText);
+  }
+}
