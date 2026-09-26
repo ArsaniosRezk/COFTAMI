@@ -1,0 +1,186 @@
+/* Pagina contenuti-social.html: la sezione Social del gestionale a sé stante.
+   Qui ci sono solo la cornice della pagina e gli stili comuni che nel
+   gestionale arrivano da gestionale.css; il resto è in socialM.css. */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1rem;
+  background-color: var(--primary);
+  color: var(--text);
+}
+
+/* INTESTAZIONE */
+
+.cs-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  padding: calc(env(safe-area-inset-top) + 14px) 40px 14px;
+  background-color: var(--secondary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cs-logo {
+  height: 60px;
+}
+
+.cs-titolo {
+  flex: 1;
+  min-width: 0;
+}
+
+.cs-titolo h1 {
+  color: var(--mainText);
+  font-size: 2rem;
+}
+
+.cs-titolo p {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.cs-divisione {
+  display: flex;
+  flex-shrink: 0;
+  padding: 4px;
+  border-radius: 999px;
+  background-color: var(--tertiary);
+}
+
+.cs-divisione button {
+  min-height: 38px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--white-50);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cs-divisione button:hover {
+  color: var(--text);
+}
+
+.cs-divisione button.selected {
+  background-color: var(--mainText);
+  color: var(--darkText);
+}
+
+.cs-errore {
+  padding: 40px;
+  text-align: center;
+}
+
+/* STILI COMUNI (come in gestionale.css) */
+
+label {
+  color: var(--mainText);
+  font-weight: bold;
+}
+
+select {
+  padding: 10px 5px 4px 5px;
+  border: none;
+  border-bottom: 5px solid var(--mainText);
+  background-color: transparent;
+  color: var(--mainText);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+select:focus {
+  outline: none;
+}
+
+option {
+  background-color: var(--primary);
+}
+
+.custom-button {
+  padding: 10px 30px;
+  border: var(--interaction);
+  border-radius: 10px;
+  background-color: var(--secondary);
+  color: var(--mainText);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.custom-button:hover {
+  border: 1px solid transparent;
+  background-color: var(--orange);
+  color: var(--text);
+}
+
+/* SMARTPHONE */
+
+@media (max-width: 1024px) {
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .cs-header {
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    padding: calc(env(safe-area-inset-top) + 10px) 16px 10px;
+  }
+
+  .cs-logo {
+    height: 40px;
+  }
+
+  .cs-titolo h1 {
+    font-size: 1.25rem;
+  }
+
+  .cs-titolo p {
+    font-size: 0.75rem;
+  }
+
+  .cs-divisione button {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 0.8rem;
+  }
+
+  /* Sotto i 16px iOS ingrandisce la pagina quando si tocca un campo */
+  select {
+    font-size: 16px;
+  }
+
+  /* Sui touch l'hover arancione resterebbe "incollato" dopo il tocco */
+  .custom-button:hover {
+    border: var(--interaction);
+    background-color: var(--secondary);
+    color: var(--mainText);
+  }
+}
+
+@media (max-width: 420px) {
+  .cs-divisione {
+    width: 100%;
+  }
+
+  .cs-divisione button {
+    flex: 1;
+  }
+}
