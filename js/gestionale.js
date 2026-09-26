@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "calendario",
     "partite",
     "report",
+    "social",
   ];
 
   const sezioneDaHash = () => {

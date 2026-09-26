@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/socialM.css" />
+  </head>
+  <body>
+    <div id="social-content">
+      <div class="social-card">
+        <div class="social-giornata">
+          <label for="social-giornata-select">Giornata</label>
+          <select id="social-giornata-select"></select>
+        </div>
+
+        <div class="social-buttons">
+          <button type="button" class="custom-button" data-tipi="calendario">
+            <i class="fa-solid fa-calendar-days"></i> Calendario
+          </button>
+          <button type="button" class="custom-button" data-tipi="risultati">
+            <i class="fa-solid fa-futbol"></i> Risultati
+          </button>
+          <button type="button" class="custom-button" data-tipi="classifica">
+            <i class="fa-solid fa-list-ol"></i> Classifica
+          </button>
+          <button type="button" class="custom-button" data-tipi="storie">
+            <i class="fa-solid fa-mobile-screen-button"></i> Partite
+          </button>
+          <button type="button" class="custom-button social-tutte" data-tipi="calendario,risultati,classifica,storie">
+            <i class="fa-solid fa-images"></i> Tutte
+          </button>
+        </div>
+      </div>
+
+      <div id="social-stato" class="social-stato" hidden></div>
+
+      <div id="social-azioni" class="social-azioni" hidden>
+        <p class="social-suggerimento">Tocca le immagini per selezionarle</p>
+        <div class="social-azioni-bottoni">
+          <button type="button" id="social-seleziona" class="custom-button">
+            <i class="fa-solid fa-check-double"></i> <span>Seleziona tutte</span>
+          </button>
+          <button type="button" id="social-scarica" class="custom-button" disabled>
+            <i class="fa-solid fa-download"></i> <span>Scarica selezionate</span>
+          </button>
+          <button type="button" id="social-condividi" class="custom-button" disabled hidden>
+            <i class="fa-solid fa-share-nodes"></i> <span>Condividi / Salva in galleria</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="social-anteprime" class="social-anteprime"></div>
+    </div>
+  </body>
+</html>
