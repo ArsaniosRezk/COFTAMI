@@ -5,8 +5,9 @@ let immaginiCorrenti = [];
 
 export const initSocial = async () => {
   const division = document.getElementById("division")?.value || "Superiori";
-  const giornataSelect = document.getElementById("social-giornata-select");
-  const bottoni = document.querySelectorAll(".social-buttons button");
+  const contenuto = document.getElementById("social-content");
+  const giornataSelect = contenuto.querySelector("#social-giornata-select");
+  const bottoni = contenuto.querySelectorAll(".social-buttons button");
 
   let dati;
   try {
@@ -17,8 +18,9 @@ export const initSocial = async () => {
     return;
   }
 
-  // Se nel frattempo si è cambiata sezione il contenuto non esiste più
-  if (!document.getElementById("social-content")) return;
+  // Se nel frattempo si è cambiata sezione o divisione questo contenuto è
+  // stato sostituito: il nuovo ha già il suo initSocial
+  if (!contenuto.isConnected) return;
 
   dati.giornate.forEach((giornata) => {
     const option = document.createElement("option");
@@ -43,7 +45,8 @@ export const initSocial = async () => {
 
       try {
         const esito = await generaGrafiche(dati, tipi, giornataSelect.value);
-        mostraRisultato(esito);
+        // Immagini della divisione di prima: non vanno nel contenuto nuovo
+        if (contenuto.isConnected) mostraRisultato(esito);
       } catch (errore) {
         console.error("Errore generazione grafiche:", errore);
         mostraStato(`Errore durante la generazione: ${errore.message}`, true);

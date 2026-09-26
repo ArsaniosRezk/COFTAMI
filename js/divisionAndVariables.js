@@ -64,6 +64,7 @@ const pagineSenzaSequenza = [
   "referti",
   "referti-social",
   "gestionale",
+  "contenuti-social",
 ];
 
 const pagina = paginaCorrente();

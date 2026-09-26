@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#377d5d" />
+  <title>Contenuti Social</title>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <link rel="stylesheet" href="css/colors.css" />
+  <link rel="stylesheet" href="css/contenuti-social.css" />
+  <link rel="stylesheet" href="css/socialM.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+
+<body>
+  <header class="cs-header">
+    <img class="cs-logo" src="assets/images/LOGO_COFTA_SITO_2.svg" alt="COFTA Milano" />
+
+    <div class="cs-titolo">
+      <h1>Contenuti Social</h1>
+      <p id="cs-edizione"></p>
+    </div>
+
+    <!-- I pulsanti comandano il select, che resta l'unica fonte del valore -->
+    <select id="division" hidden>
+      <option value="Superiori">Superiori</option>
+      <option value="Giovani">Giovani</option>
+    </select>
+    <div class="cs-divisione" id="cs-divisione" role="group" aria-label="Divisione">
+      <button type="button" data-division="Superiori">Superiori</button>
+      <button type="button" data-division="Giovani">Giovani</button>
+    </div>
+  </header>
+
+  <main id="cs-contenuto"></main>
+
+  <script type="module">
+    import { initAuthGuard } from "./js/components/auth-guard.js";
+    import { sincronizzaEdizione } from "./js/edition-sync.js";
+
+    initAuthGuard();
+    sincronizzaEdizione();
+  </script>
+  <script type="module" src="js/contenuti-social.js"></script>
+</body>
+
+</html>
