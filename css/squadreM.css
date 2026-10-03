@@ -253,6 +253,155 @@ textarea {
   padding: 10px;
 }
 
+/* GIRONI */
+#gironi-panel {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  gap: 8px;
+
+  padding: 15px 20px;
+  border-radius: 10px;
+  border: var(--interaction);
+  background-color: var(--secondary);
+}
+
+#gironi-panel h3 {
+  margin: 0;
+}
+
+.gironi-riepilogo {
+  margin: 0;
+  font-weight: bold;
+}
+
+.gironi-avviso {
+  margin: 0;
+  color: var(--orange);
+  font-weight: bold;
+}
+
+.gironi-nota {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.gironi-controlli {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+#gironi-numero {
+  width: 80px;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* Tabelle dei gironi (trascinabili) */
+.gironi-tabelle {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.girone-tabella {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background-color: var(--tertiary);
+  overflow: hidden;
+}
+
+.girone-intestazione {
+  padding: 8px 12px;
+  font-weight: bold;
+  border-bottom: var(--interaction);
+}
+
+.girone-conteggio {
+  font-weight: normal;
+  opacity: 0.8;
+}
+
+.girone-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-height: 48px; /* una tabella vuota deve restare un bersaglio valido */
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+}
+
+.girone-squadra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background-color: var(--secondary);
+  font-weight: bold;
+  cursor: grab;
+  user-select: none;
+}
+
+.gironi-tabelle-statiche .girone-squadra {
+  cursor: default;
+}
+
+.girone-squadra img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.girone-squadra-fantasma {
+  opacity: 0.4;
+  background-color: var(--orange);
+}
+
+/* Logo nel modulo di modifica */
+#logo-edit {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+#logo-edit img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+#logo-edit .custom-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Nome squadra nel modulo di modifica */
+#team-name-edit-input {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+
+  font-size: 1rem;
+  font-weight: bold;
+
+  box-sizing: border-box;
+  border: none;
+  border-radius: 5px;
+}
+
 /* Barra con il pulsante per tornare all'elenco */
 #team-info-toolbar {
   flex-basis: 100%;
@@ -467,6 +616,52 @@ textarea {
 
   #group-penalty-edit-container input:nth-of-type(2) {
     grid-area: 2 / 2;
+  }
+
+  /* Gironi: riga intera sopra la griglia */
+  #gironi-panel {
+    grid-column: 1 / -1;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  #gironi-numero {
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .gironi-controlli .custom-button {
+    flex: 1;
+    min-height: 48px;
+  }
+
+  .gironi-tabelle {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+
+  .girone-squadra {
+    min-height: 44px;
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+
+  #logo-edit img {
+    width: 64px;
+    height: 64px;
+  }
+
+  #logo-edit .custom-button {
+    flex: 1;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  #team-name-edit-input {
+    height: 48px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 16px;
   }
 
   textarea,
