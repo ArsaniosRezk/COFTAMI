@@ -1,3 +1,4 @@
+import { PERCORSO_IMPOSTAZIONI } from "../ambiente.js";
 import { ref, get, db } from "../firebase.js";
 
 /*
@@ -61,7 +62,7 @@ async function verifyPin(enteredPin) {
     if (!enteredPin) return;
 
     try {
-        const settingsRef = ref(db, "Impostazioni");
+        const settingsRef = ref(db, PERCORSO_IMPOSTAZIONI);
         const snapshot = await get(settingsRef);
 
         if (snapshot.exists()) {

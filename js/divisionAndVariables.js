@@ -1,3 +1,4 @@
+import { STAGING } from "./ambiente.js";
 import { paginaCorrente } from "./utils/percorso.js";
 
 /*
@@ -11,19 +12,19 @@ legge all'avvio e la imposta qui con impostaEdizione(): `edition` è un export
 Le pagine aspettano impostazioniPronte prima di leggere dati del torneo, così
 non serve più ricaricare la pagina quando l'edizione salvata è vecchia.
 
-Edizione forzata dall'indirizzo:
-- ?edizione=Test apre Calcio/Test, per provare il gestionale senza toccare i
-  dati veri. Non passa dallo storage: chiudendo la pagina si torna all'edizione
-  reale.
-- Sul sito pubblico ?edizione=2025 (o un altro anno) mostra un'edizione
+Edizione forzata:
+- Sullo staging (vedi ambiente.js) è sempre Calcio/Test, su ogni pagina:
+  l'indirizzo e le impostazioni non contano.
+- In produzione ?edizione=2025 (o un altro anno) mostra un'edizione
   passata. Resta valida per la scheda aperta (sessionStorage), così si può
   navigare tra classifica, calendario e squadre di quell'anno.
+  L'edizione Test in produzione non è raggiungibile.
 */
 
 const EDIZIONE_TEST = "Test";
 const CHIAVE_EDIZIONE = "site_edition";
 const CHIAVE_ARCHIVIO = "cofta_edizione_archivio";
-const FORMATO_EDIZIONE = /^(\d{4}|Test)$/;
+const FORMATO_EDIZIONE = /^\d{4}$/;
 
 const paginaGestionale = ["gestionale", "contenuti-social"].includes(paginaCorrente());
 
@@ -45,22 +46,20 @@ function scriviStorage(storage, chiave, valore) {
 }
 
 // Pagine che scrivono dati: lavorano sempre sull'edizione corrente
-// (al massimo su Test, se chiesto esplicitamente)
-const paginaDiInvio = ["iscrizione", "iscrizione-test", "invia-report"].includes(paginaCorrente());
+const paginaDiInvio = ["iscrizione", "invia-report"].includes(paginaCorrente());
 
 function edizioneDaIndirizzo() {
+  if (STAGING) return EDIZIONE_TEST;
+  if (paginaDiInvio) return null;
   const richiesta = new URLSearchParams(location.search).get("edizione");
-  if (paginaDiInvio) return richiesta === EDIZIONE_TEST ? richiesta : null;
   if (richiesta && FORMATO_EDIZIONE.test(richiesta)) {
-    if (!paginaGestionale && richiesta !== EDIZIONE_TEST) {
-      scriviStorage(sessionStorage, CHIAVE_ARCHIVIO, richiesta);
-    }
+    if (!paginaGestionale) scriviStorage(sessionStorage, CHIAVE_ARCHIVIO, richiesta);
     return richiesta;
   }
   return paginaGestionale ? null : leggiStorage(sessionStorage, CHIAVE_ARCHIVIO);
 }
 
-// Edizione scelta dall'indirizzo (Test o un anno passato), altrimenti null
+// Test sullo staging, un anno passato scelto dall'indirizzo, altrimenti null
 const edizioneForzata = edizioneDaIndirizzo();
 const edizioneTest = edizioneForzata === EDIZIONE_TEST;
 

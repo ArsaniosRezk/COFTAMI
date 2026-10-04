@@ -1,3 +1,4 @@
+import { PERCORSO_IMPOSTAZIONI } from "./ambiente.js";
 import { db, ref, onValue } from "./firebase.js";
 import { impostaEdizione, edizioneForzata } from "./divisionAndVariables.js";
 
@@ -22,7 +23,7 @@ let edizioneIniziale = null;
 
 export const impostazioniPronte = new Promise((resolve) => {
   onValue(
-    ref(db, "Impostazioni"),
+    ref(db, PERCORSO_IMPOSTAZIONI),
     (snapshot) => {
       ultime = snapshot.val() || {};
       const edizione = ultime.edizioneCorrente ? String(ultime.edizioneCorrente) : null;

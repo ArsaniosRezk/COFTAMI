@@ -14,6 +14,9 @@ dati del torneo. Il valore sta in Impostazioni/pagineAttive:
   il link sparisce dai menu (la Home resta: è l'ingresso del sito).
 - Valore assente: la pagina è accesa. Senza squadre caricate resta comunque
   l'avviso automatico "il torneo non è ancora iniziato".
+
+Anche il link "Iscrizioni" sparisce dai menu quando le iscrizioni sono chiuse
+(Impostazioni/iscrizioniAperte = false).
 */
 
 export const PAGINE_CONTROLLABILI = [
@@ -32,6 +35,9 @@ const INTERRUTTORE_PER_PAGINA = {
   squadre: "squadre",
   squadra: "squadre",
 };
+
+// Solo per i menu: il link alla pagina di iscrizione segue iscrizioniAperte
+const VOCE_PER_PAGINA = { ...INTERRUTTORE_PER_PAGINA, iscrizione: "iscrizioni" };
 
 // Ultimo stato visto: i link spenti si nascondono subito, senza aspettare il server
 const CHIAVE_ULTIMO_STATO = "cofta_pagine_attive";
@@ -53,22 +59,27 @@ function leggiUltimoStato() {
   }
 }
 
-function salvaUltimoStato(pagineAttive) {
+// Link visibili nei menu: pagine attive più le iscrizioni
+function vociVisibili(impostazioni) {
+  return { ...impostazioni.pagineAttive, iscrizioni: impostazioni.iscrizioniAperte !== false };
+}
+
+function salvaUltimoStato(voci) {
   try {
-    localStorage.setItem(CHIAVE_ULTIMO_STATO, JSON.stringify(pagineAttive || {}));
+    localStorage.setItem(CHIAVE_ULTIMO_STATO, JSON.stringify(voci));
   } catch (errore) {
     // Senza storage i link si aggiornano solo all'arrivo delle impostazioni
   }
 }
 
-// Nasconde nei menu (header, menu smartphone, footer) i link alle pagine spente.
-// La Home resta sempre raggiungibile dal menu.
-export function aggiornaMenu(pagineAttive) {
+// Nasconde nei menu (header, menu smartphone, footer) i link alle pagine spente
+// e alle iscrizioni chiuse. La Home resta sempre raggiungibile dal menu.
+export function aggiornaMenu(voci) {
   document.querySelectorAll(".nav a, #overlay-menu a, .footer-menu a").forEach((link) => {
-    const chiave = interruttoreDellaPagina(nomePagina(new URL(link.href).pathname));
+    const chiave = VOCE_PER_PAGINA[nomePagina(new URL(link.href).pathname)];
     if (!chiave || chiave === "home") return;
     const voce = link.closest("li") || link;
-    voce.hidden = pagineAttive?.[chiave] === false;
+    voce.hidden = voci?.[chiave] === false;
   });
 }
 
@@ -76,7 +87,8 @@ export function aggiornaMenu(pagineAttive) {
 export function avviaMenuPagineAttive(osservaImpostazioni) {
   aggiornaMenu(leggiUltimoStato());
   osservaImpostazioni((impostazioni) => {
-    salvaUltimoStato(impostazioni.pagineAttive);
-    aggiornaMenu(impostazioni.pagineAttive);
+    const voci = vociVisibili(impostazioni);
+    salvaUltimoStato(voci);
+    aggiornaMenu(voci);
   });
 }

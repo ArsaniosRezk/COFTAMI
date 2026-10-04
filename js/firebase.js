@@ -4,12 +4,13 @@ import {
   getDatabase,
   ref,
   get,
-  set,
+  set as setSdk,
   child,
-  update,
-  remove,
+  update as updateSdk,
+  remove as removeSdk,
   onValue,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { STAGING, PERCORSO_IMPOSTAZIONI } from "./ambiente.js";
 
 // Storage serve solo per caricare file (iscrizione, loghi): l'SDK si scarica
 // alla prima richiesta invece che su ogni pagina
@@ -33,6 +34,52 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+/*
+ PROTEZIONE DELLO STAGING
+ Sullo staging (vedi ambiente.js) si scrive solo sui dati di prova: ogni
+ scrittura del sito passa da set/update/remove/uploadFile qui sotto, e quelle
+ fuori da questi percorsi vengono rifiutate prima di arrivare a Firebase.
+*/
+const DATI_DI_PROVA = ["Calcio/Test", PERCORSO_IMPOSTAZIONI];
+const FILE_DI_PROVA = ["Loghi/Test", "Moduli/Test"];
+
+// Percorso di un riferimento del database, es. "Calcio/Test/Superiori"
+function percorsoDi(riferimento) {
+  return decodeURIComponent(new URL(riferimento.toString()).pathname).replace(/^\/+|\/+$/g, "");
+}
+
+function unisci(...parti) {
+  return parti.join("/").replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
+}
+
+function scritturaVietata(percorsi, ammessi) {
+  if (!STAGING) return null;
+  const fuori = percorsi.find(
+    (percorso) => !ammessi.some((base) => percorso === base || percorso.startsWith(`${base}/`))
+  );
+  if (fuori === undefined) return null;
+  const errore = new Error(`Staging: scrittura bloccata su "${fuori || "/"}" (fuori dai dati di prova)`);
+  console.error(errore);
+  return errore;
+}
+
+function set(riferimento, valore) {
+  const errore = scritturaVietata([percorsoDi(riferimento)], DATI_DI_PROVA);
+  return errore ? Promise.reject(errore) : setSdk(riferimento, valore);
+}
+
+function update(riferimento, valori) {
+  const base = percorsoDi(riferimento);
+  const percorsi = Object.keys(valori || {}).map((chiave) => unisci(base, chiave));
+  const errore = scritturaVietata(percorsi, DATI_DI_PROVA);
+  return errore ? Promise.reject(errore) : updateSdk(riferimento, valori);
+}
+
+function remove(riferimento) {
+  const errore = scritturaVietata([percorsoDi(riferimento)], DATI_DI_PROVA);
+  return errore ? Promise.reject(errore) : removeSdk(riferimento);
+}
+
 export { db, ref, update, get, set, child, remove, onValue };
 
 let storagePronto = null;
@@ -53,6 +100,9 @@ function caricaStorage() {
  onProgress (facoltativo) riceve l'avanzamento da 0 a 1.
 */
 export async function uploadFile(path, file, { onProgress } = {}) {
+  const vietata = scritturaVietata([unisci(path)], FILE_DI_PROVA);
+  if (vietata) throw vietata;
+
   const { sdk, storage } = await caricaStorage();
   const fileRef = sdk.ref(storage, path);
   const metadata = {

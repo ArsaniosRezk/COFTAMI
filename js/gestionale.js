@@ -32,15 +32,40 @@ function caricaStileSezione(section) {
   });
 }
 
+// Oltre questo tempo la sezione compare comunque, con i suoi messaggi di caricamento
+const ATTESA_MASSIMA_SEZIONE = 6000;
+// Lo spinner compare solo se il caricamento si fa notare
+const RITARDO_SPINNER = 300;
+
 document.addEventListener("DOMContentLoaded", async () => {
   const contentDiv = document.getElementById("content");
+  const main = document.querySelector("main");
 
   // Ogni caricamento ha un numero: se nel frattempo ne è partito un altro
   // (clic veloci sul menu), il risultato vecchio viene scartato
   let ultimoCaricamento = 0;
+  let timerSpinner;
+
+  // La sezione resta invisibile finché i suoi dati non sono disegnati:
+  // niente scheletri o tabelle che si riempiono a pezzi sotto gli occhi
+  const nascondiContenuto = () => {
+    contentDiv.classList.add("in-caricamento");
+    clearTimeout(timerSpinner);
+    timerSpinner = setTimeout(
+      () => main.classList.add("in-attesa"),
+      RITARDO_SPINNER
+    );
+  };
+
+  const mostraContenuto = () => {
+    clearTimeout(timerSpinner);
+    main.classList.remove("in-attesa");
+    contentDiv.classList.remove("in-caricamento");
+  };
 
   const loadContent = async (section) => {
     const numero = ++ultimoCaricamento;
+    nascondiContenuto();
     try {
       const [content, module] = await Promise.all([
         fetch(`management/${section}.html`).then((response) => {
@@ -57,7 +82,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const initFunction =
         module[`init${section.charAt(0).toUpperCase() + section.slice(1)}`];
       if (typeof initFunction === "function") {
-        initFunction();
+        await Promise.race([
+          Promise.resolve(initFunction()).catch((error) =>
+            console.error(`Errore nell'inizializzazione di ${section}:`, error)
+          ),
+          new Promise((resolve) => setTimeout(resolve, ATTESA_MASSIMA_SEZIONE)),
+        ]);
       }
     } catch (error) {
       if (numero !== ultimoCaricamento) return;
@@ -65,6 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       contentDiv.innerHTML =
         "<p>Impossibile caricare la sezione. Controlla la connessione e riprova.</p>";
     }
+    if (numero === ultimoCaricamento) mostraContenuto();
   };
 
   // I percorsi Firebase dipendono dall'edizione corrente

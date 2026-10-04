@@ -2,6 +2,7 @@ import { editMatchdayToShow, prossimaGiornata, recuperaCalendario } from "/js/co
 import { classificaGirone, classificaMarcatori } from "/js/components/standings.js";
 import { faseFinale } from "/js/components/final-phase.js";
 import { visualizzaSquadreConMembri } from "/js/components/teams.js";
+import { PERCORSO_IMPOSTAZIONI } from "/js/ambiente.js";
 import { ref, get, update, db } from "/js/firebase.js";
 import { impostaEdizioneLocale } from "/js/edition-sync.js";
 import { PAGINE_CONTROLLABILI, paginaAttiva } from "/js/pagine-attive.js";
@@ -53,13 +54,16 @@ function creaInterruttoriPagine(settingsRef, impostazioni) {
 }
 
 export const initDashboard = async () => {
-  // Codice di inizializzazione per la sezione dashboard
-  editMatchdayToShow();
-  classificaGirone("classifica-squadre", true);
-  classificaMarcatori("classifica-gol");
+  // Codice di inizializzazione per la sezione dashboard: la promessa restituita
+  // si risolve quando tutto è disegnato, così il gestionale mostra la sezione completa
+  const contenutiPronti = Promise.all([
+    editMatchdayToShow(),
+    classificaGirone("classifica-squadre", true),
+    classificaMarcatori("classifica-gol"),
+  ]);
 
   // Gestione Impostazioni
-  const settingsRef = ref(db, "Impostazioni");
+  const settingsRef = ref(db, PERCORSO_IMPOSTAZIONI);
   const faseFinaleCheckbox = document.getElementById("toggle-fase-finale");
   const manutenzioneCheckbox = document.getElementById("toggle-manutenzione");
   const iscrizioniCheckbox = document.getElementById("toggle-iscrizioni");
@@ -120,4 +124,6 @@ export const initDashboard = async () => {
       location.reload();
     });
   }
+
+  await contenutiPronti;
 };

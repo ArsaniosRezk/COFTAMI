@@ -23,7 +23,7 @@ REPORT
 */
 
 export async function showReportOptions() {
-    loadMatchReports();
+    return loadMatchReports();
 }
 
 // Funzione per ottenere i referti e popolare la tabella per il GESTIONALE

@@ -9,9 +9,6 @@ import {
     dataPartita,
     nomeSquadra,
     linkMappa,
-    partiteDellaSquadra,
-    creaIcs,
-    scaricaFile,
     squadraPreferita,
 } from "../utils/torneo.js";
 import { mostraToast, rendiCliccabile } from "../utils/interfaccia.js";
@@ -223,8 +220,8 @@ export async function recuperaCalendario(dati = null) {
     }
 }
 
-// Filtro per squadra e pulsante "Aggiungi al calendario"
-function disegnaBarraCalendario({ squadre, calendario, divisione }, ridisegna) {
+// Filtro per squadra
+function disegnaBarraCalendario({ squadre, divisione }, ridisegna) {
     const barra = document.getElementById("barra-calendario");
     if (!barra) return;
     barra.replaceChildren();
@@ -254,47 +251,12 @@ function disegnaBarraCalendario({ squadre, calendario, divisione }, ridisegna) {
         .forEach((chiave) => opzione(chiave, nomeSquadra(chiave)));
     select.value = statoCalendario.squadra;
 
-    const ics = document.createElement("button");
-    ics.type = "button";
-    ics.className = "btn-contorno";
-    ics.innerHTML = `<i class="icona icona-calendar-plus" aria-hidden="true"></i><span></span>`;
-
-    const aggiornaIcs = () => {
-        ics.querySelector("span").textContent = statoCalendario.squadra
-            ? "Aggiungi le sue partite al calendario"
-            : "Aggiungi tutte le partite al calendario";
-    };
-
     select.addEventListener("change", () => {
         statoCalendario.squadra = select.value;
-        aggiornaIcs();
         ridisegna();
     });
 
-    ics.addEventListener("click", () => {
-        const squadra = statoCalendario.squadra;
-        const inizioOggi = new Date().setHours(0, 0, 0, 0);
-        const elenco = (
-            squadra
-                ? partiteDellaSquadra(calendario, squadra)
-                : giornateNumerate(calendario).flatMap((giornata) =>
-                      Object.entries(calendario[giornata] || {}).map(([chiave, dati]) => {
-                          const [casa, ospite] = chiave.split(":");
-                          return { giornata, chiave, casa, ospite, dati };
-                      })
-                  )
-        ).filter(({ dati }) => !haRisultato(dati) && (dataPartita(dati) || 0) >= inizioOggi);
-
-        if (elenco.length === 0) {
-            mostraToast("Non ci sono partite in programma con data e orario");
-            return;
-        }
-        const nome = squadra ? nomeSquadra(squadra).replace(/[^\w]+/g, "-") : divisione;
-        scaricaFile(`cofta-${nome}.ics`, creaIcs(elenco, divisione), "text/calendar");
-    });
-
-    aggiornaIcs();
-    barra.append(etichetta, select, ics);
+    barra.append(etichetta, select);
 }
 
 /*

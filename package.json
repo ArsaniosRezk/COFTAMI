@@ -2,6 +2,7 @@
   "name": "coftami",
   "private": true,
   "scripts": {
-    "dev": "npx --yes serve -l 3000 ."
+    "dev": "npx --yes serve -l 3000 .",
+    "staging": "node scripts/pubblica-staging.mjs"
   }
 }

@@ -1,3 +1,4 @@
+import { STAGING } from "./ambiente.js";
 import { paginaCorrente, nomePagina } from "./utils/percorso.js";
 import { avviaControlloManutenzione } from "./maintenance-guard.js";
 import { avviaMenuPagineAttive } from "./pagine-attive.js";
@@ -165,6 +166,15 @@ if (edizioneForzata && !edizioneTest) {
   torna.addEventListener("click", tornaEdizioneCorrente);
   avviso.appendChild(torna);
 
+  document.querySelector("main")?.prepend(avviso);
+}
+
+// STAGING //
+// Sul sito di prova deve essere chiaro che i dati non sono quelli del torneo
+if (STAGING) {
+  const avviso = document.createElement("div");
+  avviso.className = "avviso-archivio";
+  avviso.innerHTML = "<span><b>Sito di staging</b>: dati di prova (Calcio/Test)</span>";
   document.querySelector("main")?.prepend(avviso);
 }
 

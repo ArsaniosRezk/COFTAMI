@@ -6,7 +6,7 @@ import { mostraToast } from "../utils/interfaccia.js";
 const segnalaErrore = (testo) => mostraToast(testo, { errore: true });
 
 export async function showMatchesOptions() {
-    selectMatchday();
+    return selectMatchday();
 }
 
 async function selectMatchday() {

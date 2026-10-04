@@ -48,6 +48,48 @@ main {
 
 #content {
   grid-area: alias-content;
+  transition: opacity 0.2s ease;
+}
+
+/* Sezione in caricamento: invisibile finché i dati non sono pronti (gestionale.js) */
+#content.in-caricamento {
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+}
+
+main.in-attesa {
+  position: relative;
+}
+
+main.in-attesa::after {
+  content: "";
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  margin-left: -16px;
+  border: 3px solid rgba(46, 104, 78, 0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: rotazione-attesa 0.8s linear infinite;
+}
+
+@keyframes rotazione-attesa {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #content {
+    transition: none;
+  }
+
+  main.in-attesa::after {
+    animation-duration: 2s;
+  }
 }
 
 /* NAV */

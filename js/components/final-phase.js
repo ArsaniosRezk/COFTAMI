@@ -1,3 +1,4 @@
+import { PERCORSO_IMPOSTAZIONI } from "../ambiente.js";
 import { ref, get, db } from "../firebase.js";
 
 /*
@@ -8,7 +9,7 @@ FASE FINALE
 
 export async function faseFinale() {
     // 1. Check Firebase Settings first
-    const settingsRef = ref(db, "Impostazioni");
+    const settingsRef = ref(db, PERCORSO_IMPOSTAZIONI);
     try {
         const snapshot = await get(settingsRef);
         if (snapshot.exists()) {

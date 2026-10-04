@@ -1,3 +1,4 @@
+import { PERCORSO_IMPOSTAZIONI } from "./ambiente.js";
 import { getData, setData, uploadFile } from "./firebase.js";
 import { edition } from "./divisionAndVariables.js";
 import { impostazioniPronte, osservaImpostazioni } from "./impostazioni.js";
@@ -502,7 +503,7 @@ async function inviaIscrizione(event) {
 
   try {
     // Ricontrollo: le iscrizioni potrebbero essere state chiuse mentre il modulo era aperto
-    const impostazioni = await getData("Impostazioni");
+    const impostazioni = await getData(PERCORSO_IMPOSTAZIONI);
     if (impostazioni && impostazioni.iscrizioniAperte === false) {
       document.getElementById("iscrizione-form").classList.add("hidden");
       document.getElementById("iscrizioni-chiuse").classList.remove("hidden");
