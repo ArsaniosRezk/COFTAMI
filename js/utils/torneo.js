@@ -36,23 +36,40 @@ export function haRisultato(partita) {
 
 /*
  Giornata da mostrare in home.
- Il gestionale può fissarla a mano; se non è impostata (o è "auto") si usa la
- prima giornata che ha ancora partite da giocare, oppure l'ultima se sono
- state giocate tutte.
+ Il gestionale può fissarla a mano; se non è impostata (o è "auto") si parte
+ dall'ultima giornata con almeno un risultato: se ha ancora partite in
+ programma è quella in corso, altrimenti si passa alla successiva. Senza
+ nessun risultato si mostra la prima.
+ Le partite senza risultato con la data già passata o svuotata ("da definire")
+ sono recuperi e non tengono ferma la giornata.
 */
 export const GIORNATA_AUTOMATICA = "auto";
 
-export function giornataCorrente(calendario, impostata = null) {
+export function giornataCorrente(calendario, impostata = null, adesso = new Date()) {
     const valore = impostata === null || impostata === undefined ? "" : String(impostata).trim();
     if (valore !== "" && valore !== GIORNATA_AUTOMATICA) return valore;
 
     const giornate = giornateNumerate(calendario);
     if (giornate.length === 0) return null;
 
-    const daGiocare = giornate.find((giornata) =>
-        Object.values(calendario[giornata] || {}).some((partita) => !haRisultato(partita))
-    );
-    return daGiocare ?? giornate[giornate.length - 1];
+    const partiteDi = (giornata) => Object.values(calendario[giornata] || {});
+
+    let indice = giornate.length - 1;
+    while (indice >= 0 && !partiteDi(giornate[indice]).some(haRisultato)) indice--;
+    if (indice < 0) return giornate[0];
+
+    const ultima = giornate[indice];
+    const partite = partiteDi(ultima);
+    const oggi = new Date(adesso.getFullYear(), adesso.getMonth(), adesso.getDate());
+    // Se la giornata non ha date non si distingue un recupero da una partita in programma
+    const conDate = partite.some((partita) => dataPartita(partita));
+    const inProgramma = partite.some((partita) => {
+        if (haRisultato(partita)) return false;
+        const data = dataPartita(partita);
+        return data ? data >= oggi : !conDate;
+    });
+    if (inProgramma) return ultima;
+    return giornate[indice + 1] ?? ultima;
 }
 
 // Anno delle partite: le date sul calendario sono "gg/mm" senza anno

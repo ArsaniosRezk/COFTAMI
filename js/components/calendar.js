@@ -176,12 +176,13 @@ export async function recuperaCalendario(dati = null) {
         statoCalendario.squadra = "";
     }
 
-    // Giornata in corso solo se resta qualcosa da giocare: a torneo finito
-    // nessuna giornata è "in corso" e la pagina parte dall'inizio
-    const restaDaGiocare = matchdays.some((giornata) =>
-        Object.values(calendario[giornata] || {}).some((partita) => !haRisultato(partita))
-    );
-    const corrente = restaDaGiocare ? giornataCorrente(calendario, null) : null;
+    // Giornata in corso solo se ha ancora qualcosa da giocare: a torneo finito
+    // (al massimo con qualche recupero indietro) nessuna giornata è "in corso"
+    // e la pagina parte dall'inizio
+    const automatica = giornataCorrente(calendario, null);
+    const corrente = Object.values(calendario[automatica] || {}).some((partita) => !haRisultato(partita))
+        ? automatica
+        : null;
     const contesto = { squadre: squadre || {}, partite, calendario, divisione };
 
     const disegna = () => {
