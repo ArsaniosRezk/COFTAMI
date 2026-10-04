@@ -715,15 +715,17 @@ select#matchday-to-show-input option {
    PAGINE VISIBILI SUL SITO
    ========================================= */
 
-/* Sempre su una riga a sé, sotto le altre impostazioni */
+/* Card a sé in fondo alla dashboard, larga come quella delle impostazioni */
+.pagine-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
 .pagine-group {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    flex-basis: 100%;
-    width: 100%;
-    padding-top: 16px;
-    border-top: 1px solid var(--divider-color);
 }
 
 .pagine-intestazione {
@@ -754,13 +756,8 @@ select#matchday-to-show-input option {
 }
 
 @media (max-width: 1024px) {
-    .pagine-group {
-        padding-top: 12px;
-    }
-
-    /* Le righe degli interruttori hanno già i loro separatori */
+    /* Separatore tra titolo e interruttori, come nella card delle impostazioni */
     .pagine-group .settings-group {
-        border-top: none;
-        padding-top: 0;
+        padding-top: 4px;
     }
 }
