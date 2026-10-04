@@ -60,8 +60,18 @@
   <script type="module">
     import { initAuthGuard } from "./js/components/auth-guard.js";
     import { sincronizzaEdizione } from "./js/edition-sync.js";
+    import { edizioneTest } from "./js/divisionAndVariables.js";
 
     initAuthGuard();
+
+    // Con ?edizione=Test si lavora su Calcio/Test: deve essere evidente
+    if (edizioneTest) {
+      const badge = document.createElement("span");
+      badge.className = "badge-test";
+      badge.textContent = "Test";
+      badge.title = "Stai modificando Calcio/Test, non i dati del torneo";
+      document.getElementById("current-section").after(badge);
+    }
     // Senza questa il gestionale userebbe l'edizione lasciata in localStorage
     // dall'ultima visita al sito pubblico, o il fallback 2025
     sincronizzaEdizione();

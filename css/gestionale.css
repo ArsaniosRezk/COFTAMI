@@ -98,6 +98,23 @@ nav ul li a {
   color: var(--mainText);
 }
 
+.badge-test {
+  margin-right: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: var(--orange);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Su smartphone resta solo "Test", per non coprire il titolo */
+.badge-test::before {
+  content: "Edizione di ";
+}
+
 #division {}
 
 select:focus,
@@ -236,6 +253,16 @@ button:hover {
     padding: calc(env(safe-area-inset-top) + 8px) 16px 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     z-index: 10;
+  }
+
+  .badge-test {
+    flex-shrink: 0;
+    padding: 3px 8px;
+    font-size: 0.65rem;
+  }
+
+  .badge-test::before {
+    content: none;
   }
 
   #current-section {

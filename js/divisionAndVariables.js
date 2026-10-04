@@ -1,9 +1,19 @@
 import { paginaCorrente } from "./utils/percorso.js";
 
+// Edizione di prova (Calcio/Test): si apre aggiungendo ?edizione=Test
+// all'indirizzo, così si possono provare le funzioni del gestionale senza
+// toccare i dati veri. Non passa dal localStorage, quindi chiudendo la
+// pagina si torna all'edizione reale.
+const EDIZIONE_TEST = "Test";
+const edizioneTest =
+  new URLSearchParams(location.search).get("edizione") === EDIZIONE_TEST;
+
 // Edizione Torneo/Anno
 // Il valore viene tenuto allineato a Impostazioni/edizioneCorrente da
 // edition-sync.js, che gira sia sul sito pubblico sia sul gestionale.
-const edition = localStorage.getItem("site_edition") || "2025";
+const edition = edizioneTest
+  ? EDIZIONE_TEST
+  : localStorage.getItem("site_edition") || "2025";
 
 // Definizione variabile e funzioni per gestione divisione
 let selectedDivision;
@@ -40,6 +50,7 @@ export {
   loadSavedOption,
   updateSelectElement,
   edition,
+  edizioneTest,
 };
 
 // Logica per il caricamento delle funzioni

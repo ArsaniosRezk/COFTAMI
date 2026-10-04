@@ -1,5 +1,5 @@
-import { showCalendarOptions } from "/js/components/calendar.js";
+import { showCalendarEditor } from "/js/components/calendar-editor.js";
 
 export const initCalendario = () => {
-  showCalendarOptions();
+  showCalendarEditor();
 };
