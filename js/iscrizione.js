@@ -1,6 +1,8 @@
 import { getData, setData, uploadFile } from "./firebase.js";
 import { edition } from "./divisionAndVariables.js";
+import { impostazioniPronte, osservaImpostazioni } from "./impostazioni.js";
 import { capitalize } from "./utils/formatters.js";
+import { conferma } from "./utils/interfaccia.js";
 
 /*
 ===================================
@@ -42,7 +44,17 @@ const MODULO_TIPI = {
   "image/png": "png",
 };
 
-const BOZZA_KEY = `cofta_iscrizione_bozza_${edition}`;
+// Le foto dal telefono vengono ridotte prima dell'invio: lato lungo massimo e
+// qualità JPEG. Un foglio A4 resta leggibile e il caricamento è molto più rapido.
+const FOTO_LATO_MASSIMO = 2400;
+const FOTO_QUALITA = 0.85;
+const FOTO_DA_RIDURRE_BYTE = 1.5 * 1024 * 1024;
+
+// Prima della compressione si accettano foto più pesanti del limite finale
+const FOTO_MAX_BYTE_ORIGINALE = 40 * 1024 * 1024;
+
+// L'edizione arriva dalle impostazioni: la chiave va calcolata al momento
+const chiaveBozza = () => `cofta_iscrizione_bozza_${edition}`;
 
 const SEZIONI = ["responsabili", "allenatori", "giocatori", "arbitri"];
 
@@ -136,10 +148,43 @@ function erroreModulo(file) {
   if (!MODULO_TIPI[file.type]) {
     return "Formato non valido: allega il modulo in PDF, JPG o PNG.";
   }
+  const eFoto = file.type.startsWith("image/");
+  if (eFoto && file.size <= FOTO_MAX_BYTE_ORIGINALE) return "";
   if (file.size > MODULO_MAX_BYTE) {
     return `Il file pesa ${formattaDimensione(file.size)}: il limite è 10 MB.`;
   }
   return "";
+}
+
+// Riduce una foto del modulo (JPG/PNG) prima del caricamento.
+// I PDF e le immagini già leggere restano invariati.
+async function preparaModulo(file) {
+  if (!file.type.startsWith("image/") || file.size <= FOTO_DA_RIDURRE_BYTE) return file;
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scala = Math.min(1, FOTO_LATO_MASSIMO / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scala);
+    canvas.height = Math.round(bitmap.height * scala);
+    const contesto = canvas.getContext("2d");
+    // Sfondo bianco: un PNG trasparente diventerebbe nero in JPEG
+    contesto.fillStyle = "#fff";
+    contesto.fillRect(0, 0, canvas.width, canvas.height);
+    contesto.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", FOTO_QUALITA)
+    );
+    if (!blob || blob.size >= file.size) return file;
+
+    const nome = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+    return new File([blob], nome, { type: "image/jpeg" });
+  } catch (errore) {
+    console.warn("Impossibile ridurre la foto, si invia l'originale:", errore);
+    return file;
+  }
 }
 
 /*
@@ -169,8 +214,9 @@ function creaRiga(sezione, rimovibile) {
   const rimuovi = document.createElement("button");
   rimuovi.type = "button";
   rimuovi.className = rimovibile ? "row-remove" : "row-remove placeholder";
-  rimuovi.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+  rimuovi.innerHTML = '<i class="icona icona-xmark" aria-hidden="true"></i>';
   rimuovi.title = "Rimuovi";
+  rimuovi.setAttribute("aria-label", `Rimuovi questo ${ETICHETTA[sezione].singolare}`);
   if (rimovibile) {
     rimuovi.addEventListener("click", () => {
       riga.remove();
@@ -330,7 +376,7 @@ function salvaBozza() {
     SEZIONI.forEach((sezione) => {
       bozza[sezione] = leggiSezioneGrezza(sezione);
     });
-    localStorage.setItem(BOZZA_KEY, JSON.stringify(bozza));
+    localStorage.setItem(chiaveBozza(), JSON.stringify(bozza));
     document.getElementById("draft-info").textContent =
       "I dati inseriti restano salvati su questo dispositivo finché non invii il modulo.";
   } catch (error) {
@@ -340,7 +386,7 @@ function salvaBozza() {
 
 function cancellaBozza() {
   try {
-    localStorage.removeItem(BOZZA_KEY);
+    localStorage.removeItem(chiaveBozza());
   } catch (error) {
     console.warn("Impossibile cancellare la bozza:", error);
   }
@@ -349,7 +395,7 @@ function cancellaBozza() {
 
 function caricaBozza() {
   try {
-    const salvata = localStorage.getItem(BOZZA_KEY);
+    const salvata = localStorage.getItem(chiaveBozza());
     return salvata ? JSON.parse(salvata) : null;
   } catch (error) {
     console.warn("Bozza non leggibile:", error);
@@ -399,6 +445,9 @@ INVIO
 async function inviaIscrizione(event) {
   event.preventDefault();
   pulisciErrori();
+
+  // Il percorso dipende dall'edizione corrente, letta dalle impostazioni
+  await impostazioniPronte;
 
   const submitBtn = document.getElementById("submit-btn");
   const divisioneEl = document.getElementById("isc-divisione");
@@ -462,11 +511,12 @@ async function inviaIscrizione(event) {
 
     const esistente = await getData(percorso);
     if (esistente) {
-      const conferma = confirm(
+      const sostituisci = await conferma(
         `Risulta già un'iscrizione per "${esistente.NomeSquadra}" (${divisione}).\n` +
-          "Vuoi sostituirla con i dati che hai appena inserito?"
+          "Vuoi sostituirla con i dati che hai appena inserito?",
+        { titolo: "Iscrizione già presente", ok: "Sostituisci" }
       );
-      if (!conferma) {
+      if (!sostituisci) {
         submitBtn.disabled = false;
         submitBtn.textContent = "Invia iscrizione";
         return;
@@ -475,14 +525,27 @@ async function inviaIscrizione(event) {
 
     // Il modulo firmato viene caricato solo ora: se l'iscrizione non parte
     // non lasciamo file orfani su Storage
-    submitBtn.textContent = "Caricamento del modulo...";
+    submitBtn.textContent = "Preparazione del modulo...";
+    const daCaricare = await preparaModulo(modulo);
 
-    const estensione = MODULO_TIPI[modulo.type];
+    if (daCaricare.size > MODULO_MAX_BYTE) {
+      document.getElementById("err-modulo").textContent =
+        `Il file pesa ${formattaDimensione(daCaricare.size)}: il limite è 10 MB.`;
+      document.querySelector(".file-picker").classList.add("invalid");
+      document.getElementById("form-error").textContent = "Controlla l'allegato e riprova.";
+      return;
+    }
+
+    const estensione = MODULO_TIPI[daCaricare.type];
     const percorsoModulo = `Moduli/${edition}/${chiave}-${codiceCasuale()}.${estensione}`;
 
     let urlModulo;
     try {
-      urlModulo = await uploadFile(percorsoModulo, modulo);
+      urlModulo = await uploadFile(percorsoModulo, daCaricare, {
+        onProgress: (avanzamento) => {
+          submitBtn.textContent = `Caricamento del modulo... ${Math.round(avanzamento * 100)}%`;
+        },
+      });
     } catch (error) {
       console.error("Errore durante il caricamento del modulo:", error);
       document.getElementById("err-modulo").textContent =
@@ -507,7 +570,7 @@ async function inviaIscrizione(event) {
       Arbitri: raccolte.arbitri.persone,
       ModuloFirmato: {
         Url: urlModulo,
-        NomeFile: modulo.name,
+        NomeFile: daCaricare.name,
         Percorso: percorsoModulo,
       },
       OraInvio: new Date().toISOString(),
@@ -520,8 +583,9 @@ async function inviaIscrizione(event) {
 
     const confermaEl = document.getElementById("conferma-testo");
     confermaEl.textContent =
-      `Per completare l'iscrizione, riceverai istruzioni per versare la quota entro data da definirsi.`+
-      " Per qualsiasi modifica scrivi a info@coftamilano.com.";
+      `Abbiamo ricevuto l'iscrizione di ${nomeSquadra} (${divisione}). ` +
+      "Ti contatteremo con le istruzioni per versare la quota di iscrizione. " +
+      "Per qualsiasi modifica scrivi a info@coftamilano.com.";
 
     document.getElementById("iscrizione-form").classList.add("hidden");
     document.getElementById("iscrizione-inviata").classList.remove("hidden");
@@ -591,14 +655,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-  // Iscrizioni aperte/chiuse (interruttore nel gestionale)
-  try {
-    const impostazioni = await getData("Impostazioni");
-    if (impostazioni && impostazioni.iscrizioniAperte === false) {
-      form.classList.add("hidden");
-      document.getElementById("iscrizioni-chiuse").classList.remove("hidden");
-    }
-  } catch (error) {
-    console.warn("Impossibile verificare lo stato delle iscrizioni:", error);
-  }
+  // Iscrizioni aperte/chiuse (interruttore nel gestionale), anche a pagina aperta.
+  // Chi ha appena inviato continua a vedere la conferma.
+  osservaImpostazioni((impostazioni) => {
+    if (!document.getElementById("iscrizione-inviata").classList.contains("hidden")) return;
+    const chiuse = impostazioni.iscrizioniAperte === false;
+    form.classList.toggle("hidden", chiuse);
+    document.getElementById("iscrizioni-chiuse").classList.toggle("hidden", !chiuse);
+  });
 });

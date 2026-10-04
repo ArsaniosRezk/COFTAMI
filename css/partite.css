@@ -1,0 +1,102 @@
+/*
+===================================
+PARTITE: elementi comuni
+===================================
+Usati da home, calendario e pagina squadra, sopra agli stili di base delle
+schede partita (home.css / calendario.css).
+*/
+
+/* Solo le partite giocate si possono aprire: le altre non reagiscono al mouse */
+.partita-div {
+  border: 1px solid transparent;
+}
+
+.partita-div:not(.cliccabile):hover {
+  background: var(--matchesGradient);
+  border-color: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+.partita-div.cliccabile {
+  cursor: pointer;
+}
+
+.partita-oggi {
+  border-color: var(--mainText);
+}
+
+/* Riga con luogo e data: leggibile anche su smartphone */
+.partita-venue {
+  align-items: center;
+  gap: 10px;
+}
+
+.partita-venue p,
+.partita-venue a {
+  font-size: 0.65rem;
+}
+
+.link-mappa {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--white-50);
+  text-underline-offset: 2px;
+}
+
+.link-mappa:hover {
+  text-decoration-color: var(--text);
+}
+
+.badge-oggi,
+.badge-giornata {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background-color: var(--mainText);
+  color: var(--darkText);
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+.giornata-corrente {
+  outline: 2px solid var(--mainText);
+  outline-offset: -2px;
+}
+
+/* La giornata portata in vista non finisce sotto l'header fisso */
+.giornata {
+  scroll-margin-top: 120px;
+}
+
+.nota-riposo {
+  font-size: 0.8rem;
+  color: var(--testoTrasparente);
+  padding: 10px 0;
+}
+
+.squadraCasa img,
+.squadraOspite img {
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (min-width: 992px) {
+  .partita-venue p,
+  .partita-venue a {
+    font-size: 0.8rem;
+  }
+
+  .badge-oggi,
+  .badge-giornata {
+    font-size: 0.7rem;
+  }
+}

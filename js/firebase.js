@@ -1,12 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getStorage,
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-import {
   getDatabase,
   ref,
   get,
@@ -17,8 +11,9 @@ import {
   onValue,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// Storage serve solo per caricare file (iscrizione, loghi): l'SDK si scarica
+// alla prima richiesta invece che su ogni pagina
+const STORAGE_SDK = "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -37,15 +32,49 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const storage = getStorage(app);
 
-export { db, storage, ref, update, get, set, child, remove, onValue };
+export { db, ref, update, get, set, child, remove, onValue };
 
-// Carica un file su Firebase Storage e restituisce l'URL da cui scaricarlo
-export async function uploadFile(path, file) {
-  const fileRef = storageRef(storage, path);
-  await uploadBytes(fileRef, file, { contentType: file.type });
-  return getDownloadURL(fileRef);
+let storagePronto = null;
+
+function caricaStorage() {
+  storagePronto ??= import(STORAGE_SDK).then((sdk) => ({
+    sdk,
+    storage: sdk.getStorage(app),
+  }));
+  return storagePronto;
+}
+
+/*
+ Carica un file su Firebase Storage e restituisce l'URL da cui scaricarlo.
+ I percorsi usati contengono sempre un codice univoco (loghi, moduli): un file
+ non cambia mai allo stesso indirizzo, quindi il browser può tenerlo in cache
+ per un anno invece di ricontrollarlo a ogni visita.
+ onProgress (facoltativo) riceve l'avanzamento da 0 a 1.
+*/
+export async function uploadFile(path, file, { onProgress } = {}) {
+  const { sdk, storage } = await caricaStorage();
+  const fileRef = sdk.ref(storage, path);
+  const metadata = {
+    contentType: file.type,
+    cacheControl: "public, max-age=31536000, immutable",
+  };
+
+  if (!onProgress) {
+    await sdk.uploadBytes(fileRef, file, metadata);
+  } else {
+    const caricamento = sdk.uploadBytesResumable(fileRef, file, metadata);
+    await new Promise((resolve, reject) => {
+      caricamento.on(
+        "state_changed",
+        (stato) => onProgress(stato.bytesTransferred / (stato.totalBytes || 1)),
+        reject,
+        resolve
+      );
+    });
+  }
+
+  return sdk.getDownloadURL(fileRef);
 }
 
 // Funzione per ottenere i dati da Firebase
@@ -80,6 +109,16 @@ export async function updateData(refPath, data) {
     );
     throw error;
   }
+}
+
+// Fino alla versione precedente calendario e squadre venivano tenuti in cache
+// per un'ora (risultati vecchi sul calendario): le copie rimaste si eliminano
+try {
+  Object.keys(localStorage)
+    .filter((chiave) => chiave.startsWith("cache_Calcio/") && chiave !== "cache_Calcio/AlboOro")
+    .forEach((chiave) => localStorage.removeItem(chiave));
+} catch (errore) {
+  // Storage non disponibile: niente da pulire
 }
 
 // Funzione per ottenere dati con caching (per dati pesanti che non cambiano spesso)
@@ -122,15 +161,19 @@ import {
   edition,
 } from "./divisionAndVariables.js";
 
-export function getPaths() {
+// Percorsi della divisione scelta nell'header, oppure di quella indicata
+// (pagina squadra, classifica completa)
+export function getPaths(divisione = null) {
   loadSavedOption();
-  const selectedDivision = getSelectedDivision();
+  const selectedDivision = divisione || getSelectedDivision();
+  const divisionPath = `Calcio/${edition}/${selectedDivision}`;
   const teamsPath = `Calcio/${edition}/${selectedDivision}/Squadre`;
   const matchesPath = `Calcio/${edition}/${selectedDivision}/Partite`;
   const calendarPath = `Calcio/${edition}/${selectedDivision}/Calendario`;
   const matchdayToShowPath = `Calcio/${edition}/GiornataDaMostrare`;
 
   return {
+    divisionPath,
     teamsPath,
     matchesPath,
     calendarPath,

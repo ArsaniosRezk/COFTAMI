@@ -1,5 +1,6 @@
 import { getData, getPaths } from "../firebase.js";
 import { edition } from "../divisionAndVariables.js";
+import { leggiImpostazioni } from "../impostazioni.js";
 
 /*
 ===================================
@@ -16,15 +17,18 @@ pubblicate, l'avviso sparisce da solo e le pagine tornano normali.
 
 const ID_AVVISO = "avviso-pre-torneo";
 
-// True se per l'edizione e la divisione correnti non c'è ancora nessuna squadra
-export async function torneoNonIniziato() {
-    const { teamsPath } = getPaths();
-    const squadre = await getData(teamsPath);
+// True se per l'edizione e la divisione correnti non c'è ancora nessuna squadra.
+// Chi ha già le squadre (dati in tempo reale) le passa e si evita una lettura.
+export async function torneoNonIniziato(squadre = undefined) {
+    if (squadre === undefined) {
+        const { teamsPath } = getPaths();
+        squadre = await getData(teamsPath);
+    }
     return !squadre || Object.keys(squadre).length === 0;
 }
 
 async function iscrizioniAperte() {
-    const impostazioni = await getData("Impostazioni");
+    const impostazioni = await leggiImpostazioni();
     // Le iscrizioni sono considerate aperte finché non vengono chiuse esplicitamente
     return !impostazioni || impostazioni.iscrizioniAperte !== false;
 }
@@ -41,7 +45,7 @@ function creaAvviso(main) {
  Restituisce true se il torneo non è ancora iniziato, così la pagina
  chiamante può fermarsi prima di caricare classifiche e calendario.
 */
-export async function gestisciAttesaTorneo() {
+export async function gestisciAttesaTorneo(squadre = undefined) {
     const main = document.querySelector("main");
     if (!main) return false;
 
@@ -50,7 +54,7 @@ export async function gestisciAttesaTorneo() {
         (el) => el.id !== ID_AVVISO
     );
 
-    const inAttesa = await torneoNonIniziato();
+    const inAttesa = await torneoNonIniziato(squadre);
 
     if (!inAttesa) {
         document.getElementById(ID_AVVISO)?.remove();
@@ -70,7 +74,7 @@ export async function gestisciAttesaTorneo() {
         : "";
 
     avviso.innerHTML = `
-        <i class="fa-solid fa-futbol icona-pre-torneo"></i>
+        <i class="icona icona-futbol icona-pre-torneo" aria-hidden="true"></i>
         <p class="section-title">Il torneo ${edition} non è ancora iniziato</p>
         <p class="testo-pre-torneo">
           Squadre, calendario e classifiche saranno pubblicati qui appena il

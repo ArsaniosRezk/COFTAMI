@@ -9,6 +9,10 @@ import {
 } from "../firebase.js";
 import { edition } from "../divisionAndVariables.js";
 import { capitalize, formatDateTime } from "../utils/formatters.js";
+import { conferma as chiediConferma, avviso as finestraAvviso, mostraToast } from "../utils/interfaccia.js";
+
+// Messaggi al posto di alert(): brevi in basso, quelli lunghi in una finestra
+const segnalaErrore = (testo) => mostraToast(testo, { errore: true });
 
 /*
 ===================================
@@ -728,7 +732,7 @@ async function salvaModifiche(iscrizione, dati) {
     dati.Divisione !== iscrizione.Divisione;
 
   if (convertita && squadraCambiata) {
-    const conferma = confirm(
+    const conferma = await chiediConferma(
       `Questa iscrizione è già stata convertita: nel torneo la squadra resta "${iscrizione.NomeSquadra}" (${iscrizione.Divisione}).\n\n` +
         "Per rinominarla usa la pagina Squadre, che aggiorna anche calendario e partite.\n" +
         'Attenzione: "Riconverti in squadra" con il nuovo nome creerebbe una seconda squadra.\n\n' +
@@ -748,7 +752,7 @@ async function salvaModifiche(iscrizione, dati) {
       await setData(`${iscrizioniPath()}/${vecchiaChiave}`, aggiornata);
     } else {
       if (await getData(`${iscrizioniPath()}/${nuovaChiave}`)) {
-        alert(
+        segnalaErrore(
           `Esiste già un'iscrizione per "${dati.NomeSquadra}" (${dati.Divisione}).`
         );
         return false;
@@ -763,13 +767,13 @@ async function salvaModifiche(iscrizione, dati) {
     carteAperte.add(nuovaChiave);
   } catch (error) {
     console.error("Errore nel salvataggio dell'iscrizione:", error);
-    alert("Errore nel salvataggio. Riprova.");
+    segnalaErrore("Errore nel salvataggio. Riprova.");
     return false;
   }
 
   // La squadra esiste già con lo stesso nome: si possono riportare subito le modifiche
   if (convertita && !squadraCambiata) {
-    const allinea = confirm(
+    const allinea = await chiediConferma(
       "Iscrizione salvata.\n\n" +
         `Vuoi aggiornare anche responsabili, allenatori e giocatori della squadra "${dati.NomeSquadra}" nel torneo?\n` +
         "(girone, logo e penalità restano invariati)"
@@ -779,7 +783,7 @@ async function salvaModifiche(iscrizione, dati) {
         await scriviSquadra({ ...aggiornata, chiave: nuovaChiave }, true);
       } catch (error) {
         console.error("Errore nell'aggiornamento della squadra:", error);
-        alert(
+        finestraAvviso(
           'Iscrizione salvata, ma la squadra non è stata aggiornata. Usa "Riconverti in squadra".'
         );
       }
@@ -835,7 +839,7 @@ async function scriviSquadra(iscrizione, sovrascriviEsistente) {
 
 async function convertiSingola(iscrizione) {
   if (!DIVISIONI.includes(iscrizione.Divisione)) {
-    alert("Divisione non valida: impossibile convertire questa iscrizione.");
+    segnalaErrore("Divisione non valida: impossibile convertire questa iscrizione.");
     return;
   }
 
@@ -845,7 +849,7 @@ async function convertiSingola(iscrizione) {
     let risultato = await scriviSquadra(iscrizione, false);
 
     if (risultato.esito === "esistente") {
-      const conferma = confirm(
+      const conferma = await chiediConferma(
         `La squadra "${nomeSquadra}" esiste già in ${iscrizione.Divisione}.\n\n` +
           "Vuoi aggiornare responsabili, allenatori e giocatori con i dati dell'iscrizione?\n" +
           "(girone, logo e penalità restano invariati)"
@@ -854,7 +858,7 @@ async function convertiSingola(iscrizione) {
       risultato = await scriviSquadra(iscrizione, true);
     }
 
-    alert(
+    mostraToast(
       risultato.esito === "creata"
         ? `Squadra "${nomeSquadra}" creata in ${iscrizione.Divisione}.`
         : `Squadra "${nomeSquadra}" aggiornata in ${iscrizione.Divisione}.`
@@ -862,7 +866,7 @@ async function convertiSingola(iscrizione) {
     showIscrizioni();
   } catch (error) {
     console.error("Errore nella conversione dell'iscrizione:", error);
-    alert("Errore nella conversione. Riprova.");
+    segnalaErrore("Errore nella conversione. Riprova.");
   }
 }
 
@@ -873,11 +877,11 @@ async function convertiTutteLeIscrizioni() {
   );
 
   if (daConvertire.length === 0) {
-    alert("Non ci sono iscrizioni da convertire con i filtri attuali.");
+    mostraToast("Non ci sono iscrizioni da convertire con i filtri attuali.");
     return;
   }
 
-  const conferma = confirm(
+  const conferma = await chiediConferma(
     `Stai per creare ${daConvertire.length} squadre a partire dalle iscrizioni non ancora convertite.\n\n` +
       "Le squadre che esistono già verranno saltate (potrai convertirle una per una)."
   );
@@ -908,7 +912,7 @@ async function convertiTutteLeIscrizioni() {
   if (errori.length > 0) {
     messaggio += `\nErrori: ${errori.join(", ")}`;
   }
-  alert(messaggio);
+  finestraAvviso(messaggio);
 
   showIscrizioni();
 }
@@ -920,7 +924,7 @@ ELIMINAZIONE
 */
 
 async function eliminaIscrizione(iscrizione) {
-  const conferma = confirm(
+  const conferma = await chiediConferma(
     `Vuoi eliminare definitivamente l'iscrizione di "${iscrizione.NomeSquadra}" (${iscrizione.Divisione})?\n\n` +
       "L'eventuale squadra già creata nel torneo NON verrà eliminata."
   );
@@ -931,7 +935,7 @@ async function eliminaIscrizione(iscrizione) {
     showIscrizioni();
   } catch (error) {
     console.error("Errore nell'eliminazione dell'iscrizione:", error);
-    alert("Errore nell'eliminazione. Riprova.");
+    segnalaErrore("Errore nell'eliminazione. Riprova.");
   }
 }
 
@@ -945,7 +949,7 @@ function esportaCsv() {
   const visibili = iscrizioniFiltrate();
 
   if (visibili.length === 0) {
-    alert("Nessuna iscrizione da esportare.");
+    mostraToast("Nessuna iscrizione da esportare.");
     return;
   }
 

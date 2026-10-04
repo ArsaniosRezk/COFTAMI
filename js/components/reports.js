@@ -1,4 +1,7 @@
 import {
+    db,
+    ref,
+    update,
     getData,
     setData,
     updateData,
@@ -8,6 +11,10 @@ import { edition } from "../divisionAndVariables.js";
 import { paginaCorrente } from "../utils/percorso.js";
 import { formatDateTime } from "../utils/formatters.js";
 import { isMobileDevice } from "../utils/device.js";
+import { mostraToast } from "../utils/interfaccia.js";
+
+// Messaggi al posto di alert(): brevi in basso, quelli lunghi in una finestra
+const segnalaErrore = (testo) => mostraToast(testo, { errore: true });
 
 /*
 ===================================
@@ -478,19 +485,20 @@ async function confermaReport(giornata, report) {
     const calendarioPath = `Calcio/${edition}/${division}/Calendario/${giornata}/${matchKey}`;
 
     try {
-        // Aggiorna i dati nel database per la partita
-        await setData(matchPath, matchData);
+        // Partita e risultato nel calendario in un'unica scrittura: il sito
+        // (in tempo reale) non vede mai il risultato senza i marcatori o viceversa
+        await update(ref(db), {
+            [matchPath]: matchData,
+            [`${calendarioPath}/Risultato`]: risultato,
+        });
 
-        // Aggiorna il risultato nel calendario
-        await updateData(calendarioPath, { Risultato: risultato });
-
-        alert(
+        mostraToast(
             `Dati della partita per ${division}, giornata ${giornata}, partita ${matchKey} aggiornati con successo.`
         );
         return true;
     } catch (error) {
         console.error("Errore nell'aggiornamento dei dati:", error);
-        alert(
+        segnalaErrore(
             "Si è verificato un errore nell'aggiornamento dei dati della partita."
         );
         return false;

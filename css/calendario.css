@@ -256,3 +256,45 @@ section .section-title {
 }
 
 @media (min-width: 1440px) {}
+/*
+===================================
+FILTRO SQUADRA E CALENDARIO PERSONALE
+===================================
+*/
+
+.barra-calendario {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin: 10px 0 5px;
+}
+
+.barra-calendario:empty {
+  display: none;
+}
+
+.filtro-squadra {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--mainText);
+}
+
+#filtro-squadra {
+  min-width: 180px;
+  padding: 9px 12px;
+  border: 1px solid var(--white-50);
+  border-radius: 8px;
+  background-color: var(--secondary);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+#filtro-squadra option {
+  color: var(--darkText);
+  background-color: var(--white);
+}

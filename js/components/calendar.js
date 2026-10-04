@@ -1,122 +1,312 @@
+import { db, ref, set, getData, getPaths } from "../firebase.js";
+import { edition, getSelectedDivision } from "../divisionAndVariables.js";
 import {
-    db,
-    ref,
-    set,
-    getData,
-    getDataCached,
-    getPaths,
-} from "../firebase.js";
-import { edition } from "../divisionAndVariables.js";
-import { convertiDataOra } from "../utils/formatters.js";
+    giornateNumerate,
+    giornataCorrente,
+    GIORNATA_AUTOMATICA,
+    haRisultato,
+    statoPartita,
+    dataPartita,
+    nomeSquadra,
+    linkMappa,
+    partiteDellaSquadra,
+    creaIcs,
+    scaricaFile,
+    squadraPreferita,
+} from "../utils/torneo.js";
+import { mostraToast, rendiCliccabile } from "../utils/interfaccia.js";
 import { showOverlayMatchResult } from "./match-overlay.js";
 import { mostraAvvisoVuoto } from "./pre-torneo.js";
 
-// Nasconde l'istruzione "Premere su una partita..." quando non c'è nulla da premere
-function nascondiIstruzione() {
+// Mostra o nasconde l'istruzione "Tocca una partita..." in base a cosa c'è da toccare
+function mostraIstruzione(visibile) {
     const istruzione = document.querySelector(".instruction");
-    if (istruzione) istruzione.style.display = "none";
+    if (istruzione) istruzione.style.display = visibile ? "block" : "none";
+}
+
+// Legge i dati della divisione corrente quando la pagina non li passa già
+async function leggiDatiDivisione() {
+    const { divisionPath, matchdayToShowPath } = getPaths();
+    const [squadre, partite, calendario, giornata, giornataGlobale] = await Promise.all([
+        getData(`${divisionPath}/Squadre`),
+        getData(`${divisionPath}/Partite`),
+        getData(`${divisionPath}/Calendario`),
+        getData(`${divisionPath}/GiornataDaMostrare`),
+        getData(matchdayToShowPath),
+    ]);
+    return {
+        divisione: getSelectedDivision(),
+        squadre,
+        partite,
+        calendario,
+        giornataImpostata: giornata ?? giornataGlobale,
+    };
 }
 
 /*
 ===================================
-CALENDARIO
+GIORNATA DA MOSTRARE (gestionale)
 ===================================
+"Automatica" mostra in home la prima giornata con partite ancora da giocare.
+Si può fissare a mano una giornata, anche della fase finale (SF1, F...).
 */
 
 export async function editMatchdayToShow() {
-    // Div prossima giornata
-    const matchdayToShowDiv = document.getElementById("matchday-selection") || document.getElementById("match-to-show-div");
+    const matchdayToShowDiv =
+        document.getElementById("matchday-selection") ||
+        document.getElementById("match-to-show-div");
+    if (!matchdayToShowDiv) return;
 
-    const { matchdayToShowPath } = getPaths(); // path globale (retro-compatibilità)
     const division = document.getElementById("division")?.value || "Superiori";
+    const { matchdayToShowPath } = getPaths(division); // path globale (retro-compatibilità)
     const perDivisionPath = `Calcio/${edition}/${division}/GiornataDaMostrare`;
 
-    // leggi: prima per-divisione, se mancante usa il globale
-    let matchdayToShow =
-        (await getData(perDivisionPath)) ?? (await getData(matchdayToShowPath));
-
-    if (matchdayToShow !== undefined && matchdayToShow !== null) {
-        const inputContainer = document.createElement("div");
-
-        const matchdayToShowLabel = document.createElement("label");
-        matchdayToShowLabel.setAttribute("for", "matchday-to-show-input");
-        matchdayToShowLabel.innerText = "Giornata da Mostrare";
-
-        const matchdayToShowInput = document.createElement("input");
-        matchdayToShowInput.id = "matchday-to-show-input";
-        matchdayToShowInput.value = matchdayToShow;
-
-        inputContainer.appendChild(matchdayToShowLabel);
-        inputContainer.appendChild(matchdayToShowInput);
-        matchdayToShowDiv.appendChild(inputContainer);
-
-        // Bottone per salvare la giornata da mostrare (per-divisione)
-        const saveButton = document.createElement("button");
-        saveButton.classList.add("custom-button");
-        saveButton.textContent = "Salva";
-        matchdayToShowDiv.appendChild(saveButton);
-
-        saveButton.addEventListener("click", () => {
-            const matchdayToShowRef = ref(db, perDivisionPath);
-
-            set(matchdayToShowRef, matchdayToShowInput.value)
-                .then(() => {
-                    alert("Modifica Salvata");
-                    // Aggiorna l'interfaccia con i nuovi dati
-                    matchdayToShow = matchdayToShowInput.value;
-
-                    // Nota: se avevi un ref con typo, usa l'ID corretto "nav-dashboard"
-                    const navDashboard =
-                        document.getElementById("nav-dashboard") ||
-                        document.getElementById("nav-dasboard");
-                    if (navDashboard) navDashboard.click();
-                })
-                .catch((error) => {
-                    console.error("Errore nel salvataggio delle modifiche:", error);
-                });
-        });
-    }
-}
-
-export async function recuperaCalendario() {
-    // Ottieni i percorsi per calendario e squadre
-    const { calendarPath, teamsPath } = getPaths();
-
-    // Recupera i dati di calendario e squadre in parallelo con cache (60 min)
-    const [calendarSnapshot, teamsSnapshot] = await Promise.all([
-        getDataCached(calendarPath, 60),
-        getDataCached(teamsPath, 60),
+    const [perDivisione, globale, calendario] = await Promise.all([
+        getData(perDivisionPath),
+        getData(matchdayToShowPath),
+        getData(`Calcio/${edition}/${division}/Calendario`),
     ]);
+    const impostata = perDivisione ?? globale;
+    const automatica = giornataCorrente(calendario, null);
 
-    if (calendarSnapshot) {
-        // Pulisce il contenuto del div prima di inserire nuove date
-        const calendarDiv = document.getElementById("giornate");
+    const inputContainer = document.createElement("div");
+
+    const matchdayToShowLabel = document.createElement("label");
+    matchdayToShowLabel.setAttribute("for", "matchday-to-show-input");
+    matchdayToShowLabel.innerText = "Giornata da Mostrare";
+
+    const matchdayToShowInput = document.createElement("select");
+    matchdayToShowInput.id = "matchday-to-show-input";
+
+    const opzione = (valore, testo) => {
+        const option = document.createElement("option");
+        option.value = valore;
+        option.textContent = testo;
+        matchdayToShowInput.appendChild(option);
+    };
+    opzione(
+        GIORNATA_AUTOMATICA,
+        automatica ? `Automatica (ora: ${automatica})` : "Automatica"
+    );
+    const giornate = Object.keys(calendario || {});
+    const numerate = giornateNumerate(calendario);
+    const speciali = giornate.filter((giornata) => !numerate.includes(giornata)).sort();
+    [...numerate, ...speciali].forEach((giornata) => opzione(giornata, giornata));
+
+    // Un valore salvato che non è più nel calendario resta visibile
+    const valoreAttuale =
+        impostata === null || impostata === undefined || impostata === ""
+            ? GIORNATA_AUTOMATICA
+            : String(impostata);
+    if (![...matchdayToShowInput.options].some((o) => o.value === valoreAttuale)) {
+        opzione(valoreAttuale, valoreAttuale);
+    }
+    matchdayToShowInput.value = valoreAttuale;
+
+    inputContainer.appendChild(matchdayToShowLabel);
+    inputContainer.appendChild(matchdayToShowInput);
+    matchdayToShowDiv.appendChild(inputContainer);
+
+    // Bottone per salvare la giornata da mostrare (per-divisione)
+    const saveButton = document.createElement("button");
+    saveButton.classList.add("custom-button");
+    saveButton.textContent = "Salva";
+    matchdayToShowDiv.appendChild(saveButton);
+
+    saveButton.addEventListener("click", async () => {
+        saveButton.disabled = true;
+        try {
+            await set(ref(db, perDivisionPath), matchdayToShowInput.value);
+            mostraToast("Giornata da mostrare salvata");
+        } catch (error) {
+            console.error("Errore nel salvataggio delle modifiche:", error);
+            mostraToast("Errore nel salvataggio. Riprova.", { errore: true });
+        } finally {
+            saveButton.disabled = false;
+        }
+    });
+}
+
+/*
+===================================
+CALENDARIO (pagina pubblica)
+===================================
+*/
+
+// Squadra scelta nel filtro e divisione a cui si riferisce
+const statoCalendario = { divisione: null, squadra: "", scorrimentoFatto: false };
+
+export function scheletroCalendario(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const giornata = `
+        <div class="giornata">
+            <div class="skeleton skeleton-text" style="width: 100px; margin: 0 auto 10px;"></div>
+            <div class="partite">
+                <div class="skeleton skeleton-card" style="height: 80px;"></div>
+                <div class="skeleton skeleton-card" style="height: 80px;"></div>
+            </div>
+        </div>`;
+    container.innerHTML = giornata + giornata;
+}
+
+export async function recuperaCalendario(dati = null) {
+    if (!dati) {
+        scheletroCalendario("giornate");
+        dati = await leggiDatiDivisione();
+    }
+
+    const calendarDiv = document.getElementById("giornate");
+    if (!calendarDiv) return;
+
+    const { calendario, squadre, partite, divisione } = dati;
+    const matchdays = giornateNumerate(calendario);
+
+    if (matchdays.length === 0) {
+        document.getElementById("barra-calendario")?.replaceChildren();
+        mostraIstruzione(false);
+        mostraAvvisoVuoto("giornate", "Il calendario delle partite non è ancora disponibile.");
+        return;
+    }
+
+    // Cambiando divisione il filtro riparte da "Tutte le squadre"
+    if (statoCalendario.divisione !== divisione) {
+        statoCalendario.divisione = divisione;
+        statoCalendario.squadra = "";
+        statoCalendario.scorrimentoFatto = false;
+    }
+    if (statoCalendario.squadra && !squadre?.[statoCalendario.squadra]) {
+        statoCalendario.squadra = "";
+    }
+
+    // Giornata in corso solo se resta qualcosa da giocare: a torneo finito
+    // nessuna giornata è "in corso" e la pagina parte dall'inizio
+    const restaDaGiocare = matchdays.some((giornata) =>
+        Object.values(calendario[giornata] || {}).some((partita) => !haRisultato(partita))
+    );
+    const corrente = restaDaGiocare ? giornataCorrente(calendario, null) : null;
+    const contesto = { squadre: squadre || {}, partite, calendario, divisione };
+
+    const disegna = () => {
         calendarDiv.innerHTML = "";
+        const filtro = statoCalendario.squadra;
+        let cliccabili = false;
 
-        // Filtra solo le chiavi numeriche
-        const matchdays = Object.keys(calendarSnapshot)
-            .filter((key) => !isNaN(key))
-            .sort();
+        for (const matchday of matchdays) {
+            let matches = calendario[matchday] || {};
+            if (filtro) {
+                matches = Object.fromEntries(
+                    Object.entries(matches).filter(([chiave]) => chiave.split(":").includes(filtro))
+                );
+            }
+            if (Object.values(matches).some(haRisultato)) cliccabili = true;
 
-        matchdays.forEach((matchday) => {
-            const matches = calendarSnapshot[matchday];
-            rappresentaGiornata(matchday, matches, teamsSnapshot, calendarDiv);
-        });
-    } else {
-        console.log("Nessun calendario trovato nel database.");
-        nascondiIstruzione();
-        mostraAvvisoVuoto(
-            "giornate",
-            "Il calendario delle partite non è ancora disponibile."
-        );
+            rappresentaGiornata(matchday, matches, contesto, calendarDiv, {
+                corrente: matchday === corrente,
+                riposo: filtro ? nomeSquadra(filtro) : null,
+            });
+        }
+        mostraIstruzione(cliccabili);
+    };
+
+    disegnaBarraCalendario(contesto, disegna);
+    disegna();
+
+    // Alla prima apertura si porta in vista la giornata in corso
+    if (!statoCalendario.scorrimentoFatto) {
+        statoCalendario.scorrimentoFatto = true;
+        if (corrente && corrente !== matchdays[0]) {
+            document
+                .getElementById(`giornata-${corrente}`)
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
     }
 }
 
-export async function prossimaGiornata() {
-    // Skeleton
-    const container = document.getElementById("prossima-giornata");
-    if (container) {
-        container.innerHTML = `
+// Filtro per squadra e pulsante "Aggiungi al calendario"
+function disegnaBarraCalendario({ squadre, calendario, divisione }, ridisegna) {
+    const barra = document.getElementById("barra-calendario");
+    if (!barra) return;
+    barra.replaceChildren();
+
+    const etichetta = document.createElement("label");
+    etichetta.className = "filtro-squadra";
+    etichetta.htmlFor = "filtro-squadra";
+    etichetta.textContent = "Squadra";
+
+    const select = document.createElement("select");
+    select.id = "filtro-squadra";
+
+    const preferita = squadraPreferita();
+    const chiavi = Object.keys(squadre).sort((a, b) => nomeSquadra(a).localeCompare(nomeSquadra(b)));
+    const opzione = (valore, testo) => {
+        const option = document.createElement("option");
+        option.value = valore;
+        option.textContent = testo;
+        select.appendChild(option);
+    };
+    opzione("", "Tutte le squadre");
+    if (preferita?.divisione === divisione && squadre[preferita.nome]) {
+        opzione(preferita.nome, `★ ${nomeSquadra(preferita.nome)}`);
+    }
+    chiavi
+        .filter((chiave) => !(preferita?.divisione === divisione && preferita.nome === chiave))
+        .forEach((chiave) => opzione(chiave, nomeSquadra(chiave)));
+    select.value = statoCalendario.squadra;
+
+    const ics = document.createElement("button");
+    ics.type = "button";
+    ics.className = "btn-contorno";
+    ics.innerHTML = `<i class="icona icona-calendar-plus" aria-hidden="true"></i><span></span>`;
+
+    const aggiornaIcs = () => {
+        ics.querySelector("span").textContent = statoCalendario.squadra
+            ? "Aggiungi le sue partite al calendario"
+            : "Aggiungi tutte le partite al calendario";
+    };
+
+    select.addEventListener("change", () => {
+        statoCalendario.squadra = select.value;
+        aggiornaIcs();
+        ridisegna();
+    });
+
+    ics.addEventListener("click", () => {
+        const squadra = statoCalendario.squadra;
+        const inizioOggi = new Date().setHours(0, 0, 0, 0);
+        const elenco = (
+            squadra
+                ? partiteDellaSquadra(calendario, squadra)
+                : giornateNumerate(calendario).flatMap((giornata) =>
+                      Object.entries(calendario[giornata] || {}).map(([chiave, dati]) => {
+                          const [casa, ospite] = chiave.split(":");
+                          return { giornata, chiave, casa, ospite, dati };
+                      })
+                  )
+        ).filter(({ dati }) => !haRisultato(dati) && (dataPartita(dati) || 0) >= inizioOggi);
+
+        if (elenco.length === 0) {
+            mostraToast("Non ci sono partite in programma con data e orario");
+            return;
+        }
+        const nome = squadra ? nomeSquadra(squadra).replace(/[^\w]+/g, "-") : divisione;
+        scaricaFile(`cofta-${nome}.ics`, creaIcs(elenco, divisione), "text/calendar");
+    });
+
+    aggiornaIcs();
+    barra.append(etichetta, select, ics);
+}
+
+/*
+===================================
+PROSSIMA GIORNATA (home)
+===================================
+*/
+
+export function scheletroProssimaGiornata(containerId = "prossima-giornata") {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = `
         <div class="giornata" style="width:100%">
             <div class="skeleton skeleton-text" style="width: 100px; margin: 10px auto;"></div>
             <div class="partite" style="justify-content: center; gap: 10px;">
@@ -125,239 +315,215 @@ export async function prossimaGiornata() {
                 <div class="skeleton skeleton-card" style="height: 80px; width: 100%;"></div>
             </div>
         </div>`;
+}
+
+export async function prossimaGiornata(dati = null) {
+    if (!dati) {
+        scheletroProssimaGiornata();
+        dati = await leggiDatiDivisione();
     }
 
-    const { matchdayToShowPath, teamsPath, calendarPath } = getPaths();
+    const calendarDiv = document.getElementById("prossima-giornata");
+    if (!calendarDiv) return;
 
-    const division = document.getElementById("division")?.value || "Superiori";
-    const perDivisionPath = `Calcio/${edition}/${division}/GiornataDaMostrare`;
+    const matchdayToShow = giornataCorrente(dati.calendario, dati.giornataImpostata);
+    const matches = matchdayToShow ? dati.calendario?.[matchdayToShow] : null;
 
-    // leggi giornata per la divisione, altrimenti usa quella globale
-    const matchdayToShow =
-        (await getData(perDivisionPath)) ?? (await getData(matchdayToShowPath));
-
-    if (matchdayToShow) {
-        const [calendarSnapshot, teamsSnapshot] = await Promise.all([
-            getData(`${calendarPath}/${matchdayToShow}`),
-            getData(teamsPath),
-        ]);
-
-        if (calendarSnapshot) {
-            const calendarDiv = document.getElementById("prossima-giornata");
-            calendarDiv.innerHTML = "";
-
-            const matchdayDiv = document.createElement("div");
-            matchdayDiv.classList.add("giornata");
-
-            const matches = calendarSnapshot;
-            rappresentaGiornata(matchdayToShow, matches, teamsSnapshot, calendarDiv);
-        } else {
-            mostraAvvisoVuoto(
-                "prossima-giornata",
-                "Le partite della prossima giornata non sono ancora state pubblicate."
-            );
-        }
-
-        const instructionElement = document.querySelector(".instruction");
-
-        // Controlla se almeno una partita ha un risultato valido
-        const hasResults = calendarSnapshot
-            ? Object.values(calendarSnapshot).some(
-                (match) =>
-                    match.Risultato &&
-                    match.Risultato.trim() !== "VS" &&
-                    match.Risultato.trim() !== ""
-            )
-            : false;
-
-        // Mostra o nasconde il paragrafo in base ai risultati
-        if (instructionElement) {
-            instructionElement.style.display = hasResults ? "block" : "none";
-        }
-    } else {
-        // Nessuna giornata impostata: lo scheletro resterebbe appeso
-        nascondiIstruzione();
+    if (!matches) {
+        // Nessuna giornata disponibile: lo scheletro resterebbe appeso
+        mostraIstruzione(false);
         mostraAvvisoVuoto(
             "prossima-giornata",
             "Le partite della prossima giornata non sono ancora state pubblicate."
         );
+        return;
     }
+
+    calendarDiv.innerHTML = "";
+    rappresentaGiornata(
+        matchdayToShow,
+        matches,
+        { squadre: dati.squadre || {}, partite: dati.partite, calendario: dati.calendario, divisione: dati.divisione },
+        calendarDiv
+    );
+
+    mostraIstruzione(Object.values(matches).some(haRisultato));
 }
 
-function rappresentaGiornata(matchday, matches, teamsSnapshot, calendarDiv) {
-    const descrizioneCalendario =
-        document.getElementById("descrizione-calendario") || null;
-    const selectDesktop = document.getElementById("division");
-    const selectMobile = document.getElementById("division-smartphone");
+/*
+===================================
+GIORNATA E PARTITA
+===================================
+contesto = { squadre, partite, calendario, divisione }
+*/
 
-    function aggiornaTestoDivisione(value) {
-        if (!descrizioneCalendario) return;
-        descrizioneCalendario.innerHTML = "";
-    }
+// Nome leggibile: "Giornata 3", oppure il nome della fase finale
+export function nomeGiornata(giornata) {
+    const fasi = { F: "Finale", SF1: "Semifinale 1", SF2: "Semifinale 2" };
+    if (fasi[giornata]) return fasi[giornata];
+    return isNaN(giornata) ? giornata : `Giornata ${giornata}`;
+}
 
-    selectDesktop.addEventListener("change", (e) => {
-        aggiornaTestoDivisione(e.target.value);
-    });
-
-    selectMobile.addEventListener("change", (e) => {
-        aggiornaTestoDivisione(e.target.value);
-    });
-
-    // Imposta il testo iniziale in base al valore selezionato all'avvio
-    aggiornaTestoDivisione(selectDesktop.value || selectMobile.value);
-
+export function rappresentaGiornata(
+    matchday,
+    matches,
+    contesto,
+    calendarDiv,
+    { corrente = false, riposo = null } = {}
+) {
     const matchdayDiv = document.createElement("div");
     matchdayDiv.classList.add("giornata");
+    matchdayDiv.id = `giornata-${matchday}`;
+    if (corrente) matchdayDiv.classList.add("giornata-corrente");
 
-    const matchdayElement = document.createElement("p");
+    const matchdayElement = document.createElement("h3");
     matchdayElement.classList.add("numero-giornata");
-    matchdayElement.textContent = `Giornata ${matchday}`;
-
+    matchdayElement.textContent = nomeGiornata(matchday);
+    if (corrente) {
+        const badge = document.createElement("span");
+        badge.className = "badge-giornata";
+        badge.textContent = "In corso";
+        matchdayElement.append(" ", badge);
+    }
     matchdayDiv.appendChild(matchdayElement);
 
     const matchesDiv = document.createElement("div");
     matchesDiv.classList.add("partite");
 
-    const matchesArray = [];
+    const ordinate = Object.entries(matches || {}).sort(
+        ([, a], [, b]) => (dataPartita(a) || Infinity) - (dataPartita(b) || Infinity)
+    );
 
-    for (const [matchString, matchData] of Object.entries(matches)) {
-        const dateAndTime = convertiDataOra(matchData.Data, matchData.Orario);
-        const matchObj = {
-            div: rappresentaPartita(matchString, matchData, teamsSnapshot, matchday),
-            dateAndTime: dateAndTime,
-        };
-        matchesArray.push(matchObj);
+    for (const [matchString, matchData] of ordinate) {
+        matchesDiv.appendChild(rappresentaPartita(matchString, matchData, contesto, matchday));
     }
 
-    // Ordina le partite in base alla data e all'hourrio
-    const orderedMatches = ordinaPartite(matchesArray);
-
-    // Aggiungi le partite ordinate al div delle partite
-    orderedMatches.forEach((matchObj) => {
-        matchesDiv.appendChild(matchObj.div);
-    });
+    if (ordinate.length === 0 && riposo) {
+        const nota = document.createElement("p");
+        nota.className = "nota-riposo";
+        nota.textContent = `${riposo} riposa in questa giornata`;
+        matchesDiv.appendChild(nota);
+    }
 
     matchdayDiv.appendChild(matchesDiv);
     calendarDiv.appendChild(matchdayDiv);
+    return matchdayDiv;
 }
 
-function rappresentaPartita(matchString, matchData, teamsSnapshot, matchday) {
+function logoSquadra(url) {
+    const container = document.createElement("div");
+    container.classList.add("container-logo");
+    if (url) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = "";
+        img.width = 50;
+        img.height = 50;
+        img.loading = "lazy";
+        img.decoding = "async";
+        container.appendChild(img);
+    }
+    return container;
+}
+
+function bloccoSquadra(classe, chiave, squadre) {
+    const div = document.createElement("div");
+    div.classList.add(classe);
+
+    const nomeContainer = document.createElement("div");
+    nomeContainer.classList.add("container-nome-squadra");
+    const nome = document.createElement("p");
+    nome.textContent = nomeSquadra(chiave);
+    nome.classList.add("nome-squadra");
+    nomeContainer.appendChild(nome);
+
+    div.append(logoSquadra(squadre?.[chiave]?.LogoLR || ""), nomeContainer);
+    return div;
+}
+
+export function rappresentaPartita(matchString, matchData, contesto, matchday) {
     const [homeTeam, awayTeam] = matchString.split(":");
-    const homeTeamAbbreviated = homeTeam.replace(/_/g, ".");
-    const awayTeamAbbreviated = awayTeam.replace(/_/g, ".");
+    const giocata = haRisultato(matchData);
+    const stato = statoPartita(matchData);
 
     // container della partita
     const matchDiv = document.createElement("div");
     matchDiv.classList.add("partita-div");
+    if (stato === "oggi") matchDiv.classList.add("partita-oggi");
 
     // container delle squadre che si affrontano
     const match = document.createElement("div");
     match.classList.add("partita");
 
-    // SQUADRA CASA
-    const homeTeamDiv = document.createElement("div");
-    homeTeamDiv.classList.add("squadraCasa");
-
-    // Recupera il logo della squadra casa dal nodo Squadre
-    const homeLogoContainer = document.createElement("div");
-    homeLogoContainer.classList.add("container-logo");
-    const homeLogoElement = document.createElement("img");
-    const homeLogoUrl = teamsSnapshot[homeTeam]?.LogoLR || "";
-    homeLogoElement.src = homeLogoUrl;
-
-    const homeTeamNameContainter = document.createElement("div");
-    homeTeamNameContainter.classList.add("container-nome-squadra");
-    const homeTeamElement = document.createElement("p");
-    homeTeamElement.textContent = homeTeamAbbreviated;
-    homeTeamElement.classList.add("nome-squadra");
-
-    homeLogoContainer.appendChild(homeLogoElement);
-    homeTeamNameContainter.appendChild(homeTeamElement);
-    homeTeamDiv.appendChild(homeLogoContainer);
-    homeTeamDiv.appendChild(homeTeamNameContainter);
-
-    // RISULTATO
     const resultDiv = document.createElement("div");
     resultDiv.classList.add("risultato");
+    resultDiv.textContent = giocata ? String(matchData.Risultato).trim() : "VS";
 
-    const resultValue = matchData?.Risultato || "VS";
-    resultDiv.textContent = resultValue.trim() ? resultValue : "VS";
-
-    // SQUADRA OSPITE
-    const awayTeamDiv = document.createElement("div");
-    awayTeamDiv.classList.add("squadraOspite");
-
-    // Recupera il logo della squadra ospite dal nodo Squadre
-    const awayLogoContainer = document.createElement("div");
-    awayLogoContainer.classList.add("container-logo");
-    const awayLogoElement = document.createElement("img");
-    const awayLogoUrl = teamsSnapshot[awayTeam]?.LogoLR || "";
-    awayLogoElement.src = awayLogoUrl;
-
-    const awayTeamNameContainer = document.createElement("div");
-    awayTeamNameContainer.classList.add("container-nome-squadra");
-    const awayTeamElement = document.createElement("p");
-    awayTeamElement.textContent = awayTeamAbbreviated;
-    awayTeamElement.classList.add("nome-squadra");
-
-    awayLogoContainer.appendChild(awayLogoElement);
-    awayTeamNameContainer.appendChild(awayTeamElement);
-    awayTeamDiv.appendChild(awayLogoContainer);
-    awayTeamDiv.appendChild(awayTeamNameContainer);
+    match.append(
+        bloccoSquadra("squadraCasa", homeTeam, contesto.squadre),
+        resultDiv,
+        bloccoSquadra("squadraOspite", awayTeam, contesto.squadre)
+    );
 
     // container di luogo e data
     const matchVenueDiv = document.createElement("div");
     matchVenueDiv.classList.add("partita-venue");
 
-    const matchDate = matchData?.Data || null;
-    const matchTime = matchData?.Orario || null;
-    const matchVenue = matchData?.Luogo || null;
+    const venueDiv = document.createElement("div");
+    venueDiv.classList.add("luogo");
+    const luogo = matchData?.Luogo;
+    if (luogo) {
+        const link = document.createElement("a");
+        link.href = linkMappa(luogo);
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.className = "link-mappa";
+        link.title = `Apri ${luogo} su Google Maps`;
+        link.innerHTML = `<i class="icona icona-location" aria-hidden="true"></i>`;
+        link.append(` ${luogo}`);
+        // Il clic sul luogo apre la mappa, non il dettaglio della partita
+        link.addEventListener("click", (evento) => evento.stopPropagation());
+        link.addEventListener("keydown", (evento) => evento.stopPropagation());
+        venueDiv.appendChild(link);
+    } else {
+        const venueElement = document.createElement("p");
+        venueElement.textContent = "Luogo da definire";
+        venueDiv.appendChild(venueElement);
+    }
 
     const dateDiv = document.createElement("div");
     dateDiv.classList.add("data");
-    const venueDiv = document.createElement("div");
-    venueDiv.classList.add("luogo");
-
-    if (matchDate && matchTime) {
-        const dateElement = document.createElement("p");
-        dateElement.textContent = `${matchDate} - ${matchTime}`;
-        dateDiv.appendChild(dateElement);
+    const dateElement = document.createElement("p");
+    if (matchData?.Data && matchData?.Orario) {
+        dateElement.textContent = `${matchData.Data} - ${matchData.Orario}`;
     } else {
-        const dateElement = document.createElement("p");
-        dateElement.textContent = "TBD";
-        dateDiv.appendChild(dateElement);
+        dateElement.textContent = "Data da definire";
     }
-
-    if (matchVenue) {
-        const venueElement = document.createElement("p");
-        venueElement.textContent = `${matchVenue}`;
-        venueDiv.appendChild(venueElement);
-    } else {
-        const venueElement = document.createElement("p");
-        venueElement.textContent = "TBD";
-        venueDiv.appendChild(venueElement);
+    if (stato === "oggi") {
+        const oggi = document.createElement("span");
+        oggi.className = "badge-oggi";
+        oggi.textContent = "Oggi";
+        dateElement.prepend(oggi, " ");
     }
+    dateDiv.appendChild(dateElement);
 
-    match.appendChild(homeTeamDiv);
-    match.appendChild(resultDiv);
-    match.appendChild(awayTeamDiv);
+    matchVenueDiv.append(venueDiv, dateDiv);
+    matchDiv.append(match, matchVenueDiv);
 
-    matchVenueDiv.appendChild(venueDiv);
-    matchVenueDiv.appendChild(dateDiv);
-
-    matchDiv.appendChild(match);
-    matchDiv.appendChild(matchVenueDiv);
-
-    // Aggiungi l'event listener per l'overlay
-    if (resultValue !== "VS") {
-        matchDiv.addEventListener("click", () => {
-            showOverlayMatchResult(matchString, teamsSnapshot, matchday);
-        });
+    // Solo le partite giocate hanno un dettaglio da mostrare
+    if (giocata) {
+        matchDiv.classList.add("cliccabile");
+        rendiCliccabile(
+            matchDiv,
+            () =>
+                showOverlayMatchResult(matchString, contesto.squadre, matchday, {
+                    partite: contesto.partite,
+                    calendario: contesto.calendario,
+                    divisione: contesto.divisione,
+                }),
+            `${nomeSquadra(homeTeam)} ${resultDiv.textContent} ${nomeSquadra(awayTeam)}: vedi i marcatori`
+        );
     }
 
     return matchDiv;
-}
-
-function ordinaPartite(matchesArray) {
-    return matchesArray.sort((a, b) => a.dateAndTime - b.dateAndTime);
 }

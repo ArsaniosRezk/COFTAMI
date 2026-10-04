@@ -1,0 +1,20 @@
+{
+  "name": "Cofta Milano",
+  "short_name": "Cofta",
+  "description": "Classifiche, risultati, calendario e squadre del campionato di calcio diocesano Cofta Milano.",
+  "lang": "it",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2e684e",
+  "icons": [
+    { "src": "/assets/icons/icona-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icona-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icona-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Classifica", "url": "/campionato.html", "icons": [{ "src": "/assets/icons/icona-192.png", "sizes": "192x192" }] },
+    { "name": "Calendario", "url": "/calendario.html", "icons": [{ "src": "/assets/icons/icona-192.png", "sizes": "192x192" }] }
+  ]
+}

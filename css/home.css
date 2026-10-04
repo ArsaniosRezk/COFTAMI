@@ -449,3 +449,87 @@ section .section-title {
 }
 
 @media (min-width: 1440px) {}
+/* Istruzione sempre visibile (non dipende dai risultati) */
+.instruction-fissa {
+  margin-top: 0;
+}
+
+/*
+===================================
+LA TUA SQUADRA
+===================================
+*/
+
+#tua-squadra {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.tua-squadra-intestazione {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  background-color: var(--secondary);
+  color: var(--text);
+  text-align: left;
+}
+
+.tua-squadra-intestazione:hover {
+  background-color: var(--tertiary);
+}
+
+.tua-squadra-intestazione img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.tua-squadra-intestazione div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+
+.tua-squadra-intestazione strong {
+  color: var(--mainText);
+  font-size: 1.1rem;
+}
+
+.tua-squadra-intestazione span {
+  font-size: 0.85rem;
+  color: var(--testoTrasparente);
+}
+
+.tua-squadra-partite {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.tua-squadra-etichetta {
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: left;
+  color: var(--testoTrasparente);
+}
+
+@media (min-width: 992px) {
+  .tua-squadra-partite {
+    flex-direction: row;
+  }
+
+  .tua-squadra-blocco {
+    flex: 1;
+  }
+
+  .tua-squadra-blocco .partita-div {
+    width: 100%;
+  }
+}

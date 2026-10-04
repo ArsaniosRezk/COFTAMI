@@ -1,5 +1,16 @@
 import { getData, getPaths } from "../firebase.js";
+import { getSelectedDivision } from "../divisionAndVariables.js";
+import { paginaCorrente } from "../utils/percorso.js";
+import {
+    giornateNumerate,
+    nomeSquadra,
+    linkSquadra,
+    eSquadraPreferita,
+} from "../utils/torneo.js";
 import { mostraAvvisoVuoto } from "./pre-torneo.js";
+
+// Nel gestionale i nomi delle squadre non portano alla pagina pubblica
+const conLinkSquadre = () => paginaCorrente() !== "gestionale";
 
 /*
 ===================================
@@ -7,11 +18,10 @@ CLASSIFICA SQUADRE
 ===================================
 */
 
-export async function classificaGirone(targetDiv, showGenericTitle = false) {
-    const containerId = targetDiv;
+export function scheletroClassifica(containerId) {
     const container = document.getElementById(containerId);
-    if (container) {
-        container.innerHTML = `
+    if (!container) return;
+    container.innerHTML = `
         <div class="skeleton skeleton-card">
             <div class="skeleton skeleton-title"></div>
             <div class="skeleton skeleton-rect" style="height: 150px;"></div>
@@ -20,64 +30,49 @@ export async function classificaGirone(targetDiv, showGenericTitle = false) {
             <div class="skeleton skeleton-title"></div>
             <div class="skeleton skeleton-rect" style="height: 150px;"></div>
         </div>`;
+}
+
+/*
+ Classifiche di tutti i gironi.
+ Restituisce [{ girone, ranking }] con ranking = [[chiaveSquadra, statistiche], ...]
+ già ordinato. girone vale "unico" se nessuna squadra ha un girone.
+*/
+export function calcolaClassifiche(teams, giornate) {
+    const numeriGiornate = giornateNumerate(giornate);
+
+    // Raggruppa le squadre per girone
+    const gironi = {};
+    let almenoUnGirone = false;
+
+    for (const teamKey in teams) {
+        const girone = teams[teamKey].Girone || "";
+
+        if (girone !== "") {
+            almenoUnGirone = true;
+            if (!gironi[girone]) gironi[girone] = {};
+            gironi[girone][teamKey] = teams[teamKey];
+        }
     }
 
-    const { teamsPath, matchesPath } = getPaths();
+    // Se nessuna squadra ha un girone, raggruppale tutte in un unico girone "unico"
+    if (!almenoUnGirone) {
+        gironi["unico"] = teams;
+    }
 
-    try {
-        const teams = await getData(teamsPath);
-        if (!teams) {
-            console.log("Nessuna squadra trovata");
-            mostraAvvisoVuoto(
-                containerId,
-                "La classifica sarà disponibile appena verranno pubblicate le squadre."
-            );
-            return;
-        }
-
-        const giornate = await getData(matchesPath);
-        const numeriGiornate = giornate
-            ? Object.keys(giornate).filter((key) => !isNaN(key))
-            : [];
-        // Raggruppa le squadre per girone
-        const gironi = {};
-        let almenoUnGirone = false;
-
-        for (const teamKey in teams) {
-            const girone = teams[teamKey].Girone || "";
-
-            if (girone !== "") {
-                almenoUnGirone = true;
-                if (!gironi[girone]) gironi[girone] = {};
-                gironi[girone][teamKey] = teams[teamKey];
-            }
-        }
-
-        // Se nessuna squadra ha un girone, raggruppale tutte in un unico girone "unico"
-        if (!almenoUnGirone) {
-            gironi["unico"] = teams;
-        }
-
-        const container = document.getElementById(containerId);
-        if (!container) return; // Exit if container no longer exists
-        container.innerHTML = ""; // Pulisce il contenuto precedente
-
-        // Per ogni girone, calcola e mostra la classifica
-        for (const girone of Object.keys(gironi).sort()) {
+    return Object.keys(gironi)
+        .sort()
+        .map((girone) => {
             const gironeTeams = gironi[girone];
             const scores = inizializzaPunteggi(gironeTeams);
 
-            // Calcola punteggi solo delle partite tra squadre dello stesso girone
+            // Se almeno una delle due squadre è del girone, aggiorniamo quella
+            // (o entrambe se la partita è interna al girone)
             for (const giornata of numeriGiornate) {
                 const matches = giornate[giornata];
                 for (const matchKey in matches) {
                     const match = matches[matchKey];
-                    // DOPO — “inclusiva”
-                    // Se almeno una delle due è del girone, aggiorniamo quella (o entrambe se intra-girone)
-                    const casaIn = !!gironeTeams[match.SquadraCasa];
-                    const trasIn = !!gironeTeams[match.SquadraOspite];
 
-                    if (casaIn) {
+                    if (gironeTeams[match.SquadraCasa]) {
                         aggiornaPunteggi(
                             scores,
                             match.SquadraCasa,
@@ -86,7 +81,7 @@ export async function classificaGirone(targetDiv, showGenericTitle = false) {
                             match.SquadraOspite
                         );
                     }
-                    if (trasIn) {
+                    if (gironeTeams[match.SquadraOspite]) {
                         aggiornaPunteggi(
                             scores,
                             match.SquadraOspite,
@@ -98,40 +93,73 @@ export async function classificaGirone(targetDiv, showGenericTitle = false) {
                 }
             }
 
-            const rankingArray = ordinaClassifica(scores);
+            return { girone, ranking: ordinaClassifica(scores) };
+        });
+}
 
-            // Aggiungi un titolo per il girone
-            // Aggiungi un contenitore specifico per ogni girone
-            const gironeSection = document.createElement("div");
-            gironeSection.classList.add("girone-section");
+/*
+ Disegna la classifica nel contenitore.
+ dati (facoltativo) = { squadre, partite, divisione }: senza, i dati vengono letti
+ da Firebase (gestionale); con, si ridisegna subito (aggiornamenti in tempo reale).
+*/
+export async function classificaGirone(targetDiv, showGenericTitle = false, dati = null) {
+    const containerId = targetDiv;
 
-            const numeroGironi = Object.keys(gironi).length;
+    if (!dati) {
+        scheletroClassifica(containerId);
+        const { teamsPath, matchesPath } = getPaths();
+        try {
+            const [squadre, partite] = await Promise.all([
+                getData(teamsPath),
+                getData(matchesPath),
+            ]);
+            dati = { squadre, partite, divisione: getSelectedDivision() };
+        } catch (error) {
+            console.error(
+                `Errore nel recupero delle partite o squadre da Firebase: ${error.message}`,
+                error
+            );
+            mostraAvvisoVuoto(containerId, "Impossibile caricare la classifica. Riprova più tardi.");
+            return;
+        }
+    }
 
-            if (numeroGironi === 1) {
-                if (showGenericTitle) {
-                    const title = document.createElement("h3");
-                    title.classList.add("titolo-girone");
-                    title.innerText = "Classifica Squadre";
-                    gironeSection.appendChild(title);
-                }
-            } else if (girone !== "unico") {
+    const teams = dati.squadre;
+    if (!teams) {
+        mostraAvvisoVuoto(
+            containerId,
+            "La classifica sarà disponibile appena verranno pubblicate le squadre."
+        );
+        return;
+    }
+
+    const container = document.getElementById(containerId);
+    if (!container) return; // Exit if container no longer exists
+    container.innerHTML = ""; // Pulisce il contenuto precedente
+
+    const classifiche = calcolaClassifiche(teams, dati.partite || {});
+    const divisione = dati.divisione || getSelectedDivision();
+
+    for (const { girone, ranking } of classifiche) {
+        const gironeSection = document.createElement("div");
+        gironeSection.classList.add("girone-section");
+
+        if (classifiche.length === 1) {
+            if (showGenericTitle) {
                 const title = document.createElement("h3");
                 title.classList.add("titolo-girone");
-                title.innerText = `Girone ${girone}`;
+                title.innerText = "Classifica Squadre";
                 gironeSection.appendChild(title);
             }
-
-            // Appendiamo la classifica lì dentro
-            rappresentaClassifica(containerId, rankingArray, gironeSection);
-
-            // Infine, aggiungiamo questa sezione al contenitore principale
-            container.appendChild(gironeSection);
+        } else if (girone !== "unico") {
+            const title = document.createElement("h3");
+            title.classList.add("titolo-girone");
+            title.innerText = `Girone ${girone}`;
+            gironeSection.appendChild(title);
         }
-    } catch (error) {
-        console.error(
-            `Errore nel recupero delle partite o squadre da Firebase: ${error.message}`,
-            error
-        );
+
+        rappresentaClassifica(containerId, ranking, gironeSection, divisione);
+        container.appendChild(gironeSection);
     }
 }
 
@@ -149,7 +177,7 @@ export function inizializzaPunteggi(teams) {
             goalsDifference: 0,
             points: 0,
             headToHead: {},
-            penaltyPoints: team.Penalità || 0,
+            penaltyPoints: Number(team.Penalità) || 0,
         };
     }
     return scores;
@@ -162,6 +190,9 @@ export function aggiornaPunteggi(
     concededGoals,
     opponent
 ) {
+    scoredGoals = Number(scoredGoals) || 0;
+    concededGoals = Number(concededGoals) || 0;
+
     const teamStats = scores[team];
     teamStats.playedMatches++;
     teamStats.scoredGoals += scoredGoals;
@@ -188,7 +219,7 @@ export function aggiornaScontriDiretti(
     concededGoals,
     opponent
 ) {
-    // NUOVO: se l’avversaria non è nel girone corrente, niente H2H
+    // Se l'avversaria non è nel girone corrente, niente scontri diretti
     if (!scores[opponent]) return;
 
     if (!scores[team].headToHead[opponent]) {
@@ -256,43 +287,54 @@ export function ordinaClassifica(scores) {
 export function rappresentaClassifica(
     containerId,
     rankingArray,
-    target = null
+    target = null,
+    divisione = null
 ) {
     const rankingDiv = target || document.getElementById(containerId);
+    const divisioneSquadre = divisione || getSelectedDivision();
+    const link = conLinkSquadre();
 
-    // rankingDiv.innerHTML = "";
     const table = document.createElement("table");
     table.classList.add("ranking-table");
 
     const thead = document.createElement("thead");
     const tbody = document.createElement("tbody");
 
-    // Funzione helper per creare righe di tabella
-    const creaRigaTabella = (cellData, isHeader = false) => {
-        const row = document.createElement("tr");
-        cellData.forEach((cellText) => {
-            const cell = document.createElement(isHeader ? "th" : "td");
-            cell.innerText = cellText;
-            row.appendChild(cell);
-        });
-        return row;
-    };
-
-    const headerRow = creaRigaTabella(
-        ["#", "Squadra", "PG", "V", "N", "S", "GF", "GS", "DR", "P"],
-        true
-    );
+    // Intestazioni abbreviate con il significato per gli screen reader
+    const intestazioni = [
+        ["#", "Posizione"],
+        ["Squadra", "Squadra"],
+        ["PG", "Partite giocate"],
+        ["V", "Vinte"],
+        ["N", "Pareggiate"],
+        ["S", "Perse"],
+        ["GF", "Gol fatti"],
+        ["GS", "Gol subiti"],
+        ["DR", "Differenza reti"],
+        ["P", "Punti"],
+    ];
+    const headerRow = document.createElement("tr");
+    for (const [sigla, significato] of intestazioni) {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = sigla;
+        if (sigla !== significato) th.title = significato;
+        headerRow.appendChild(th);
+    }
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
     rankingArray.forEach(([team, data], index) => {
-        const teamName = data.penaltyPoints > 0 ? team + "*" : team;
-        const abbreviatedTeamName = teamName.replace(/_/g, ".");
         const pointsWithoutPenalty = data.points - (data.penaltyPoints || 0);
+        const row = document.createElement("tr");
 
-        const rowData = [
+        if (eSquadraPreferita(divisioneSquadre, team)) {
+            row.classList.add("riga-preferita");
+        }
+
+        const valori = [
             index + 1,
-            abbreviatedTeamName,
+            null, // nome squadra, sotto
             data.playedMatches,
             data.wonMatches,
             data.drawnMatches,
@@ -303,9 +345,27 @@ export function rappresentaClassifica(
             pointsWithoutPenalty,
         ];
 
-        const row = creaRigaTabella(rowData);
+        valori.forEach((valore, colonna) => {
+            const cell = document.createElement("td");
 
-        // Aggiunge classe speciale alla cella posizione (solo primi 4)
+            if (colonna === 1) {
+                const nome = nomeSquadra(team) + (data.penaltyPoints > 0 ? "*" : "");
+                if (link) {
+                    const a = document.createElement("a");
+                    a.href = linkSquadra(team, divisioneSquadre);
+                    a.className = "link-squadra";
+                    a.textContent = nome;
+                    cell.appendChild(a);
+                } else {
+                    cell.textContent = nome;
+                }
+            } else {
+                cell.textContent = valore;
+            }
+            row.appendChild(cell);
+        });
+
+        // Indicatore laterale sulle prime 4 posizioni
         if (index < 10) {
             const posCell = row.children[0];
             const indicator = document.createElement("span");
@@ -321,20 +381,18 @@ export function rappresentaClassifica(
     rankingDiv.appendChild(table);
 
     // Aggiungi il messaggio delle penalità se esistono penalità
-    if (rankingArray.some(([_, data]) => data.penaltyPoints > 0)) {
+    const penalizzate = rankingArray.filter(([_, data]) => data.penaltyPoints > 0);
+    if (penalizzate.length > 0) {
         const penaltyDiv = document.createElement("div");
         penaltyDiv.classList.add("penalty-message");
 
-        const penaltyMessage = rankingArray
-            .filter(([_, data]) => data.penaltyPoints > 0)
-            .map(
-                ([team, data]) =>
-                    `<strong>${team.replace(/_/g, ".")}</strong>: -${data.penaltyPoints
-                    } punti penalità`
-            )
-            .join("<br>");
-
-        penaltyDiv.innerHTML = penaltyMessage;
+        penalizzate.forEach(([team, data], indice) => {
+            if (indice > 0) penaltyDiv.appendChild(document.createElement("br"));
+            const nome = document.createElement("strong");
+            nome.textContent = nomeSquadra(team);
+            penaltyDiv.appendChild(nome);
+            penaltyDiv.append(`: -${data.penaltyPoints} punti penalità`);
+        });
 
         rankingDiv.appendChild(penaltyDiv);
     }
@@ -345,14 +403,17 @@ export function rappresentaClassifica(
 CLASSIFICA MARCATORI
 ===================================
 */
-let globalRankingArray = []; // Memorizza la classifica globale
-let teamsCache = {}; // Memorizza la cache delle squadre
 
-export async function classificaMarcatori(targetDiv) {
-    const containerId = targetDiv;
+const RIGHE_PER_PAGINA = 10;
+
+// Pagina e ricerca per contenitore: restano uguali quando la classifica si
+// ridisegna per un aggiornamento in tempo reale
+const statoMarcatori = {};
+
+export function scheletroMarcatori(containerId) {
     const container = document.getElementById(containerId);
-    if (container) {
-        container.innerHTML = `
+    if (!container) return;
+    container.innerHTML = `
         <div class="skeleton skeleton-card">
             <div class="skeleton skeleton-row"></div>
             <div class="skeleton skeleton-row"></div>
@@ -360,196 +421,234 @@ export async function classificaMarcatori(targetDiv) {
             <div class="skeleton skeleton-row"></div>
             <div class="skeleton skeleton-row"></div>
         </div>`;
-    }
+}
 
+// Gol per giocatore: [[nome, gol], ...] dal più prolifico
+export function calcolaMarcatori(partite) {
     const scorers = {};
-    const { matchesPath } = getPaths();
-
-    try {
-        teamsCache = await caricaSquadre();
-
-        const giornateSnapshot = await getData(matchesPath);
-
-        if (giornateSnapshot) {
-            for (const giornataKey in giornateSnapshot) {
-                const giornata = giornateSnapshot[giornataKey] || {};
-                for (const matchKey in giornata) {
-                    const match = giornata[matchKey] || {};
-                    aggiornaClassifica(scorers, match?.Marcatori?.MarcatoriCasa || {});
-                    aggiornaClassifica(scorers, match?.Marcatori?.MarcatoriOspite || {});
-                }
-            }
-        } else {
-            console.log(`Nessuna partita trovata su Firebase`);
+    for (const giornataKey in partite || {}) {
+        const giornata = partite[giornataKey] || {};
+        for (const matchKey in giornata) {
+            const match = giornata[matchKey] || {};
+            aggiornaClassifica(scorers, match?.Marcatori?.MarcatoriCasa || {});
+            aggiornaClassifica(scorers, match?.Marcatori?.MarcatoriOspite || {});
         }
-    } catch (error) {
-        console.error(`Errore nel recupero delle partite da Firebase:`, error);
+    }
+    return Object.entries(scorers).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+
+// Giocatore -> squadra
+export function squadraDeiGiocatori(squadre) {
+    const squadraDi = {};
+    for (const teamName in squadre || {}) {
+        for (const player in squadre[teamName].Giocatori || {}) {
+            squadraDi[player] = teamName;
+        }
+    }
+    return squadraDi;
+}
+
+export async function classificaMarcatori(targetDiv, dati = null) {
+    const containerId = targetDiv;
+
+    if (!dati) {
+        scheletroMarcatori(containerId);
+        const { teamsPath, matchesPath } = getPaths();
+        try {
+            const [squadre, partite] = await Promise.all([
+                getData(teamsPath),
+                getData(matchesPath),
+            ]);
+            dati = { squadre, partite, divisione: getSelectedDivision() };
+        } catch (error) {
+            console.error(`Errore nel recupero delle partite da Firebase:`, error);
+            dati = { squadre: null, partite: null };
+        }
     }
 
-    const scorersArray = Object.entries(scorers);
-    scorersArray.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-
-    globalRankingArray = scorersArray;
-
+    const scorersArray = calcolaMarcatori(dati.partite);
     if (scorersArray.length === 0) {
         mostraAvvisoVuoto(containerId, "Ancora nessun gol segnato.");
         return;
     }
 
-    const rowsPerPage = 10;
-    rappresentaClassificaMarcatori(containerId, scorersArray, 1, rowsPerPage);
-}
-
-function aggiornaVistaPagina(
-    containerId,
-    rankingWithPositions,
-    currentPage,
-    rowsPerPage
-) {
-    const rankingDiv = document.getElementById(containerId);
-    const tbody = rankingDiv.querySelector("tbody");
-    tbody.innerHTML = ""; // Pulisce solo il corpo della tabella, non l'intera tabella
-
-    const startingIndex = (currentPage - 1) * rowsPerPage;
-    const finalIndex = Math.min(
-        startingIndex + rowsPerPage,
-        rankingWithPositions.length
-    );
-
-    for (let index = startingIndex; index < finalIndex; index++) {
-        const { position, player, value } = rankingWithPositions[index];
-
-        const tr = document.createElement("tr");
-        const team = teamsCache[player] || "N/A";
-        const abbreviatedTeamName = team.replace(/_/g, ".");
-
-        const dataColumns = [position, player, abbreviatedTeamName, value];
-        dataColumns.forEach((dato, columnIndex) => {
-            const td = document.createElement("td");
-            td.textContent = dato;
-
-            if (columnIndex === 0 && position <= 2) {
-                td.classList.add("primaColonnaCella" + position);
-            }
-
-            tr.appendChild(td);
-        });
-
-        tbody.appendChild(tr);
-    }
-}
-
-function aggiungiControlliPaginazione(
-    container,
-    numberOfPages,
-    currentPage,
-    rankingArray,
-    rowsPerPage
-) {
-    const paginationDiv = document.createElement("div");
-    paginationDiv.classList.add("pagination");
-
-    for (let page = 1; page <= numberOfPages; page++) {
-        const link = document.createElement("a");
-        link.href = "#";
-        link.textContent = page;
-
-        if (page === currentPage) {
-            link.classList.add("active");
-        }
-
-        link.addEventListener("click", (event) => {
-            event.preventDefault();
-
-            // Rimuovi la classe active da tutti i link
-            const allLinks = paginationDiv.querySelectorAll("a");
-            allLinks.forEach((link) => link.classList.remove("active"));
-
-            // Aggiorna la vista della pagina
-            aggiornaVistaPagina(container.id, rankingArray, page, rowsPerPage);
-
-            // Aggiungi la classe active al link corrente
-            link.classList.add("active");
-        });
-
-        paginationDiv.appendChild(link);
-    }
-
-    container.appendChild(paginationDiv);
-}
-
-async function rappresentaClassificaMarcatori(
-    containerId,
-    rankingArray,
-    currentPage,
-    rowsPerPage
-) {
     const rankingDiv = document.getElementById(containerId);
     if (!rankingDiv) return;
-    rankingDiv.innerHTML = "";
 
-    // Se non ci sono marcatori, mostra un messaggio e interrompi
-    if (rankingArray.length === 0) {
+    const squadraDi = squadraDeiGiocatori(dati.squadre);
+    const divisione = dati.divisione || getSelectedDivision();
+    const righe = calcolaPosizioniGlobali(scorersArray).map((riga) => ({
+        ...riga,
+        squadra: squadraDi[riga.player] || null,
+    }));
+
+    // Cambiando divisione si riparte dalla prima pagina, senza filtro
+    if (statoMarcatori[containerId]?.divisione !== divisione) {
+        statoMarcatori[containerId] = { pagina: 1, ricerca: "", divisione };
+        rankingDiv.querySelector(".ricerca-marcatori")?.remove();
+    }
+    const stato = statoMarcatori[containerId];
+
+    // Il campo di ricerca resta lo stesso elemento: chi sta scrivendo non perde il focus
+    let ricerca = rankingDiv.querySelector(".ricerca-marcatori input");
+    if (!ricerca) {
         rankingDiv.innerHTML = "";
-        return;
+
+        const etichetta = document.createElement("label");
+        etichetta.className = "ricerca-marcatori";
+        etichetta.innerHTML = `<i class="icona icona-search" aria-hidden="true"></i><span class="sr-only">Cerca un giocatore o una squadra</span>`;
+        ricerca = document.createElement("input");
+        ricerca.type = "search";
+        ricerca.placeholder = "Cerca giocatore o squadra";
+        ricerca.autocomplete = "off";
+        ricerca.value = stato.ricerca;
+        etichetta.appendChild(ricerca);
+        rankingDiv.appendChild(etichetta);
+
+        const contenuto = document.createElement("div");
+        contenuto.className = "contenuto-marcatori";
+        rankingDiv.appendChild(contenuto);
     }
 
-    // Calcola le posizioni globali una volta sola
-    const rankingWithPositions = calcolaPosizioniGlobali(rankingArray);
+    const contenuto = rankingDiv.querySelector(".contenuto-marcatori");
 
+    const disegna = () => {
+        const testo = stato.ricerca.trim().toLowerCase();
+        const filtrate = testo
+            ? righe.filter(
+                  ({ player, squadra }) =>
+                      player.toLowerCase().includes(testo) ||
+                      nomeSquadra(squadra).toLowerCase().includes(testo)
+              )
+            : righe;
+
+        const pagine = Math.max(1, Math.ceil(filtrate.length / RIGHE_PER_PAGINA));
+        stato.pagina = Math.min(stato.pagina, pagine);
+
+        contenuto.innerHTML = "";
+        if (filtrate.length === 0) {
+            const vuoto = document.createElement("p");
+            vuoto.className = "avviso-vuoto";
+            vuoto.textContent = "Nessun giocatore trovato.";
+            contenuto.appendChild(vuoto);
+            return;
+        }
+
+        contenuto.appendChild(
+            tabellaMarcatori(
+                filtrate.slice((stato.pagina - 1) * RIGHE_PER_PAGINA, stato.pagina * RIGHE_PER_PAGINA),
+                divisione
+            )
+        );
+        if (pagine > 1) {
+            contenuto.appendChild(
+                controlliPaginazione(pagine, stato.pagina, (pagina) => {
+                    stato.pagina = pagina;
+                    disegna();
+                })
+            );
+        }
+    };
+
+    ricerca.oninput = () => {
+        stato.ricerca = ricerca.value;
+        stato.pagina = 1;
+        disegna();
+    };
+
+    disegna();
+}
+
+function tabellaMarcatori(righe, divisione) {
+    const link = conLinkSquadre();
     const table = document.createElement("table");
     table.classList.add("scorers-table");
 
     const thead = document.createElement("thead");
-    const tbody = document.createElement("tbody");
-
     const theadRow = document.createElement("tr");
-
-    const columns = ["#", "Giocatore", "Squadra", "G"];
-    columns.forEach((column) => {
+    [
+        ["#", "Posizione"],
+        ["Giocatore", "Giocatore"],
+        ["Squadra", "Squadra"],
+        ["G", "Gol"],
+    ].forEach(([sigla, significato]) => {
         const th = document.createElement("th");
-        th.textContent = column;
+        th.scope = "col";
+        th.textContent = sigla;
+        if (sigla !== significato) th.title = significato;
         theadRow.appendChild(th);
     });
-
     thead.appendChild(theadRow);
     table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    for (const { position, player, value, squadra } of righe) {
+        const tr = document.createElement("tr");
+        if (squadra && eSquadraPreferita(divisione, squadra)) tr.classList.add("riga-preferita");
+
+        const posizione = document.createElement("td");
+        posizione.textContent = position;
+        if (position <= 2) posizione.classList.add("primaColonnaCella" + position);
+
+        const giocatore = document.createElement("td");
+        giocatore.textContent = player;
+
+        const cellaSquadra = document.createElement("td");
+        if (squadra && link) {
+            const a = document.createElement("a");
+            a.href = linkSquadra(squadra, divisione);
+            a.className = "link-squadra";
+            a.textContent = nomeSquadra(squadra);
+            cellaSquadra.appendChild(a);
+        } else {
+            cellaSquadra.textContent = squadra ? nomeSquadra(squadra) : "N/A";
+        }
+
+        const gol = document.createElement("td");
+        gol.textContent = value;
+
+        tr.append(posizione, giocatore, cellaSquadra, gol);
+        tbody.appendChild(tr);
+    }
     table.appendChild(tbody);
-
-    rankingDiv.appendChild(table);
-
-    const numberOfPages = Math.ceil(rankingArray.length / rowsPerPage);
-
-    aggiornaVistaPagina(
-        containerId,
-        rankingWithPositions,
-        currentPage,
-        rowsPerPage
-    );
-    aggiungiControlliPaginazione(
-        rankingDiv,
-        numberOfPages,
-        currentPage,
-        rankingWithPositions,
-        rowsPerPage
-    );
+    return table;
 }
 
-async function caricaSquadre() {
-    const { teamsPath } = getPaths();
-    const teams = await getData(teamsPath);
-    const teamsCache = {};
+function controlliPaginazione(numberOfPages, currentPage, vaiAPagina) {
+    const paginationDiv = document.createElement("nav");
+    paginationDiv.classList.add("pagination");
+    paginationDiv.setAttribute("aria-label", "Pagine della classifica marcatori");
 
-    if (teams) {
-        for (const teamName in teams) {
-            const teamPlayers = teams[teamName].Giocatori || {};
-            for (const player in teamPlayers) {
-                teamsCache[player] = teamName;
-            }
+    const pulsante = (testo, pagina, { etichetta = null, attiva = false, disabilitato = false } = {}) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = testo;
+        if (etichetta) button.setAttribute("aria-label", etichetta);
+        if (attiva) {
+            button.classList.add("active");
+            button.setAttribute("aria-current", "page");
         }
-    }
+        button.disabled = disabilitato;
+        button.addEventListener("click", () => vaiAPagina(pagina));
+        return button;
+    };
 
-    return teamsCache;
+    paginationDiv.appendChild(
+        pulsante("‹", currentPage - 1, { etichetta: "Pagina precedente", disabilitato: currentPage === 1 })
+    );
+    for (let page = 1; page <= numberOfPages; page++) {
+        paginationDiv.appendChild(
+            pulsante(String(page), page, { etichetta: `Pagina ${page}`, attiva: page === currentPage })
+        );
+    }
+    paginationDiv.appendChild(
+        pulsante("›", currentPage + 1, {
+            etichetta: "Pagina successiva",
+            disabilitato: currentPage === numberOfPages,
+        })
+    );
+
+    return paginationDiv;
 }
 
 function aggiornaClassifica(ranking, players) {
@@ -578,4 +677,22 @@ function calcolaPosizioniGlobali(rankingArray) {
 
         return { position: uniquePosition, player, value };
     });
+}
+
+// Posizione e statistiche di una squadra nel suo girone, oppure null
+export function posizioneSquadra(squadre, partite, chiave) {
+    if (!squadre?.[chiave]) return null;
+    for (const { girone, ranking } of calcolaClassifiche(squadre, partite || {})) {
+        const indice = ranking.findIndex(([squadra]) => squadra === chiave);
+        if (indice === -1) continue;
+        const statistiche = ranking[indice][1];
+        return {
+            girone: girone === "unico" ? null : girone,
+            posizione: indice + 1,
+            totale: ranking.length,
+            statistiche,
+            punti: statistiche.points - statistiche.penaltyPoints,
+        };
+    }
+    return null;
 }

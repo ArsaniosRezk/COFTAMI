@@ -21,8 +21,9 @@ export async function getAlboOro() {
             </div>`;
         }
 
-        // Recupero tutti gli anni disponibili sotto il nodo Calcio/AlboOro (cache 24h = 1440 min)
-        let alboOroData = await getDataCached("Calcio/AlboOro", 1440);
+        // Recupero tutti gli anni disponibili sotto il nodo Calcio/AlboOro (cache di un'ora:
+        // cambia una volta l'anno, ma il giorno della finale il vincitore deve comparire presto)
+        let alboOroData = await getDataCached("Calcio/AlboOro", 60);
 
         if (!container) {
             console.error("Elemento #albo-d'oro non trovato.");
@@ -41,7 +42,7 @@ export async function getAlboOro() {
         }
 
         // Ordiniamo gli anni dal più recente al più vecchio
-        let anniOrdinati = Array.from(anniDisponibili).sort((b, a) =>
+        let anniOrdinati = Array.from(anniDisponibili).sort((a, b) =>
             b.localeCompare(a)
         );
 
@@ -91,7 +92,10 @@ export async function getAlboOro() {
                     </tr>
                 </tbody>
             </table>
-            <br>
+            <a class="link-edizione" href="/campionato.html?edizione=${encodeURIComponent(anno)}">
+                Rivedi classifiche e risultati del ${anno}
+                <i class="icona icona-chevron-right" aria-hidden="true"></i>
+            </a>
         `;
 
             container.appendChild(block);

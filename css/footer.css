@@ -74,8 +74,12 @@ my-footer {
 }
 
 .contact-icon {
-  padding: 0 5px;
+  margin: 0 6px;
   font-size: 1.6rem;
+}
+
+.footer-contacts p a {
+  font-size: inherit;
 }
 
 .footer-contacts p {
@@ -87,23 +91,6 @@ my-footer {
 break points
 ===================================
 */
-
-@media (min-width: 576px) {
-  .footer-grid {
-    display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas: "alias-footer-menu alias-footer-logo alias-footer-contacts";
-  }
-
-  .footer-menu {
-    margin-bottom: 0px;
-  }
-
-  .footer-logo {
-    margin-bottom: 0px;
-  }
-}
 
 @media (min-width: 576px) {
   .footer-grid {

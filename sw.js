@@ -32,33 +32,46 @@ const ASSETS_TO_CACHE = [
     "/index.html",
     "/campionato.html",
     "/squadre.html",
+    "/squadra.html",
     "/calendario.html",
-    "/gestionale.html",
+    "/regolamento.html",
     "/iscrizione.html",
     "/style.css",
-    "/css/home.css",
+    "/css/colors.css",
+    "/css/icone.css",
     "/css/header.css",
     "/css/footer.css",
-    "/css/colors.css",
-    "/css/gestionale.css",
-    "/css/iscrizione.css",
-    "/css/iscrizioniM.css",
-    "/css/dashboard.css",
+    "/css/skeleton.css",
     "/css/pre-torneo.css",
-    "/css/squadreM.css",
+    "/css/home.css",
+    "/css/partite.css",
     "/css/tabelle.css",
+    "/css/overlay-partite.css",
+    "/css/calendario.css",
+    "/css/squadre.css",
+    "/css/squadra.css",
     "/js/firebase.js",
-    "/js/edition-sync.js",
+    "/js/impostazioni.js",
+    "/js/dati-torneo.js",
+    "/js/divisionAndVariables.js",
+    "/js/headerFooterManager.js",
+    "/js/maintenance-guard.js",
+    "/js/funzioniHome.js",
     "/js/utils/percorso.js",
+    "/js/utils/torneo.js",
+    "/js/utils/interfaccia.js",
+    "/js/components/standings.js",
+    "/js/components/calendar.js",
     "/js/components/pre-torneo.js",
-    "/js/gestionale.js",
-    "/js/iscrizione.js",
+    "/js/components/manutenzione.js",
+    "/manifest.webmanifest",
     "/assets/images/favicon.svg",
-    "/assets/images/LOGO_COFTA_SITO_2.svg",
-    "/assets/fonts/UaCadet-2068.ttf"
+    "/assets/images/LOGO_COFTA_SITO.svg",
+    "/assets/images/LOGO_COFTA_SITO_3.svg",
+    "/assets/fonts/UaCadet-2068.woff2"
 ];
 
-const FILE_STATICI = /\.(png|jpe?g|gif|svg|webp|ico|ttf|otf|woff2?)$/i;
+const FILE_STATICI = /\.(png|jpe?g|gif|svg|webp|avif|ico|ttf|otf|woff2?)$/i;
 
 // INSTALLAZIONE
 self.addEventListener("install", (event) => {
@@ -155,8 +168,11 @@ async function primaLaRete(richiesta) {
         salvaInCache(richiesta, risposta);
         return risposta;
     } catch (errore) {
-        // Offline: si usa l'ultima copia salvata
-        const inCache = await caches.match(richiesta);
+        // Offline: si usa l'ultima copia salvata. Le pagine si cercano senza
+        // parametri: squadra.html?nome=... usa la copia di squadra.html
+        const inCache = await caches.match(richiesta, {
+            ignoreSearch: richiesta.mode === "navigate",
+        });
         if (inCache) return inCache;
         throw errore;
     }

@@ -1,9 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 #teams-container {
   display: flex;
   flex-direction: row;
@@ -12,17 +6,34 @@
   flex-wrap: wrap;
   width: 100%;
 
-  gap: 30px;
+  gap: 20px;
 }
 
+/* Ogni scheda è un link alla pagina della squadra */
 .squadra {
+  position: relative;
   display: flex;
   flex-direction: column;
-  width: 120px;
-  height: 160px;
+  width: 130px;
+  height: 170px;
   border-radius: 10px;
   box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  color: var(--text);
+  transition: transform 0.2s;
+}
+
+.squadra:hover {
+  transform: translateY(-2px);
+}
+
+.squadra.preferita::after {
+  content: "★";
+  position: absolute;
+  top: 6px;
+  right: 9px;
+  color: var(--mainText);
+  font-size: 1.1rem;
 }
 
 .logo-e-nome {
@@ -38,13 +49,14 @@
   color: var(--text);
 }
 
-.logo-e-nome:hover {
+.squadra:hover .logo-e-nome {
   background-color: var(--tertiary);
 }
 
 .squadra img {
+  width: 90px;
   height: 90px;
-  max-width: 100%;
+  object-fit: contain;
   margin-bottom: 10px;
 }
 
@@ -62,84 +74,11 @@
 
 /*
 ===================================
-team overlay
-===================================
-*/
-
-#team-overlay {
-  position: fixed;
-  left: 0;
-  bottom: -100%;
-  width: 100%;
-  height: 100%;
-  background-color: var(--primary);
-  text-align: center;
-  transition: all 0.5s ease;
-  color: var(--text);
-  z-index: 2000;
-}
-
-#team-info {
-  position: absolute;
-  top: 10%;
-  text-align: center;
-  opacity: 0;
-  transition: all 1s ease;
-
-  width: 100%;
-  padding: 0 40px;
-}
-
-#team-logo {
-  max-height: 150px;
-  margin-bottom: 15px;
-}
-
-#team-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: var(--mainText);
-}
-
-#team-info h3 {
-  font-size: 1rem;
-  margin-bottom: 8px;
-  color: var(--mainText);
-}
-
-#overlay-allenatori,
-#overlay-giocatori {
-  line-height: 23px;
-  margin-bottom: 10px;
-  font-weight: 300;
-}
-
-.close-team-info {
-  float: right;
-  padding: 35px;
-  color: var(--text);
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-/*
-===================================
 break points
 ===================================
 */
 
-@media (min-width: 576px) {}
-
 @media (min-width: 992px) {
-  #container-squadre {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 90%;
-  }
-
   .squadra {
     display: flex;
     flex-direction: row;
@@ -148,7 +87,7 @@ break points
     border-radius: 10px;
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    margin: 15px 0;
+    margin: 5px 0;
   }
 
   .logo-e-nome {
@@ -158,18 +97,14 @@ break points
     align-items: center;
     flex-shrink: 0;
 
-    width: 150px;
+    width: 170px;
     height: 200px;
     border-right: 1px solid var(--primary);
   }
 
-  .logo-e-nome:hover {
-    background-color: var(--secondary);
-  }
-
   .squadra img {
+    width: 125px;
     height: 125px;
-    max-width: 100%;
     margin-bottom: 15px;
   }
 
@@ -202,10 +137,4 @@ break points
     font-weight: 500;
     color: var(--text);
   }
-
-  #overlay-content {
-    display: none;
-  }
 }
-
-@media (min-width: 1440px) {}

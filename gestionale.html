@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="it">
 
 <head>
@@ -10,17 +11,23 @@
   <meta name="apple-mobile-web-app-title" content="COFTA Gestionale" />
   <title>Gestionale</title>
   <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
-  <link rel="apple-touch-icon" href="/assets/images/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300..900&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-  <link rel="stylesheet" href="css/gestionale.css" />
-  <link rel="stylesheet" href="css/auth.css" />
-  <link rel="stylesheet" href="css/colors.css" />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js" />
+
+  <link rel="stylesheet" href="/css/gestionale.css" />
+  <link rel="stylesheet" href="/css/auth.css" />
+  <link rel="stylesheet" href="/css/colors.css" />
+  <link rel="stylesheet" href="/css/icone.css" />
+  <!-- Lo stile della sezione aperta viene aggiunto da gestionale.js -->
 </head>
 
 <body>
@@ -59,22 +66,20 @@
 
   <script type="module">
     import { initAuthGuard } from "./js/components/auth-guard.js";
-    import { sincronizzaEdizione } from "./js/edition-sync.js";
-    import { edizioneTest } from "./js/divisionAndVariables.js";
+    import { edizioneForzata, edizioneTest } from "./js/divisionAndVariables.js";
 
     initAuthGuard();
 
-    // Con ?edizione=Test si lavora su Calcio/Test: deve essere evidente
-    if (edizioneTest) {
+    // Con ?edizione=Test (o un anno) si lavora su un'altra edizione: deve essere evidente
+    if (edizioneForzata) {
       const badge = document.createElement("span");
       badge.className = "badge-test";
-      badge.textContent = "Test";
-      badge.title = "Stai modificando Calcio/Test, non i dati del torneo";
+      badge.textContent = edizioneForzata;
+      badge.title = edizioneTest
+        ? "Stai modificando Calcio/Test, non i dati del torneo"
+        : `Stai modificando l'edizione ${edizioneForzata}, non quella corrente`;
       document.getElementById("current-section").after(badge);
     }
-    // Senza questa il gestionale userebbe l'edizione lasciata in localStorage
-    // dall'ultima visita al sito pubblico, o il fallback 2025
-    sincronizzaEdizione();
   </script>
   <script type="module" src="js/gestionale.js"></script>
   <script type="module" src="js/firebase.js"></script>

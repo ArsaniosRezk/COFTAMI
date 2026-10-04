@@ -1,0 +1,228 @@
+/*
+===================================
+GALLERIA
+===================================
+*/
+
+.titolo-galleria {
+  align-self: flex-start;
+  margin: 25px 0 12px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: var(--mainText);
+}
+
+/* Video: copertine verticali (reel 9:16) */
+.griglia-video {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.scheda-video {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #000;
+  cursor: pointer;
+  aspect-ratio: 9 / 16;
+}
+
+.scheda-video img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.scheda-video:hover img {
+  transform: scale(1.04);
+}
+
+.play-video {
+  position: absolute;
+  /* Sotto il titolo stampato sulla copertina */
+  top: 72%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: var(--white);
+  font-size: 1.2rem;
+  transform: translate(-50%, -50%);
+}
+
+.titolo-video {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 25px 10px 10px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+  color: var(--white);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* Foto */
+.griglia-foto {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.miniatura {
+  display: block;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--secondary);
+  cursor: zoom-in;
+  aspect-ratio: 3 / 2;
+}
+
+.miniatura img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.miniatura:hover img {
+  transform: scale(1.05);
+}
+
+/*
+===================================
+VISUALIZZATORE
+===================================
+*/
+
+.visualizzatore {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.94);
+}
+
+.visualizzatore[hidden] {
+  display: none;
+}
+
+.visualizzatore-barra {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: calc(12px + env(safe-area-inset-top)) 15px 12px 20px;
+}
+
+.visualizzatore-contatore {
+  color: var(--white);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.visualizzatore-pulsante {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--white);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.visualizzatore-pulsante:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.visualizzatore-freccia {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.visualizzatore-freccia.sinistra {
+  left: 10px;
+}
+
+.visualizzatore-freccia.destra {
+  right: 10px;
+}
+
+.visualizzatore-contenuto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 70px 0;
+}
+
+.visualizzatore-contenuto img,
+.visualizzatore-contenuto video {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/*
+===================================
+break points
+===================================
+*/
+
+@media (min-width: 576px) {
+  .griglia-video {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .griglia-foto {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .griglia-foto {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .visualizzatore-contenuto {
+    padding: 70px 80px;
+  }
+
+  .visualizzatore-freccia.sinistra {
+    left: 20px;
+  }
+
+  .visualizzatore-freccia.destra {
+    right: 20px;
+  }
+}

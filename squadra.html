@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Squadra - Cofta</title>
+  <meta name="description" content="Partite, risultati, marcatori e rosa di una squadra del campionato Cofta Milano." />
+  <link rel="canonical" href="https://coftamilano.com/squadra.html" />
+  <meta name="theme-color" content="#2e684e" />
+
+  <!-- Anteprima nei link condivisi (WhatsApp, Instagram, Telegram...) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Cofta Milano" />
+  <meta property="og:locale" content="it_IT" />
+  <meta property="og:title" content="Squadra - Cofta Milano" />
+  <meta property="og:description" content="Partite, risultati, marcatori e rosa di una squadra del campionato Cofta Milano." />
+  <meta property="og:url" content="https://coftamilano.com/squadra.html" />
+  <meta property="og:image" content="https://coftamilano.com/assets/images/og-cofta.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- SDK Firebase: senza questi il download partirebbe solo dopo firebase.js -->
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js" />
+  <link rel="preconnect" href="https://cofta-mi-default-rtdb.europe-west1.firebasedatabase.app" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300..800&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/css/colors.css" />
+  <link rel="stylesheet" href="/css/icone.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/skeleton.css" />
+  <link rel="stylesheet" href="/css/calendario.css" />
+  <link rel="stylesheet" href="/css/partite.css" />
+  <link rel="stylesheet" href="/css/tabelle.css" />
+  <link rel="stylesheet" href="/css/overlay-partite.css" />
+  <link rel="stylesheet" href="/css/squadra.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHN9QNCZV6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-LHN9QNCZV6");
+  </script>
+</head>
+
+<body>
+  <div class="grid">
+    <my-header></my-header>
+
+    <main>
+      <section id="sezione-squadra">
+        <a class="torna-squadre" href="/squadre.html">
+          <i class="icona icona-arrow-left" aria-hidden="true"></i> Tutte le squadre
+        </a>
+
+        <div class="intestazione-squadra">
+          <img id="logo-squadra" class="logo-squadra" alt="" width="120" height="120" hidden />
+          <div>
+            <h1 id="nome-squadra" class="section-title">
+              <span class="skeleton skeleton-text" style="display:inline-block; width: 180px; height: 2rem;"></span>
+            </h1>
+            <p id="dettagli-squadra" class="dettagli-squadra"></p>
+          </div>
+        </div>
+
+        <div id="azioni-squadra" class="azioni-squadra">
+          <button type="button" id="pulsante-preferita" class="btn-chiaro" aria-pressed="false">
+            <i class="icona icona-star-vuota" aria-hidden="true"></i><span>Segui questa squadra</span>
+          </button>
+          <button type="button" id="pulsante-calendario" class="btn-contorno">
+            <i class="icona icona-calendar-plus" aria-hidden="true"></i><span>Aggiungi al calendario</span>
+          </button>
+          <button type="button" id="pulsante-condividi" class="btn-contorno">
+            <i class="icona icona-share" aria-hidden="true"></i><span>Condividi</span>
+          </button>
+        </div>
+
+        <div id="statistiche-squadra" class="statistiche-squadra"></div>
+      </section>
+
+      <section class="sezione-dati-squadra">
+        <h2 class="section-title">Prossime partite</h2>
+        <div id="prossime-partite" class="elenco-partite-squadra">
+          <div class="skeleton skeleton-card" style="height: 90px;"></div>
+        </div>
+      </section>
+
+      <section class="sezione-dati-squadra">
+        <h2 class="section-title">Risultati</h2>
+        <p class="instruction instruction-fissa">Tocca una partita per vedere i marcatori</p>
+        <div id="risultati-squadra" class="elenco-partite-squadra">
+          <div class="skeleton skeleton-card" style="height: 90px;"></div>
+        </div>
+      </section>
+
+      <section class="sezione-dati-squadra">
+        <h2 class="section-title">Marcatori</h2>
+        <div id="marcatori-squadra" class="marcatori-squadra">
+          <div class="skeleton skeleton-card">
+            <div class="skeleton skeleton-row"></div>
+            <div class="skeleton skeleton-row"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sezione-dati-squadra">
+        <h2 class="section-title">Rosa</h2>
+        <div id="rosa-squadra" class="rosa-squadra"></div>
+      </section>
+    </main>
+
+    <my-footer></my-footer>
+  </div>
+  <script type="module" src="/js/headerFooterManager.js"></script>
+  <script type="module" src="/js/divisionAndVariables.js"></script>
+  <script type="module" src="/js/funzioniSquadra.js"></script>
+</body>
+
+</html>

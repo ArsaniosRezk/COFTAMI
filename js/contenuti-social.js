@@ -1,4 +1,5 @@
 import { initSocial } from "../management/social.js";
+import { impostazioniPronte } from "./impostazioni.js";
 import {
   edition,
   loadSavedOption,
@@ -58,6 +59,9 @@ divisionSwitch.addEventListener("click", (event) => {
   aggiornaSwitch();
   mostraSezione();
 });
+
+// Edizione corrente prima di mostrare e leggere qualsiasi dato
+await impostazioniPronte;
 
 loadSavedOption();
 divisionSelect.value = getSelectedDivision();

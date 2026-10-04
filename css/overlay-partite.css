@@ -6,6 +6,7 @@
   bottom: -100%;
   width: 100%;
   height: 100%;
+  overflow-y: auto;
   background-color: var(--primary);
   text-align: center;
   transition: all 0.5s ease;
@@ -14,13 +15,39 @@
   z-index: 2000;
 }
 
+.overlay-azioni {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 25px 25px 0;
+}
+
+.overlay-pulsante {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--white-20);
+  color: var(--text);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.overlay-pulsante:hover {
+  background-color: var(--tertiary);
+}
+
 .overlay-content {
-  position: absolute;
-  top: 10%;
   padding: 20px;
 
   display: flex;
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
   flex-direction: column;
   justify-content: start;
   align-items: center;
@@ -37,18 +64,24 @@
   flex-direction: column;
   justify-content: start;
   align-items: center;
+  gap: 10px;
   width: 50%;
-
-  /* background-color: red; */
-  /* height: 230px; */
 }
 
 .logo-div {
-  /* background-color: orange; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
 }
 
 .logo-img {
-  max-width: 150px;
+  max-width: 110px;
+  max-height: 110px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 .team-name {
@@ -56,11 +89,6 @@
   text-align: center;
   font-weight: bold;
   color: var(--mainText);
-}
-
-#team-logo {
-  max-height: 150px;
-  margin-bottom: 15px;
 }
 
 .gols-div {
@@ -85,7 +113,7 @@
   width: 100%;
   gap: 20px;
 
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: bold;
 }
 
@@ -107,28 +135,26 @@
   text-align: right;
 }
 
-.close-team-info {
-  float: right;
-  padding: 35px;
-  color: var(--text);
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.fa-soccer-ball-o {
-  font-weight: 100;
+.pallone {
+  margin: 0 2px;
   color: rgba(255, 255, 255, 0.8);
   transform: rotate(20deg);
-  vertical-align: 0.01px;
 }
 
 .goals-count {
-  /* color: rgba(255, 255, 255, 0.5); */
   font-weight: 300;
 }
 
 @media (min-width: 992px) {
   .scorers-div {
     font-size: 1.2rem;
+  }
+
+  .logo-div,
+  .logo-img {
+    width: 150px;
+    height: 150px;
+    max-width: 150px;
+    max-height: 150px;
   }
 }

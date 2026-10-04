@@ -551,3 +551,162 @@ table tbody tr:last-child {
         text-align: center;
     }
 }
+
+/* Giornata da mostrare: elenco con "Automatica" e tutte le giornate */
+select#matchday-to-show-input {
+    /* Il margine dei select generici del gestionale (css/gestionale.css) qui non serve */
+    margin: 0;
+    width: auto;
+    min-width: 110px;
+    max-width: 240px;
+    text-align: left;
+    cursor: pointer;
+}
+
+select#matchday-to-show-input option {
+    color: var(--black);
+    background-color: var(--white);
+}
+
+/* =========================================
+   DESKTOP: card delle impostazioni
+   ========================================= */
+
+@media (min-width: 1025px) {
+    #match-to-show-div.dashboard-controls-wrapper {
+        width: 100%;
+        max-width: 1100px;
+    }
+
+    /* Se lo spazio non basta le impostazioni vanno a capo, senza uscire dalla card */
+    .dashboard-controls-card {
+        flex-wrap: wrap;
+        row-gap: 20px;
+    }
+
+    .dashboard-controls-card {
+        column-gap: 40px;
+    }
+
+    /* Il divisore resterebbe da solo in fondo alla riga quando le
+       impostazioni vanno a capo: basta lo spazio tra i gruppi */
+    .vertical-divider {
+        display: none;
+    }
+
+    .settings-group {
+        align-items: flex-start;
+        gap: 28px;
+    }
+
+    /* Etichette sulla stessa riga, controlli centrati in una riga di altezza fissa */
+    .setting-item {
+        display: grid;
+        grid-template-rows: auto 30px;
+        justify-items: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .setting-label {
+        white-space: nowrap;
+    }
+
+    .dashboard-select {
+        height: 28px;
+    }
+}
+
+/* =========================================
+   CLASSIFICA MARCATORI: ricerca e pagine
+   ========================================= */
+
+.ricerca-marcatori {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--testoTrasparente);
+}
+
+.ricerca-marcatori:focus-within {
+    border-color: var(--mainText);
+}
+
+.ricerca-marcatori input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.ricerca-marcatori input::placeholder {
+    color: var(--testoTrasparente);
+}
+
+.contenuto-marcatori {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.pagination button {
+    min-width: 32px;
+    padding: 6px 10px;
+    border: none;
+    border-right: 1px solid var(--white-20);
+    background: transparent;
+    color: var(--testoTrasparente);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.pagination button:last-child {
+    border-right: none;
+}
+
+.pagination button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.pagination button.active {
+    color: var(--text);
+    background-color: var(--tertiary);
+    font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+    .pagination button {
+        min-width: 40px;
+        padding: 10px 12px;
+    }
+}
+
+/* Smartphone: etichetta sopra e menu della giornata a tutta larghezza,
+   come il pulsante Salva (accanto all'etichetta verrebbe troncato) */
+@media (max-width: 1024px) {
+    .matchday-group div {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    select#matchday-to-show-input {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        height: 48px;
+        font-size: 1rem;
+    }
+}

@@ -254,7 +254,8 @@ textarea {
 }
 
 /* GIRONI */
-#gironi-panel {
+#gironi-panel,
+#loghi-panel {
   display: flex;
   flex-direction: column;
   flex-basis: 100%;
@@ -266,8 +267,13 @@ textarea {
   background-color: var(--secondary);
 }
 
-#gironi-panel h3 {
+#gironi-panel h3,
+#loghi-panel h3 {
   margin: 0;
+}
+
+#loghi-panel .custom-button {
+  align-self: flex-start;
 }
 
 .gironi-riepilogo {
@@ -619,7 +625,8 @@ textarea {
   }
 
   /* Gironi: riga intera sopra la griglia */
-  #gironi-panel {
+  #gironi-panel,
+  #loghi-panel {
     grid-column: 1 / -1;
     padding: 14px;
     border-radius: 12px;

@@ -1,83 +1,78 @@
 import { paginaCorrente, nomePagina } from "./utils/percorso.js";
+import { avviaControlloManutenzione } from "./maintenance-guard.js";
+import {
+  edizioneForzata,
+  edizioneTest,
+  tornaEdizioneCorrente,
+} from "./divisionAndVariables.js";
 
 // HEADER E FOOTER //
 
+const VOCI_MENU = [
+  { href: "/", testo: "Home" },
+  { href: "/campionato.html", testo: "Campionato" },
+  { href: "/squadre.html", testo: "Squadre" },
+  { href: "/calendario.html", testo: "Calendario" },
+  { href: "/regolamento.html", testo: "Regolamento" },
+  { href: "/albo-d'oro.html", testo: "Albo d'Oro" },
+  // Galleria nascosta per il momento: la pagina esiste ancora (/galleria.html)
+  // { href: "/galleria.html", testo: "Galleria" },
+  { href: "/iscrizione.html", testo: "Iscrizioni" },
+];
+
+// Pagine in cui la divisione cambia i contenuti: altrove il selettore è nascosto
+const PAGINE_CON_DIVISIONE = ["", "campionato", "squadre", "calendario"];
+
+// La pagina di una squadra evidenzia "Squadre" nel menu
+const VOCE_ATTIVA_PER_PAGINA = { squadra: "squadre" };
+
+const vociMenu = (classeLink = "") =>
+  VOCI_MENU.map(
+    ({ href, testo }) =>
+      `<li><a${classeLink ? ` class="${classeLink}"` : ""} href="${href}">${testo}</a></li>`
+  ).join("");
+
 class MyHeader extends HTMLElement {
   connectedCallback() {
+    const conDivisione = PAGINE_CON_DIVISIONE.includes(paginaCorrente());
+
     this.innerHTML = `
     <header>
       <div class="left-header">
-        <a href="/"
-          ><img src="assets/images/LOGO_COFTA_SITO.svg" width="130px" class="logo"
-        /></a>
+        <a href="/" aria-label="Cofta Milano, vai alla home">
+          <img src="/assets/images/LOGO_COFTA_SITO.svg" width="130" height="58" class="logo" alt="Cofta Milano" />
+        </a>
 
-        <select id="division">
+        <!-- Fonte del valore per gli script: lo comandano i pulsanti qui sotto -->
+        <select id="division" hidden tabindex="-1" aria-hidden="true">
           <option value="Superiori">Superiori</option>
           <option value="Giovani">Giovani</option>
         </select>
+        <div class="division-switch" role="group" aria-label="Divisione"${conDivisione ? "" : " hidden"}>
+          <button type="button" data-division="Superiori">Superiori</button>
+          <button type="button" data-division="Giovani">Giovani</button>
+        </div>
       </div>
 
       <div class="right-header">
-        <select id="division-smartphone">
-          <option value="Superiori">Superiori</option>
-          <option value="Giovani">Giovani</option>
-        </select>
-        <nav class="nav">
-          <ul>
-            <li>
-              <a class="nav-link" href="/">Home</a>
-            </li>
-            <li>
-              <a class="nav-link" href="/campionato.html">Campionato</a>
-            </li>
-            <li>
-              <a class="nav-link" href="/squadre.html">Squadre</a>
-            </li>
-            <li>
-              <a class="nav-link" href="/calendario.html">Calendario</a>
-            </li>            
-            <li>
-              <a class="nav-link" href="/regolamento.html">Regolamento</a>
-            </li>
-            <li>
-              <a class="nav-link" href="/albo-d'oro.html">Albo d'Oro</a>
-            </li>
-            <li>
-              <a class="nav-link" href="/iscrizione.html">Iscrizioni</a>
-            </li>
-          </ul>
+        <nav class="nav" aria-label="Menu principale">
+          <ul>${vociMenu("nav-link")}</ul>
         </nav>
-        <i class="fa-solid fa-bars menu-icon hide-hamb" onclick="openMenu()"></i>
-        <div id="overlay-menu-container">
-          <i class="fa-solid fa-xmark close-menu-icon" onclick="closeMenu()"></i>
+        <button type="button" class="menu-icon hide-hamb" aria-label="Apri il menu"
+          aria-expanded="false" aria-controls="overlay-menu-container">
+          <i class="icona icona-bars" aria-hidden="true"></i>
+        </button>
+        <div id="overlay-menu-container" role="dialog" aria-modal="true" aria-label="Menu">
+          <button type="button" class="close-menu-icon" aria-label="Chiudi il menu">
+            <i class="icona icona-xmark" aria-hidden="true"></i>
+          </button>
           <ul id="overlay-menu">
-            <a href="/"
-              ><img
-                src="assets/images/LOGO_COFTA_SITO.svg"
-                width="150px"
-                class="logo hide-logo"
-            /></a>
-            <li>
-              <a href="/">Home</a>
+            <li class="voce-logo">
+              <a href="/" aria-label="Home">
+                <img src="/assets/images/LOGO_COFTA_SITO.svg" width="150" height="67" class="logo hide-logo" alt="" />
+              </a>
             </li>
-            <li>
-              <a href="/campionato.html">Campionato</a>
-            </li>
-            <li>
-              <a href="/squadre.html">Squadre</a>
-            </li>
-            <li>
-              <a href="/calendario.html">Calendario</a>
-            </li>
-            <li>
-              <a href="/regolamento.html">Regolamento</a>
-            </li>
-            <li>
-              <a href="/albo-d'oro.html">Albo d'Oro</a>
-            </li>
-            <li>
-              <a href="/iscrizione.html">Iscrizioni</a>
-            </li>
+            ${vociMenu()}
           </ul>
         </div>
       </div>
@@ -93,48 +88,21 @@ class MyFooter extends HTMLElement {
       <div class="footer-grid">
         <div class="footer-menu">
           <h4>Menu</h4>
-          <ul>
-            <li>
-              <a href="index.html">Home</a>
-            </li>
-            <li>
-              <a href="/campionato.html">Campionato</a>
-            </li>
-            <li>
-              <a href="/squadre.html">Squadre</a>
-            </li>
-            <li>
-              <a href="/calendario.html">Calendario</a>
-            </li>
-            <li>
-              <a href="/regolamento.html">Regolamento</a>
-            </li>
-            <li>
-              <a href="/albo-d'oro.html">Albo d'Oro</a>
-            </li>
-            <li>
-              <a href="/iscrizione.html">Iscrizioni</a>
-            </li>
-          </ul>
+          <ul>${vociMenu()}</ul>
         </div>
         <div class="footer-logo">
-          <a href="/"><img src="assets/images/LOGO_COFTA_SITO_3.svg" height="90px" class="logo" /></a>
+          <a href="/" aria-label="Home"><img src="/assets/images/LOGO_COFTA_SITO_3.svg" width="83" height="90" class="logo" alt="Cofta Milano" loading="lazy" /></a>
         </div>
         <div class="footer-contacts">
           <h4>Contatti</h4>
-          <p>Per maggiori info manda una <br />mail a: <b>info@coftamilano.com</b></p>
+          <p>Per maggiori info manda una <br />mail a: <a href="mailto:info@coftamilano.com"><b>info@coftamilano.com</b></a></p>
           <div class="contacts-icon">
-          <a href="https://www.instagram.com/coftamilano"><i class="fa-brands fa-instagram contact-icon"></i></a>
-            <a href="mailto: info@coftamilano.com"><i class="fa-solid fa-envelope contact-icon"></i></a>
+            <a href="https://www.instagram.com/coftamilano" aria-label="Instagram di Cofta Milano" rel="noopener" target="_blank"><i class="icona icona-instagram contact-icon" aria-hidden="true"></i></a>
+            <a href="mailto:info@coftamilano.com" aria-label="Scrivi una mail a Cofta Milano"><i class="icona icona-envelope contact-icon" aria-hidden="true"></i></a>
           </div>
         </div>
       </div>
     </footer>
-    <style>
-      footer {
-        padding-bottom: env(safe-area-inset-bottom); /* Fix for iPhone Home Bar */
-      }
-    </style>
     `;
   }
 }
@@ -145,47 +113,67 @@ customElements.define("my-footer", MyFooter);
 // Active Page //
 // Confronto sui nomi normalizzati: l'evidenziazione funziona sia su
 // /campionato.html sia su /campionato.
-const navLinkEls = document.querySelectorAll(".nav-link");
-const paginaAttiva = paginaCorrente();
+const paginaAttiva = VOCE_ATTIVA_PER_PAGINA[paginaCorrente()] ?? paginaCorrente();
 
-navLinkEls.forEach((navLinkEl) => {
-  const paginaLink = nomePagina(new URL(navLinkEl.href).pathname);
-
-  if (paginaAttiva === paginaLink || (paginaAttiva === "" && paginaLink === "")) {
-    navLinkEl.classList.add("active");
+document.querySelectorAll(".nav-link, #overlay-menu a, .footer-menu a").forEach((link) => {
+  const paginaLink = nomePagina(new URL(link.href).pathname);
+  if (paginaAttiva === paginaLink && !link.closest(".voce-logo")) {
+    if (link.classList.contains("nav-link")) link.classList.add("active");
+    link.setAttribute("aria-current", "page");
   }
 });
 
-// GLOBAL MAINTENANCE CHECK
-import { maintenanceGuard } from "./maintenance-guard.js";
+// MENU SU SMARTPHONE //
+const pulsanteMenu = document.querySelector(".menu-icon");
+const menu = document.getElementById("overlay-menu-container");
 
-(async function checkMaintenanceGlobal() {
-  // The guard handles visibility and throws if maintenance is on
-  try {
-    await maintenanceGuard();
-    // If we get here, it's safe to run other logic if needed
-  } catch (e) {
-    if (e.message !== "MAINTENANCE_MODE_BLOCK") {
-      console.error(e);
-    }
-    // If blocked, we do nothing more. The body is visible (showing overlay) but we stop here.
-  }
-})();
+function apriMenu() {
+  menu.classList.add("aperto");
+  pulsanteMenu.setAttribute("aria-expanded", "true");
+  document.body.style.overflow = "hidden";
+  menu.querySelector(".close-menu-icon").focus();
+}
 
-// EDITION SYNC CHECK (Runs on every page load)
-import { sincronizzaEdizione } from "./edition-sync.js";
+function chiudiMenu() {
+  if (!menu.classList.contains("aperto")) return;
+  menu.classList.remove("aperto");
+  pulsanteMenu.setAttribute("aria-expanded", "false");
+  document.body.style.overflow = "";
+  pulsanteMenu.focus();
+}
 
-sincronizzaEdizione();
+if (pulsanteMenu && menu) {
+  pulsanteMenu.addEventListener("click", apriMenu);
+  menu.querySelector(".close-menu-icon").addEventListener("click", chiudiMenu);
+  document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") chiudiMenu();
+  });
+}
+
+// EDIZIONE PASSATA //
+// Chi guarda un'edizione passata (link dall'albo d'oro) deve capirlo e poter tornare indietro
+if (edizioneForzata && !edizioneTest) {
+  const avviso = document.createElement("div");
+  avviso.className = "avviso-archivio";
+  avviso.innerHTML = `<span>Stai guardando l'edizione <b>${edizioneForzata}</b></span>`;
+
+  const torna = document.createElement("button");
+  torna.type = "button";
+  torna.textContent = "Torna all'edizione corrente";
+  torna.addEventListener("click", tornaEdizioneCorrente);
+  avviso.appendChild(torna);
+
+  document.querySelector("main")?.prepend(avviso);
+}
+
+// MANUTENZIONE //
+avviaControlloManutenzione();
 
 // SERVICE WORKER REGISTRATION (Cache)
-document.addEventListener("DOMContentLoaded", () => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('SW Registered (Public)', registration.scope);
-      })
-      .catch((error) => {
-        console.log('SW Registration Failed:', error);
-      });
-  }
-});
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch((error) => {
+      console.log("SW Registration Failed:", error);
+    });
+  });
+}

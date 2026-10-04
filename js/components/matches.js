@@ -1,5 +1,9 @@
 import { getData, updateData, getPaths } from "../../js/firebase.js";
 import { edition } from "../../js/divisionAndVariables.js";
+import { mostraToast } from "../utils/interfaccia.js";
+
+// Messaggi al posto di alert(): brevi in basso, quelli lunghi in una finestra
+const segnalaErrore = (testo) => mostraToast(testo, { errore: true });
 
 export async function showMatchesOptions() {
     selectMatchday();
@@ -385,9 +389,9 @@ async function saveEditedMatch(match, selectedGiornata) {
     try {
         await updateData(matchPath, match);
         await updateData(calendarioPath, { Risultato: risultato });
-        alert("Modifiche salvate con successo!");
+        mostraToast("Modifiche salvate con successo!");
     } catch (error) {
         console.error("Errore durante il salvataggio delle modifiche:", error);
-        alert("Si è verificato un errore durante il salvataggio delle modifiche.");
+        segnalaErrore("Si è verificato un errore durante il salvataggio delle modifiche.");
     }
 }

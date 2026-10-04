@@ -110,9 +110,9 @@ nav ul li a {
   white-space: nowrap;
 }
 
-/* Su smartphone resta solo "Test", per non coprire il titolo */
+/* Su smartphone resta solo "Test" (o l'anno), per non coprire il titolo */
 .badge-test::before {
-  content: "Edizione di ";
+  content: "Edizione ";
 }
 
 #division {}

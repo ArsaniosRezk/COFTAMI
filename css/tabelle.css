@@ -241,23 +241,32 @@ table tbody tr:last-child {
   margin-top: 5px;
 }
 
-.pagination a {
+.pagination button {
   display: inline-block;
-  padding: 5px 8px;
-  text-decoration: none;
-  font-size: 0.45rem;
-  /* border-right: 1px solid var(--tertiary); */
+  min-width: 28px;
+  padding: 6px 9px;
+  border: none;
   border-right: 1px solid var(--white-20);
+  background: transparent;
   color: var(--testoTrasparente);
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
 }
 
-.pagination a:last-child {
+.pagination button:last-child {
   border-right: none;
 }
 
-.pagination a.active {
+.pagination button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pagination button.active {
   color: var(--text) !important;
   background-color: var(--tertiary);
+  font-weight: 700;
 }
 
 @media (min-width: 576px) {}
@@ -267,7 +276,7 @@ table tbody tr:last-child {
     margin-top: 10px;
   }
 
-  .pagination a {
+  .pagination button {
     padding: 8px 12px;
     font-size: 1rem;
   }
@@ -382,4 +391,100 @@ table tbody tr:last-child {
 .posizione-3,
 .posizione-4 {
   background-color: var(--mainText);
+}
+/*
+  ===================================
+  LINK SQUADRA E SQUADRA PREFERITA
+  ===================================
+*/
+
+.link-squadra {
+  color: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+
+.link-squadra:hover,
+.link-squadra:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.riga-preferita td {
+  background-color: rgba(252, 235, 0, 0.12);
+}
+
+.riga-preferita td:nth-child(2)::before {
+  content: "★ ";
+  color: var(--mainText);
+}
+
+/*
+  ===================================
+  RICERCA MARCATORI
+  ===================================
+*/
+
+.ricerca-marcatori {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: var(--secondary);
+  color: var(--testoTrasparente);
+}
+
+.ricerca-marcatori input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.ricerca-marcatori input::placeholder {
+  color: var(--testoTrasparente);
+}
+
+.ricerca-marcatori input:focus {
+  outline: none;
+}
+
+.ricerca-marcatori:focus-within {
+  outline: 2px solid var(--mainText);
+}
+
+.contenuto-marcatori {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Albo d'oro: link all'edizione passata */
+.albo-table-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.link-edizione {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--mainText);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.link-edizione:hover {
+  text-decoration: underline;
 }

@@ -7,9 +7,14 @@ import {
     getPaths,
     uploadFile,
 } from "../firebase.js";
-import { isMobileDevice } from "../utils/device.js";
+import { getSelectedDivision } from "../divisionAndVariables.js";
 import { capitalize } from "../utils/formatters.js";
+import { nomeSquadra, linkSquadra, eSquadraPreferita } from "../utils/torneo.js";
 import { mostraAvvisoVuoto } from "./pre-torneo.js";
+import { conferma as chiediConferma, mostraToast } from "../utils/interfaccia.js";
+
+// Messaggi al posto di alert(): brevi in basso, quelli lunghi in una finestra
+const segnalaErrore = (testo) => mostraToast(testo, { errore: true });
 
 // Caratteri che Firebase non accetta nelle chiavi, più ":" che separa
 // le due squadre nelle chiavi delle partite (Casa:Ospite)
@@ -29,116 +34,83 @@ SQUADRE
 ===================================
 */
 
-export async function visualizzaSquadreConMembri() {
+export async function visualizzaSquadreConMembri(dati = null) {
     const teamsContainer = document.getElementById("teams-container");
+    if (!teamsContainer) return;
 
-    // Svuota div container squadre
-    teamsContainer.innerHTML = "";
+    let teamsSnapshot = dati?.squadre;
+    const divisione = dati?.divisione || getSelectedDivision();
+    if (!dati) {
+        const { teamsPath } = getPaths();
+        teamsSnapshot = await getData(teamsPath);
+    }
 
-    const { teamsPath } = getPaths();
-    const teamsSnapshot = await getData(teamsPath);
-
-    if (teamsSnapshot) {
-        for (const [teamName, teamData] of Object.entries(teamsSnapshot)) {
-            const abbreviatedTeamName = teamName.replace(/_/g, ".");
-            const teamLogo = teamData.Logo;
-            const coaches = teamData.Allenatori || {};
-            const players = teamData.Giocatori || {};
-
-            // Creazione del div per la squadra
-            const teamDiv = document.createElement("div");
-            teamDiv.className = "squadra";
-
-            // Creazione dell'elemento div per logo e nome della squadra
-            const logoNameDiv = document.createElement("div");
-            logoNameDiv.className = "logo-e-nome";
-
-            // Creazione dell'elemento immagine
-            const logoEl = document.createElement("img");
-            logoEl.src = teamLogo;
-
-            // Creazione dell'elemento div per il nome della squadra
-            const teamNameDiv = document.createElement("div");
-            teamNameDiv.className = "nome-team";
-
-            // Creazione dell'elemento span
-            const teamNameEl = document.createElement("span");
-            teamNameEl.textContent = abbreviatedTeamName;
-
-            // Aggiunta degli elementi al DOM
-            teamNameDiv.appendChild(teamNameEl);
-            logoNameDiv.appendChild(logoEl);
-            logoNameDiv.appendChild(teamNameDiv);
-            teamDiv.appendChild(logoNameDiv);
-
-            // Creazione del div per i membri della squadra
-            const membersDiv = document.createElement("div");
-            membersDiv.className = "membri";
-
-            // Creazione e aggiunta degli elementi p per gli allenatori
-            const coachesMembersType = document.createElement("p");
-            coachesMembersType.className = "tipo-membro";
-            coachesMembersType.textContent = "Allenatori";
-            membersDiv.appendChild(coachesMembersType);
-
-            const coachesMembers = document.createElement("p");
-            coachesMembers.className = "membro";
-            coachesMembers.textContent = Object.keys(coaches).join(", ");
-            membersDiv.appendChild(coachesMembers);
-
-            // Creazione e aggiunta degli elementi p per i giocatori
-            const playersMembersType = document.createElement("p");
-            playersMembersType.className = "tipo-membro";
-            playersMembersType.textContent = "Giocatori";
-            membersDiv.appendChild(playersMembersType);
-
-            const playersMembers = document.createElement("p");
-            playersMembers.className = "membro";
-            playersMembers.textContent = Object.keys(players).join(", ");
-            membersDiv.appendChild(playersMembers);
-
-            // Aggiunta del div dei membri al DOM
-            teamDiv.appendChild(membersDiv);
-
-            // Aggiunta del div della squadra al container
-            teamsContainer.appendChild(teamDiv);
-
-            teamDiv.addEventListener("click", () => {
-                openTeamMembersOverlay(abbreviatedTeamName, coaches, players, teamLogo);
-            });
-        }
-    } else {
-        console.log("Nessuna squadra trovata nel database.");
+    if (!teamsSnapshot) {
         mostraAvvisoVuoto(
             "teams-container",
             "Le squadre iscritte saranno pubblicate qui a breve."
         );
+        return;
     }
-}
 
-// Funzione per aprire l'overlay e popolare i dati della squadra
-function openTeamMembersOverlay(
-    abbreviatedTeamName,
-    coaches,
-    players,
-    teamLogo
-) {
-    if (isMobileDevice()) {
-        const overlay = document.getElementById("team-overlay");
-        const teamNameEl = document.getElementById("team-name");
-        const logoEl = document.getElementById("team-logo");
-        const coachesEl = document.getElementById("overlay-allenatori");
-        const playersEl = document.getElementById("overlay-giocatori");
+    teamsContainer.innerHTML = "";
 
-        // Popola i dati della squadra nell'overlay
-        teamNameEl.textContent = abbreviatedTeamName;
-        logoEl.src = teamLogo;
-        coachesEl.textContent = Object.keys(coaches).join(", ");
-        playersEl.textContent = Object.keys(players).join(", ");
+    const ordinate = Object.entries(teamsSnapshot).sort(([a], [b]) =>
+        nomeSquadra(a).localeCompare(nomeSquadra(b))
+    );
 
-        // Mostra l'overlay
-        overlay.style.top = "0%";
-        document.getElementById("team-info").style.opacity = "1";
+    for (const [teamName, teamData] of ordinate) {
+        const coaches = teamData.Allenatori || {};
+        const players = teamData.Giocatori || {};
+
+        // Ogni scheda porta alla pagina della squadra (partite, marcatori, rosa)
+        const teamDiv = document.createElement("a");
+        teamDiv.className = "squadra";
+        teamDiv.href = linkSquadra(teamName, divisione);
+        if (eSquadraPreferita(divisione, teamName)) teamDiv.classList.add("preferita");
+
+        const logoNameDiv = document.createElement("div");
+        logoNameDiv.className = "logo-e-nome";
+
+        // Versione leggera del logo: quella grande pesa fino a 1 MB
+        const logoUrl = teamData.LogoLR || teamData.Logo;
+        if (logoUrl) {
+            const logoEl = document.createElement("img");
+            logoEl.src = logoUrl;
+            logoEl.alt = "";
+            logoEl.width = 125;
+            logoEl.height = 125;
+            logoEl.loading = "lazy";
+            logoEl.decoding = "async";
+            logoNameDiv.appendChild(logoEl);
+        }
+
+        const teamNameDiv = document.createElement("div");
+        teamNameDiv.className = "nome-team";
+        const teamNameEl = document.createElement("span");
+        teamNameEl.textContent = nomeSquadra(teamName);
+        teamNameDiv.appendChild(teamNameEl);
+        logoNameDiv.appendChild(teamNameDiv);
+        teamDiv.appendChild(logoNameDiv);
+
+        // Rosa visibile accanto al logo su schermi larghi
+        const membersDiv = document.createElement("div");
+        membersDiv.className = "membri";
+
+        const aggiungiMembri = (titolo, membri) => {
+            const tipo = document.createElement("p");
+            tipo.className = "tipo-membro";
+            tipo.textContent = titolo;
+            const elenco = document.createElement("p");
+            elenco.className = "membro";
+            elenco.textContent = Object.keys(membri).join(", ") || "-";
+            membersDiv.append(tipo, elenco);
+        };
+        aggiungiMembri("Allenatori", coaches);
+        aggiungiMembri("Giocatori", players);
+
+        teamDiv.appendChild(membersDiv);
+        teamsContainer.appendChild(teamDiv);
     }
 }
 
@@ -159,6 +131,8 @@ export async function showTeams() {
 
     if (teamsSnapshot) {
         teamsContainer.appendChild(creaPannelloGironi(teamsSnapshot));
+        const pannelloLoghi = creaPannelloLoghi(teamsSnapshot);
+        if (pannelloLoghi) teamsContainer.appendChild(pannelloLoghi);
 
         for (const [teamName, teamData] of Object.entries(teamsSnapshot)) {
             const abbreviatedTeamName = teamName.replace(/_/g, ".");
@@ -403,7 +377,7 @@ function creaTabelleGironi(teamsSnapshot, gironi, aggiornaRiepilogo) {
                             });
                         } catch (error) {
                             console.error("Errore nello spostamento della squadra:", error);
-                            alert("Errore nel salvataggio del girone. Riprova.");
+                            segnalaErrore("Errore nel salvataggio del girone. Riprova.");
                             // Rimette la squadra dov'era
                             teamsSnapshot[chiave].Girone = vecchioGirone;
                             evento.from.insertBefore(
@@ -427,7 +401,7 @@ function creaTabelleGironi(teamsSnapshot, gironi, aggiornaRiepilogo) {
 async function applicaGironi(chiaviSquadre, numeroGironi) {
     const massimo = Math.min(chiaviSquadre.length, 26);
     if (!Number.isInteger(numeroGironi) || numeroGironi < 1 || numeroGironi > massimo) {
-        alert(`Inserisci un numero di gironi tra 1 e ${massimo}.`);
+        segnalaErrore(`Inserisci un numero di gironi tra 1 e ${massimo}.`);
         return;
     }
 
@@ -435,7 +409,7 @@ async function applicaGironi(chiaviSquadre, numeroGironi) {
         String.fromCharCode(65 + i)
     );
 
-    const conferma = confirm(
+    const conferma = await chiediConferma(
         numeroGironi === 1
             ? `Tutte le ${chiaviSquadre.length} squadre verranno messe in un girone unico.`
             : `Le ${chiaviSquadre.length} squadre verranno sorteggiate in ${numeroGironi} gironi ` +
@@ -463,7 +437,7 @@ async function applicaGironi(chiaviSquadre, numeroGironi) {
         document.getElementById("nav-squadre")?.click();
     } catch (error) {
         console.error("Errore nell'assegnazione dei gironi:", error);
-        alert("Errore nel salvataggio dei gironi. Riprova.");
+        segnalaErrore("Errore nel salvataggio dei gironi. Riprova.");
     }
 }
 
@@ -665,12 +639,12 @@ function editTeamInfo(teamName, teamData) {
         const file = logoInput.files[0];
         if (!file) return;
         if (!TIPI_LOGO.includes(file.type)) {
-            alert("Il logo deve essere un'immagine PNG, JPG o WEBP.");
+            segnalaErrore("Il logo deve essere un'immagine PNG, JPG o WEBP.");
             logoInput.value = "";
             return;
         }
         if (file.size > LOGO_MAX_BYTE) {
-            alert("L'immagine è troppo pesante (massimo 10 MB).");
+            segnalaErrore("L'immagine è troppo pesante (massimo 10 MB).");
             logoInput.value = "";
             return;
         }
@@ -787,11 +761,11 @@ async function saveTeamChanges({
 
     const newTeamName = chiaveDaNome(newName);
     if (!newTeamName) {
-        alert("Il nome della squadra non può essere vuoto.");
+        segnalaErrore("Il nome della squadra non può essere vuoto.");
         return;
     }
     if (CARATTERI_VIETATI.test(newTeamName)) {
-        alert('Il nome della squadra non può contenere i caratteri / # $ [ ] :');
+        segnalaErrore('Il nome della squadra non può contenere i caratteri / # $ [ ] :');
         return;
     }
 
@@ -840,12 +814,89 @@ async function saveTeamChanges({
         showTeamInfo(newTeamName, teamData);
     } catch (error) {
         console.error("Errore nel salvataggio delle modifiche:", error);
-        alert("Errore nel salvataggio delle modifiche. Riprova.");
+        segnalaErrore("Errore nel salvataggio delle modifiche. Riprova.");
     }
 }
 
+/*
+-----------------------------------
+OTTIMIZZAZIONE LOGHI
+-----------------------------------
+I loghi caricati prima del 2026 pesano fino a 1 MB e non hanno la cache del
+browser: a ogni visita venivano ricontrollati. Questo pannello li ricarica
+nel formato attuale (600 px + versione leggera da 200 px, con cache lunga).
+I file vecchi restano su Storage: si cambia solo l'indirizzo salvato.
+*/
+
+// I loghi caricati con caricaLogo() stanno in Loghi/{edizione}/{divisione}/
+const LOGO_RECENTE = /\/o\/Loghi%2F(\d{4}|Test)%2F/;
+
+function logoDaOttimizzare(datiSquadra) {
+    return Boolean(datiSquadra.Logo) && !LOGO_RECENTE.test(datiSquadra.Logo);
+}
+
+function creaPannelloLoghi(teamsSnapshot) {
+    const daOttimizzare = Object.entries(teamsSnapshot).filter(([, dati]) => logoDaOttimizzare(dati));
+    if (daOttimizzare.length === 0) return null;
+
+    const pannello = document.createElement("div");
+    pannello.id = "loghi-panel";
+
+    const titolo = document.createElement("h3");
+    titolo.textContent = "Loghi";
+
+    const testo = document.createElement("p");
+    testo.className = "gironi-nota";
+    testo.textContent =
+        `${daOttimizzare.length} loghi sono nel formato vecchio (fino a 1 MB l'uno): ` +
+        "ottimizzandoli il sito pubblico si carica molto più in fretta. L'aspetto non cambia.";
+
+    const pulsante = document.createElement("button");
+    pulsante.className = "custom-button";
+    pulsante.textContent = `Ottimizza ${daOttimizzare.length} loghi`;
+
+    pulsante.addEventListener("click", async () => {
+        const procedi = await chiediConferma(
+            `Verranno ricaricati ${daOttimizzare.length} loghi in versione leggera. Ci vuole circa un minuto: lascia aperta la pagina.`,
+            { titolo: "Ottimizza i loghi", ok: "Ottimizza" }
+        );
+        if (!procedi) return;
+
+        const { teamsPath } = getPaths();
+        pulsante.disabled = true;
+        const falliti = [];
+
+        for (const [indice, [chiave, dati]] of daOttimizzare.entries()) {
+            pulsante.textContent = `Ottimizzazione ${indice + 1} di ${daOttimizzare.length}...`;
+            try {
+                const risposta = await fetch(dati.Logo);
+                if (!risposta.ok) throw new Error(`HTTP ${risposta.status}`);
+                const nuovi = await caricaLogo(chiave, await risposta.blob());
+                await update(ref(db, `${teamsPath}/${chiave}`), nuovi);
+                Object.assign(teamsSnapshot[chiave], nuovi);
+            } catch (errore) {
+                console.error(`Logo di ${chiave} non ottimizzato:`, errore);
+                falliti.push(chiave.replace(/_/g, "."));
+            }
+        }
+
+        if (falliti.length === 0) {
+            mostraToast("Loghi ottimizzati");
+            pannello.remove();
+        } else {
+            segnalaErrore(`Non ottimizzati: ${falliti.join(", ")}. Riprova.`);
+            pulsante.disabled = false;
+            pulsante.textContent = "Riprova";
+        }
+    });
+
+    pannello.append(titolo, testo, pulsante);
+    return pannello;
+}
+
 // Carica il logo su Storage in due versioni: Logo (schede, grafiche social)
-// e LogoLR, più leggera, per il calendario. Restituisce i due URL.
+// e LogoLR, più leggera, per calendario, elenco squadre e pagina squadra.
+// 200 px restano nitidi anche sugli schermi ad alta densità. Restituisce i due URL.
 async function caricaLogo(teamKey, file) {
     const { teamsPath } = getPaths();
     // Calcio/{edizione}/{Divisione}/Squadre -> Loghi/{edizione}/{Divisione}/...
@@ -854,7 +905,7 @@ async function caricaLogo(teamKey, file) {
 
     const [logo, logoLR] = await Promise.all([
         ridimensionaImmagine(file, 600),
-        ridimensionaImmagine(file, 150),
+        ridimensionaImmagine(file, 200),
     ]);
 
     const [urlLogo, urlLogoLR] = await Promise.all([
@@ -893,7 +944,7 @@ async function rinominaSquadra(vecchiaChiave, nuovaChiave, datiSquadra) {
     const refertiPath = teamsPath.replace(/Squadre$/, "Referti");
 
     if (await getData(`${teamsPath}/${nuovaChiave}`)) {
-        alert(`Esiste già una squadra chiamata "${nuovaChiave.replace(/_/g, ".")}".`);
+        segnalaErrore(`Esiste già una squadra chiamata "${nuovaChiave.replace(/_/g, ".")}".`);
         return false;
     }
 
@@ -932,14 +983,6 @@ async function rinominaSquadra(vecchiaChiave, nuovaChiave, datiSquadra) {
 
     await update(ref(db), updates);
 
-    // Calendario e squadre sono in cache locale (getDataCached): vanno riletti
-    try {
-        localStorage.removeItem(`cache_${teamsPath}`);
-        localStorage.removeItem(`cache_${calendarPath}`);
-    } catch (e) {
-        console.warn("Impossibile svuotare la cache locale", e);
-    }
-
     return true;
 }
 
@@ -973,7 +1016,7 @@ async function addTeam() {
     saveTeam.addEventListener("click", async () => {
         const teamName = teamNameValueInput.value.trim();
         if (CARATTERI_VIETATI.test(teamName)) {
-            alert('Il nome della squadra non può contenere i caratteri / # $ [ ] :');
+            segnalaErrore('Il nome della squadra non può contenere i caratteri / # $ [ ] :');
             return;
         }
         if (teamName) {
@@ -1004,7 +1047,7 @@ async function addTeam() {
                 console.error("Errore nel salvataggio della squadra:", error);
             }
         } else {
-            alert("Inserisci un nome per la squadra!");
+            segnalaErrore("Inserisci un nome per la squadra!");
         }
     });
     newTeamDiv.appendChild(saveTeam);

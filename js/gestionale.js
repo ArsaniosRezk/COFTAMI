@@ -1,41 +1,74 @@
-document.addEventListener("DOMContentLoaded", () => {
+import { impostazioniPronte } from "./impostazioni.js";
+
+// Stile di ogni sezione: uno solo alla volta, perché alcuni fogli contengono
+// regole generiche (table, td, .custom-button) che si pesterebbero i piedi
+const STILI_SEZIONE = {
+  dashboard: "/css/dashboard.css",
+  iscrizioni: "/css/iscrizioniM.css",
+  squadre: "/css/squadreM.css",
+  calendario: "/css/calendarioM.css",
+  report: "/css/reportM.css",
+  partite: "/css/partiteM.css",
+  social: "/css/socialM.css",
+};
+
+// Carica il foglio di stile della sezione e toglie quello precedente solo
+// quando il nuovo è pronto: il contenuto non compare mai senza stile
+function caricaStileSezione(section) {
+  const href = STILI_SEZIONE[section];
+  const attuale = document.getElementById("stile-sezione");
+  if (!href || attuale?.getAttribute("href") === href) return Promise.resolve();
+
+  return new Promise((resolve) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.onload = link.onerror = () => {
+      attuale?.remove();
+      link.id = "stile-sezione";
+      resolve();
+    };
+    document.head.appendChild(link);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
   const contentDiv = document.getElementById("content");
 
+  // Ogni caricamento ha un numero: se nel frattempo ne è partito un altro
+  // (clic veloci sul menu), il risultato vecchio viene scartato
+  let ultimoCaricamento = 0;
+
   const loadContent = async (section) => {
+    const numero = ++ultimoCaricamento;
     try {
-      const response = await fetch(`management/${section}.html`);
-      const content = await response.text();
+      const [content, module] = await Promise.all([
+        fetch(`management/${section}.html`).then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.text();
+        }),
+        import(`/management/${section}.js`),
+        caricaStileSezione(section),
+      ]);
+      if (numero !== ultimoCaricamento) return;
+
       contentDiv.innerHTML = content;
 
-      // Rimuove eventuali script precedenti con lo stesso src
-      const existingScript = document.querySelector(
-        `script[src="management/${section}.js"]`
-      );
-      if (existingScript) {
-        existingScript.remove();
+      const initFunction =
+        module[`init${section.charAt(0).toUpperCase() + section.slice(1)}`];
+      if (typeof initFunction === "function") {
+        initFunction();
       }
-
-      // Trova e carica gli script associati alla sezione caricata
-      const script = document.createElement("script");
-      script.src = `management/${section}.js`;
-      script.type = "module";
-      document.body.appendChild(script);
-
-      // Esegue la funzione di inizializzazione dopo che lo script è stato caricato
-      script.onload = async () => {
-        const module = await import(`/management/${section}.js`);
-        const initFunction =
-          module[`init${section.charAt(0).toUpperCase() + section.slice(1)}`];
-        if (typeof initFunction === "function") {
-          initFunction();
-        }
-      };
     } catch (error) {
+      if (numero !== ultimoCaricamento) return;
       console.error("Error loading content:", error);
       contentDiv.innerHTML =
-        "<p>Unable to load content. Please try again later.</p>";
+        "<p>Impossibile caricare la sezione. Controlla la connessione e riprova.</p>";
     }
   };
+
+  // I percorsi Firebase dipendono dall'edizione corrente
+  await impostazioniPronte;
 
   const sections = [
     "dashboard",
@@ -141,18 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }, 100);
   });
-});
-
-// Active Section //
-const navLinkEls = document.querySelectorAll(".nav-links");
-const headerText = document.getElementById("current-section");
-
-navLinkEls.forEach((navLinkEl) => {
-  // const navLinkPathname = new URL(navLinkEl.href).pathname;
-
-  if (navLinkEl === headerText) {
-    navLinkEl.classList.add("active");
-  }
 });
 
 // SERVICE WORKER REGISTRATION (Admin)

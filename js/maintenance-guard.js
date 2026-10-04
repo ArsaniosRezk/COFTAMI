@@ -1,5 +1,5 @@
-import { manutenzione } from "./components/manutenzione.js";
-import { ref, db, get } from "./firebase.js";
+import { manutenzione, rimuoviManutenzione } from "./components/manutenzione.js";
+import { osservaImpostazioni } from "./impostazioni.js";
 import { paginaCorrente } from "./utils/percorso.js";
 
 /*
@@ -12,55 +12,42 @@ import { paginaCorrente } from "./utils/percorso.js";
 */
 const PAGINE_ESENTI = ["regolamento-test", "iscrizione-test"];
 
+// Ultimo stato visto: chi torna sul sito durante la manutenzione vede subito
+// l'avviso, senza intravedere la pagina mentre arriva la risposta del server
+const CHIAVE_ULTIMO_STATO = "cofta_manutenzione";
+
 function paginaEsenteDaManutenzione() {
     // Funziona sia con /iscrizione.html sia con /iscrizione
     return PAGINE_ESENTI.includes(paginaCorrente());
 }
 
+function ricordaStato(attiva) {
+    try {
+        if (attiva) localStorage.setItem(CHIAVE_ULTIMO_STATO, "1");
+        else localStorage.removeItem(CHIAVE_ULTIMO_STATO);
+    } catch (errore) {
+        // Senza storage si perde solo l'avviso immediato
+    }
+}
+
 /**
- * Checks maintenance status and strictly blocks execution if active.
- * Handles page visibility to prevent flashing.
- * @returns {Promise<void>} Resolves if safe to proceed, rejects/hangs if maintenance is active.
+ * Mostra l'avviso di manutenzione sopra la pagina quando è attivo nelle
+ * impostazioni, e lo toglie quando viene disattivato (anche a pagina aperta).
+ * La pagina sotto continua a caricarsi: è coperta, non serve fermarla.
  */
-export async function maintenanceGuard() {
-    const settingsRef = ref(db, "Impostazioni");
+export function avviaControlloManutenzione() {
+    if (paginaEsenteDaManutenzione()) return;
 
     try {
-        const snapshot = await get(settingsRef);
-
-        if (
-            snapshot.exists() &&
-            snapshot.val().manutenzione &&
-            !paginaEsenteDaManutenzione()
-        ) {
-            // 1. Show Overlay
-            manutenzione();
-
-            // 2. Reveal Body (so overlay is seen)
-            document.body.style.opacity = "1";
-            document.body.style.pointerEvents = "auto";
-
-            // 3. STOP EVERYTHING
-            console.warn("Maintenance Mode Active: Blocking further execution.");
-            // Throwing an error creates a rejected promise, stopping await chains
-            throw new Error("MAINTENANCE_MODE_BLOCK");
-        }
-
-        // If we get here, no maintenance.
-        // Reveal body for normal content
-        document.body.style.opacity = "1";
-        document.body.style.pointerEvents = "auto";
-
-    } catch (error) {
-        if (error.message === "MAINTENANCE_MODE_BLOCK") {
-            // Re-throw to stop caller
-            throw error;
-        }
-
-        console.error("Maintenance Guard Error:", error);
-        // In case of error (e.g. offline), we usually want to fail safe or show content?
-        // Let's show content to avoid permanent white screen if DB fails
-        document.body.style.opacity = "1";
-        document.body.style.pointerEvents = "auto";
+        if (localStorage.getItem(CHIAVE_ULTIMO_STATO) === "1") manutenzione();
+    } catch (errore) {
+        // Storage non leggibile: si aspetta la risposta del server
     }
+
+    osservaImpostazioni((impostazioni) => {
+        const attiva = Boolean(impostazioni.manutenzione);
+        ricordaStato(attiva);
+        if (attiva) manutenzione();
+        else rimuoviManutenzione();
+    });
 }

@@ -1,5 +1,9 @@
 import { db, ref, update, set, getData, getPaths } from "../firebase.js";
 import * as G from "../utils/generatore-calendario.js";
+import { avviso, conferma, mostraToast } from "../utils/interfaccia.js";
+
+// Messaggio di errore breve, al posto di alert()
+const errore = (testo) => mostraToast(testo, { errore: true });
 
 /*
 ===================================
@@ -425,9 +429,9 @@ async function scriviBozza(percorso, dati) {
     }
 }
 
-function scartaBozza() {
+async function scartaBozza() {
     if (!ciSonoModifiche()) return;
-    if (!confirm("Scartare tutte le modifiche non pubblicate e tornare al calendario pubblicato?")) return;
+    if (!(await conferma("Scartare tutte le modifiche non pubblicate e tornare al calendario pubblicato?", { titolo: "Scarta la bozza", ok: "Scarta", pericolosa: true }))) return;
     modifica("Bozza scartata", (s) => {
         Object.assign(s, clona(pubblicato));
     });
@@ -1039,15 +1043,17 @@ function invertiPartita(id) {
     });
 }
 
-function eliminaPartita(id) {
+async function eliminaPartita(id) {
     const trovata = trovaPartita(id);
     if (!trovata) return false;
     const { partita } = trovata;
     const testo = `${nome(partita.casa)} – ${nome(partita.ospite)}`;
     if (eGiocata(partita)) {
-        if (!confirm(`${testo} è già stata giocata o ha un referto.\n\nEliminandola, alla pubblicazione verranno cancellati anche il risultato e il referto. Continuare?`)) {
-            return false;
-        }
+        const continua = await conferma(
+            `${testo} è già stata giocata o ha un referto.\n\nEliminandola, alla pubblicazione verranno cancellati anche il risultato e il referto. Continuare?`,
+            { titolo: "Partita già giocata", ok: "Elimina", pericolosa: true }
+        );
+        if (!continua) return false;
     }
     return modifica(`Partita ${testo} eliminata`, (s) => {
         const { lista, indice } = trovaPartita(id, s);
@@ -1120,25 +1126,46 @@ function riordinaMobili(s, trasforma) {
 }
 
 function aggiungiGiornataSpeciale() {
-    const testo = prompt("Nome della giornata (es. QF, SF1, SF2, F):");
-    if (testo === null) return;
-    const nomeGiornata = testo.trim();
-    if (!nomeGiornata) return;
-    if (eNumerica(nomeGiornata)) {
-        alert("Le giornate numerate si aggiungono con \"Nuova giornata\": qui serve un nome come SF o F.");
-        return;
-    }
-    if (CARATTERI_VIETATI.test(nomeGiornata)) {
-        alert("Il nome non può contenere i caratteri . / # $ [ ] :");
-        return;
-    }
-    if (stato.speciali.some((g) => g.nome === nomeGiornata)) {
-        alert(`Esiste già una giornata "${nomeGiornata}".`);
-        return;
-    }
-    modifica(`Giornata ${nomeGiornata} aggiunta`, (s) => {
-        s.speciali.push(nuovaGiornata(nomeGiornata));
+    const campo = el("input", {
+        type: "text",
+        class: "cal-campo",
+        placeholder: "Es. QF, SF1, SF2, F",
+        "aria-label": "Nome della giornata",
     });
+
+    // false = la finestra resta aperta per correggere il nome
+    const aggiungi = () => {
+        const nomeGiornata = campo.value.trim();
+        if (!nomeGiornata) {
+            errore("Scrivi il nome della giornata.");
+            return false;
+        }
+        if (eNumerica(nomeGiornata)) {
+            errore("Le giornate numerate si aggiungono con \"Nuova giornata\": qui serve un nome come SF o F.");
+            return false;
+        }
+        if (CARATTERI_VIETATI.test(nomeGiornata)) {
+            errore("Il nome non può contenere i caratteri . / # $ [ ] :");
+            return false;
+        }
+        if (stato.speciali.some((g) => g.nome === nomeGiornata)) {
+            errore(`Esiste già una giornata "${nomeGiornata}".`);
+            return false;
+        }
+        modifica(`Giornata ${nomeGiornata} aggiunta`, (s) => {
+            s.speciali.push(nuovaGiornata(nomeGiornata));
+        });
+        return true;
+    };
+
+    const { chiudi } = dialogo("Nuova giornata della fase finale", campo, [
+        { testo: "Annulla", azione: () => true },
+        { testo: "Aggiungi", principale: true, azione: aggiungi },
+    ]);
+    campo.addEventListener("keydown", (evento) => {
+        if (evento.key === "Enter" && aggiungi()) chiudi();
+    });
+    campo.focus();
 }
 
 /*
@@ -1283,11 +1310,11 @@ function apriAzioniPartita(id) {
             if (!altre.value) return;
             const altra = trovaPartita(altre.value);
             if (altra?.lista.bloccata) {
-                alert("L'altra partita è in una giornata bloccata.");
+                errore("L'altra partita è in una giornata bloccata.");
                 return;
             }
             if (giocata && altra?.lista.id === ID_PARCHEGGIO) {
-                alert("Una partita giocata non può andare in \"Da collocare\".");
+                errore("Una partita giocata non può andare in \"Da collocare\".");
                 return;
             }
             scambiaPartite(id, altre.value);
@@ -1299,7 +1326,7 @@ function apriAzioniPartita(id) {
         }, { disabilitata: giocata }),
         voceAzione("Cambia le squadre", giocata ? "Non possibile: la partita è già giocata." : "Per correggere un abbinamento sbagliato.", "Applica", () => {
             if (casa.value === ospite.value) {
-                alert("Una squadra non può giocare contro se stessa.");
+                errore("Una squadra non può giocare contro se stessa.");
                 return;
             }
             modifica("Squadre della partita cambiate", (s) => {
@@ -1320,7 +1347,7 @@ function apriAzioniPartita(id) {
             chiudi();
         }, { disabilitata: giocata || lista.id === ID_PARCHEGGIO || lista.bloccata }),
         voceAzione("Elimina la partita", giocata ? "Alla pubblicazione verranno cancellati anche risultato e referto." : "", "Elimina", () => {
-            if (eliminaPartita(id)) chiudi();
+            eliminaPartita(id).then((eliminata) => eliminata && chiudi());
         }, { pericolosa: true, disabilitata: lista.bloccata })
     );
 
@@ -1391,7 +1418,7 @@ function apriAzioniGiornata(id) {
         voceAzione("Scambia con un'altra giornata", "Le due giornate si scambiano di posto.", "Scambia", () => {
             const altra = trovaLista(conChi.value);
             if (altra?.bloccata) {
-                alert("L'altra giornata è bloccata.");
+                errore("L'altra giornata è bloccata.");
                 return;
             }
             scambiaGiornate(id, conChi.value);
@@ -1416,7 +1443,7 @@ function apriAzioniGiornata(id) {
         voceAzione("Unisci a un'altra giornata", "Tutte le partite passano nell'altra giornata e questa viene eliminata.", "Unisci", () => {
             const altra = trovaLista(unisciCon.value);
             if (altra?.bloccata) {
-                alert("L'altra giornata è bloccata.");
+                errore("L'altra giornata è bloccata.");
                 return;
             }
             modifica(`${etichetta} unita a ${etichettaLista(altra)}`, (s) => {
@@ -1537,8 +1564,8 @@ function apriStrumentiGiornate() {
             });
             chiudi();
         }),
-        voceAzione("Svuota il calendario", "Elimina tutte le partite non giocate delle giornate numerate non bloccate (la fase finale non viene toccata).", "Svuota", () => {
-            if (!confirm("Eliminare tutte le partite non giocate dalla bozza? Puoi sempre annullare.")) return;
+        voceAzione("Svuota il calendario", "Elimina tutte le partite non giocate delle giornate numerate non bloccate (la fase finale non viene toccata).", "Svuota", async () => {
+            if (!(await conferma("Eliminare tutte le partite non giocate dalla bozza? Puoi sempre annullare.", { titolo: "Svuota il calendario", ok: "Svuota", pericolosa: true }))) return;
             modifica("Calendario svuotato", (s) => {
                 for (const g of s.giornate) if (!g.bloccata) g.partite = g.partite.filter(eGiocata);
                 s.giornate = s.giornate.filter((g) => g.partite.length || g.bloccata);
@@ -1673,8 +1700,8 @@ function apriStrumentiSquadra(iniziale = "") {
             });
             chiudi();
         }),
-        voceAzione("Elimina le sue partite non giocate", "Per una squadra che si ritira.", "Elimina", () => {
-            if (!confirm(`Eliminare tutte le partite non giocate di ${nome(squadra.value)}?`)) return false;
+        voceAzione("Elimina le sue partite non giocate", "Per una squadra che si ritira.", "Elimina", async () => {
+            if (!(await conferma(`Eliminare tutte le partite non giocate di ${nome(squadra.value)}?`, { titolo: "Elimina partite", ok: "Elimina", pericolosa: true }))) return;
             modifica(`Partite di ${nome(squadra.value)} eliminate`, (s) => {
                 for (const { lista, p } of partiteDi(s, squadra.value, true)) {
                     lista.partite.splice(lista.partite.indexOf(p), 1);
@@ -1741,16 +1768,16 @@ function apriAggiungiPartita(idGiornata = null) {
             principale: true,
             azione: () => {
                 if (!casa.value || !ospite.value || casa.value === ospite.value) {
-                    alert("Scegli due squadre diverse.");
+                    errore("Scegli due squadre diverse.");
                     return false;
                 }
                 const destinazione = trovaLista(giornata.value);
                 if (destinazione?.bloccata) {
-                    alert("La giornata scelta è bloccata.");
+                    errore("La giornata scelta è bloccata.");
                     return false;
                 }
                 if (destinazione?.partite.some((p) => p.casa === casa.value && p.ospite === ospite.value)) {
-                    alert("Questa partita è già in quella giornata.");
+                    errore("Questa partita è già in quella giornata.");
                     return false;
                 }
                 modifica(`Partita ${nome(casa.value)} – ${nome(ospite.value)} aggiunta`, (s) => {
@@ -1867,7 +1894,7 @@ function apriGenera() {
     const { elenco, esclusi } = gironi();
     const validi = elenco.filter((g) => g.squadre.length >= 2);
     if (!validi.length) {
-        alert("Servono almeno 2 squadre nello stesso girone per generare un calendario.");
+        avviso("Servono almeno 2 squadre nello stesso girone per generare un calendario.", { titolo: "Impossibile generare" });
         return;
     }
 
@@ -2001,7 +2028,7 @@ function genera(opzioni, gironiValidi) {
     const inGioco = new Set(coinvolti.flatMap((g) => g.squadre));
 
     if (partiteNellAmbito(opzioni.ambito, inGioco).some(eGiocata)) {
-        alert("Ci sono partite già giocate: non si può rigenerare.");
+        errore("Ci sono partite già giocate: non si può rigenerare.");
         return false;
     }
 
@@ -2013,7 +2040,7 @@ function genera(opzioni, gironiValidi) {
                 : G.generaEstrazioneCasuale(g.squadre, opzioni.x)
         );
     } catch (error) {
-        alert(`Impossibile generare: ${error.message}.`);
+        avviso(`${error.message}.`, { titolo: "Impossibile generare" });
         return false;
     }
 
@@ -2060,7 +2087,7 @@ async function pubblica() {
     const problemi = analizza();
     const gravi = problemi.filter((p) => p.grave);
     if (gravi.length) {
-        alert(`Prima di pubblicare correggi:\n\n• ${gravi.map((p) => p.testo).join("\n• ")}`);
+        avviso(`• ${gravi.map((p) => p.testo).join("\n• ")}`, { titolo: "Prima di pubblicare correggi" });
         return;
     }
 
@@ -2160,19 +2187,12 @@ async function pubblica() {
         const avvisi = problemi.filter((p) => !p.grave && !p.testo.includes("Da collocare"));
         if (avvisi.length) righe.push(`Avvisi:\n  - ${avvisi.map((p) => p.testo).join("\n  - ")}`);
 
-        if (!confirm(`${righe.join("\n\n")}\n\nPubblicare?`)) {
+        if (!(await conferma(righe.join("\n\n"), { titolo: "Pubblicare il calendario?", ok: "Pubblica" }))) {
             aggiornaBarra();
             return;
         }
 
         await update(ref(db), updates);
-
-        // Il sito tiene il calendario in cache locale (getDataCached)
-        try {
-            localStorage.removeItem(`cache_${percorsi.calendario}`);
-        } catch (e) {
-            console.warn("Impossibile svuotare la cache locale", e);
-        }
 
         await carica();
         annulla = [];
@@ -2181,7 +2201,7 @@ async function pubblica() {
         mostraAvviso("Calendario pubblicato");
     } catch (error) {
         console.error("Errore nella pubblicazione del calendario:", error);
-        alert("Errore nella pubblicazione del calendario. La bozza è ancora salvata: riprova.");
+        avviso("La bozza è ancora salvata: riprova.", { titolo: "Errore nella pubblicazione" });
         aggiornaBarra();
     }
 }

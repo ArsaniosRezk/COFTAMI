@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Galleria - Cofta</title>
+  <meta name="description" content="Foto e video delle partite del torneo di calcio Cofta Milano." />
+  <!-- Pagina nascosta per il momento: fuori dal menu e dalla sitemap -->
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#2e684e" />
+
+  <!-- Anteprima nei link condivisi (WhatsApp, Instagram, Telegram...) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Cofta Milano" />
+  <meta property="og:locale" content="it_IT" />
+  <meta property="og:title" content="Galleria foto e video - Cofta Milano" />
+  <meta property="og:description" content="Foto e video delle partite del torneo di calcio Cofta Milano." />
+  <meta property="og:url" content="https://coftamilano.com/galleria.html" />
+  <meta property="og:image" content="https://coftamilano.com/assets/images/og-cofta.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- SDK Firebase: senza questi il download partirebbe solo dopo firebase.js -->
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js" />
+  <link rel="preconnect" href="https://cofta-mi-default-rtdb.europe-west1.firebasedatabase.app" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300..800&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/css/colors.css" />
+  <link rel="stylesheet" href="/css/icone.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/galleria.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHN9QNCZV6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-LHN9QNCZV6");
+  </script>
+</head>
+
+<body>
+  <div class="grid">
+    <my-header></my-header>
+
+    <main>
+      <section>
+        <h1 class="section-title">Galleria</h1>
+        <p class="instruction instruction-fissa">I momenti più belli del torneo</p>
+
+        <h2 class="titolo-galleria">Video</h2>
+        <div id="galleria-video" class="griglia-video"></div>
+
+        <h2 class="titolo-galleria">Foto</h2>
+        <div id="galleria-foto" class="griglia-foto"></div>
+      </section>
+    </main>
+
+    <my-footer></my-footer>
+  </div>
+
+  <!-- Visualizzatore a schermo intero per foto e video -->
+  <div id="visualizzatore" class="visualizzatore" hidden>
+    <div class="visualizzatore-barra">
+      <span id="visualizzatore-contatore" class="visualizzatore-contatore" aria-live="polite"></span>
+      <button type="button" id="visualizzatore-chiudi" class="visualizzatore-pulsante" aria-label="Chiudi">
+        <i class="icona icona-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+    <button type="button" id="visualizzatore-precedente" class="visualizzatore-pulsante visualizzatore-freccia sinistra"
+      aria-label="Foto precedente">
+      <i class="icona icona-chevron-left" aria-hidden="true"></i>
+    </button>
+    <div id="visualizzatore-contenuto" class="visualizzatore-contenuto"></div>
+    <button type="button" id="visualizzatore-successiva" class="visualizzatore-pulsante visualizzatore-freccia destra"
+      aria-label="Foto successiva">
+      <i class="icona icona-chevron-right" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <script type="module" src="/js/headerFooterManager.js"></script>
+  <script type="module" src="/js/divisionAndVariables.js"></script>
+  <script type="module" src="/js/galleria.js"></script>
+</body>
+
+</html>

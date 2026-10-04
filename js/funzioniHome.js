@@ -1,36 +1,41 @@
-import { classificaGirone } from "./components/standings.js";
+import { classificaGirone, scheletroClassifica } from "./components/standings.js";
 import { faseFinale } from "./components/final-phase.js";
-import { prossimaGiornata } from "./components/calendar.js";
+import { prossimaGiornata, scheletroProssimaGiornata } from "./components/calendar.js";
 import { gestisciAttesaTorneo } from "./components/pre-torneo.js";
-import { getData, ref, db, get } from "./firebase.js";
-import { maintenanceGuard } from "./maintenance-guard.js";
+import { laTuaSquadra } from "./components/squadra-preferita.js";
+import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
+import { leggiImpostazioni } from "./impostazioni.js";
+
+// Ascolto dei dati della divisione mostrata: va fermato quando si cambia divisione
+let fermaAscolto = null;
 
 // Sequenza esecuzione dei contenuti della pagina
-// Esportata e importata nel header
+// Chiamata da divisionAndVariables.js all'avvio e a ogni cambio di divisione
 export async function sequenzaEsecuzione() {
-  // 1. Check Guard FIRST. If maintenance is on, this throws and stops everything.
-  await maintenanceGuard();
+  fermaAscolto?.();
+  scheletroClassifica("classifica-squadre");
+  scheletroProssimaGiornata("prossima-giornata");
 
-  // 2. Se il torneo dell'edizione corrente non è ancora iniziato mostra
-  // l'avviso d'attesa e non caricare classifica e prossima giornata.
-  if (await gestisciAttesaTorneo()) return;
+  let faseFinaleMostrata = false;
 
-  const settingsRef = ref(db, "Impostazioni");
-  try {
-    const snapshot = await get(settingsRef);
-    if (snapshot.exists()) {
-      const data = snapshot.val();
+  fermaAscolto = osservaDivisione(
+    async (dati) => {
+      // Se il torneo dell'edizione corrente non è ancora iniziato mostra
+      // l'avviso d'attesa al posto di classifica e prossima giornata
+      if (await gestisciAttesaTorneo(dati.squadre)) return;
 
-      // Gestione Fase Finale
-      if (data.faseFinale) {
-        faseFinale();
+      if (!faseFinaleMostrata) {
+        faseFinaleMostrata = true;
+        const impostazioni = await leggiImpostazioni();
+        if (impostazioni.faseFinale) faseFinale();
       }
-    }
-  } catch (error) {
-    console.error("Errore recupero impostazioni:", error);
-  }
 
-  classificaGirone("classifica-squadre");
-  // faseFinale(); // Spostato dentro il check
-  prossimaGiornata();
+      laTuaSquadra(dati);
+      classificaGirone("classifica-squadre", false, dati);
+      prossimaGiornata(dati);
+    },
+    {
+      onLento: () => mostraErroreCaricamento(["classifica-squadre", "prossima-giornata"]),
+    }
+  );
 }

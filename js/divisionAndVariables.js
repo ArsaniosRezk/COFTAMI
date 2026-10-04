@@ -1,21 +1,93 @@
 import { paginaCorrente } from "./utils/percorso.js";
 
-// Edizione di prova (Calcio/Test): si apre aggiungendo ?edizione=Test
-// all'indirizzo, così si possono provare le funzioni del gestionale senza
-// toccare i dati veri. Non passa dal localStorage, quindi chiudendo la
-// pagina si torna all'edizione reale.
-const EDIZIONE_TEST = "Test";
-const edizioneTest =
-  new URLSearchParams(location.search).get("edizione") === EDIZIONE_TEST;
+/*
+===================================
+EDIZIONE
+===================================
 
-// Edizione Torneo/Anno
-// Il valore viene tenuto allineato a Impostazioni/edizioneCorrente da
-// edition-sync.js, che gira sia sul sito pubblico sia sul gestionale.
-const edition = edizioneTest
-  ? EDIZIONE_TEST
-  : localStorage.getItem("site_edition") || "2025";
+L'edizione da mostrare è Impostazioni/edizioneCorrente. impostazioni.js la
+legge all'avvio e la imposta qui con impostaEdizione(): `edition` è un export
+"vivo", quindi chi lo importa vede sempre il valore aggiornato.
+Le pagine aspettano impostazioniPronte prima di leggere dati del torneo, così
+non serve più ricaricare la pagina quando l'edizione salvata è vecchia.
+
+Edizione forzata dall'indirizzo:
+- ?edizione=Test apre Calcio/Test, per provare il gestionale senza toccare i
+  dati veri. Non passa dallo storage: chiudendo la pagina si torna all'edizione
+  reale.
+- Sul sito pubblico ?edizione=2025 (o un altro anno) mostra un'edizione
+  passata. Resta valida per la scheda aperta (sessionStorage), così si può
+  navigare tra classifica, calendario e squadre di quell'anno.
+*/
+
+const EDIZIONE_TEST = "Test";
+const CHIAVE_EDIZIONE = "site_edition";
+const CHIAVE_ARCHIVIO = "cofta_edizione_archivio";
+const FORMATO_EDIZIONE = /^(\d{4}|Test)$/;
+
+const paginaGestionale = ["gestionale", "contenuti-social"].includes(paginaCorrente());
+
+function leggiStorage(storage, chiave) {
+  try {
+    return storage.getItem(chiave);
+  } catch (errore) {
+    return null;
+  }
+}
+
+function scriviStorage(storage, chiave, valore) {
+  try {
+    if (valore === null) storage.removeItem(chiave);
+    else storage.setItem(chiave, valore);
+  } catch (errore) {
+    // Storage non disponibile (es. navigazione privata): si prosegue senza
+  }
+}
+
+// Pagine che scrivono dati: lavorano sempre sull'edizione corrente
+// (al massimo su Test, se chiesto esplicitamente)
+const paginaDiInvio = ["iscrizione", "iscrizione-test", "invia-report"].includes(paginaCorrente());
+
+function edizioneDaIndirizzo() {
+  const richiesta = new URLSearchParams(location.search).get("edizione");
+  if (paginaDiInvio) return richiesta === EDIZIONE_TEST ? richiesta : null;
+  if (richiesta && FORMATO_EDIZIONE.test(richiesta)) {
+    if (!paginaGestionale && richiesta !== EDIZIONE_TEST) {
+      scriviStorage(sessionStorage, CHIAVE_ARCHIVIO, richiesta);
+    }
+    return richiesta;
+  }
+  return paginaGestionale ? null : leggiStorage(sessionStorage, CHIAVE_ARCHIVIO);
+}
+
+// Edizione scelta dall'indirizzo (Test o un anno passato), altrimenti null
+const edizioneForzata = edizioneDaIndirizzo();
+const edizioneTest = edizioneForzata === EDIZIONE_TEST;
+
+// Valore iniziale: serve solo finché non arriva Impostazioni/edizioneCorrente
+let edition =
+  edizioneForzata ||
+  leggiStorage(localStorage, CHIAVE_EDIZIONE) ||
+  String(new Date().getFullYear());
+
+// Chiamata da impostazioni.js con il valore del server.
+// Con un'edizione forzata dall'indirizzo il server non la sovrascrive.
+function impostaEdizione(edizioneServer) {
+  if (!edizioneServer) return;
+  scriviStorage(localStorage, CHIAVE_EDIZIONE, String(edizioneServer));
+  if (!edizioneForzata) edition = String(edizioneServer);
+}
+
+// Esce dalla vista di un'edizione passata e torna a quella corrente
+function tornaEdizioneCorrente() {
+  scriviStorage(sessionStorage, CHIAVE_ARCHIVIO, null);
+  const indirizzo = new URL(location.href);
+  indirizzo.searchParams.delete("edizione");
+  location.href = indirizzo.href;
+}
 
 // Definizione variabile e funzioni per gestione divisione
+const DIVISIONI = ["Superiori", "Giovani"];
 let selectedDivision;
 
 function getSelectedDivision() {
@@ -24,24 +96,25 @@ function getSelectedDivision() {
 
 function setSelectedDivision(value) {
   selectedDivision = value;
-  localStorage.setItem("selectedDivision", selectedDivision);
+  scriviStorage(localStorage, "selectedDivision", selectedDivision);
 }
 
 function loadSavedOption() {
-  const savedOption = localStorage.getItem("selectedDivision");
-  if (savedOption) {
-    selectedDivision = savedOption;
-  } else {
-    selectedDivision = "Superiori";
-  }
+  const savedOption = leggiStorage(localStorage, "selectedDivision");
+  selectedDivision = DIVISIONI.includes(savedOption) ? savedOption : "Superiori";
 }
 
-// Funzione per aggiornare entrambi gli elementi <select>
+// Allinea il select #division e i pulsanti del selettore nell'header
 function updateSelectElement(selectId, value) {
   const selectElement = document.getElementById(selectId);
   if (selectElement) {
     selectElement.value = value;
   }
+  document.querySelectorAll(".division-switch button[data-division]").forEach((pulsante) => {
+    const scelto = pulsante.dataset.division === value;
+    pulsante.classList.toggle("selected", scelto);
+    pulsante.setAttribute("aria-pressed", String(scelto));
+  });
 }
 
 export {
@@ -49,8 +122,12 @@ export {
   setSelectedDivision,
   loadSavedOption,
   updateSelectElement,
+  impostaEdizione,
+  tornaEdizioneCorrente,
   edition,
   edizioneTest,
+  edizioneForzata,
+  DIVISIONI,
 };
 
 // Logica per il caricamento delle funzioni
@@ -64,102 +141,59 @@ const moduliPerPagina = {
   "albo-d'oro": "./funzioniAlboOro.js",
 };
 
-// Pagine che non hanno una sequenzaEsecuzione: si caricano da sole
-const pagineSenzaSequenza = [
-  "regolamento",
-  "regolamento-test",
-  "invia-report",
-  "iscrizione",
-  "iscrizione-test",
-  "classifica-completa",
-  "referti",
-  "referti-social",
-  "gestionale",
-  "contenuti-social",
-];
-
 const pagina = paginaCorrente();
-let sequenzaEsecuzioneModule = null;
+const sequenzaEsecuzioneModule = moduliPerPagina[pagina]
+  ? import(moduliPerPagina[pagina])
+  : null;
 
-if (moduliPerPagina[pagina]) {
-  sequenzaEsecuzioneModule = import(moduliPerPagina[pagina]);
-} else if (!pagineSenzaSequenza.includes(pagina)) {
-  console.error(
-    "La pagina corrente non ha una funzione sequenzaEsecuzione definita."
-  );
-}
+// Pagine con il selettore della divisione nell'header
+const pagineConDivisione = ["", "campionato", "squadre", "calendario"];
 
-const pagineEscluse = [
-  "invia-report",
-  "inviareport",
-  "classifica-completa",
-  "referti",
-  "referti-social",
-]; // Aggiungi qui la pagina che vuoi escludere
-
-if (!pagineEscluse.includes(pagina)) {
-  document.addEventListener("DOMContentLoaded", function () {
-    loadSavedOption();
-    const selectedDivision = getSelectedDivision();
-    updateSelectElement("division", selectedDivision);
-    updateSelectElement("division-smartphone", selectedDivision);
-
-    // Codice per gestire il cambiamento dell'opzione selezionata
-    const divisionProps = document.getElementById("division");
-    if (divisionProps) {
-      divisionProps.addEventListener("change", function () {
-        setSelectedDivision(this.value);
-        updateSelectElement("division-smartphone", this.value);
-
-        // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-        if (sequenzaEsecuzioneModule) {
-          sequenzaEsecuzioneModule.then((module) => {
-            if (module && module.sequenzaEsecuzione) {
-              module.sequenzaEsecuzione();
-            } else {
-              console.error(
-                "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-              );
-            }
-          });
-        }
-      });
-    }
-
-    const divisionSmartphoneElement = document.getElementById(
-      "division-smartphone"
+async function eseguiSequenza() {
+  if (!sequenzaEsecuzioneModule) return;
+  const module = await sequenzaEsecuzioneModule;
+  if (module && module.sequenzaEsecuzione) {
+    module.sequenzaEsecuzione();
+  } else {
+    console.error(
+      "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
     );
-    if (divisionSmartphoneElement) {
-      divisionSmartphoneElement.addEventListener("change", function () {
-        setSelectedDivision(this.value);
-        updateSelectElement("division", this.value);
-
-        // Una volta caricato il modulo, esegui la funzione sequenzaEsecuzione corrispondente
-        if (sequenzaEsecuzioneModule) {
-          sequenzaEsecuzioneModule.then((module) => {
-            if (module && module.sequenzaEsecuzione) {
-              module.sequenzaEsecuzione();
-            } else {
-              console.error(
-                "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-              );
-            }
-          });
-        }
-      });
-    }
-
-    // Chiamata alla funzione sequenzaEsecuzione solo se `sequenzaEsecuzioneModule` è definita
-    if (sequenzaEsecuzioneModule) {
-      sequenzaEsecuzioneModule.then((module) => {
-        if (module && module.sequenzaEsecuzione) {
-          module.sequenzaEsecuzione();
-        } else {
-          console.error(
-            "Il modulo della pagina corrente non contiene una funzione sequenzaEsecuzione."
-          );
-        }
-      });
-    }
-  });
+  }
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+  loadSavedOption();
+
+  // Altre pagine hanno un loro select "division" (es. il modulo del referto):
+  // si tocca solo quello dell'header e del gestionale
+  const divisionSelect = document.getElementById("division");
+  const conSelettore = pagineConDivisione.includes(pagina) || pagina === "gestionale";
+
+  if (divisionSelect && conSelettore) {
+    updateSelectElement("division", getSelectedDivision());
+
+    divisionSelect.addEventListener("change", function () {
+      setSelectedDivision(this.value);
+      updateSelectElement("division", this.value);
+      eseguiSequenza();
+    });
+
+    // I pulsanti dell'header comandano il select, che resta l'unica fonte del valore
+    // (il gestionale ha i suoi, gestiti da gestionale.js)
+    document.querySelectorAll("my-header .division-switch").forEach((selettore) => {
+      selettore.addEventListener("click", (evento) => {
+        const pulsante = evento.target.closest("button[data-division]");
+        if (!pulsante || pulsante.dataset.division === divisionSelect.value) return;
+        divisionSelect.value = pulsante.dataset.division;
+        divisionSelect.dispatchEvent(new Event("change"));
+      });
+    });
+  }
+
+  if (!sequenzaEsecuzioneModule) return;
+
+  // Prima di leggere i dati serve l'edizione corrente
+  const { impostazioniPronte } = await import("./impostazioni.js");
+  await impostazioniPronte;
+  eseguiSequenza();
+});

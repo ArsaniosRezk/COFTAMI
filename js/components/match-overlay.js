@@ -1,295 +1,220 @@
 import { getData, getPaths } from "../firebase.js";
 import { abbreviateName, separateScorers } from "../utils/formatters.js";
+import { nomeSquadra } from "../utils/torneo.js";
+import { condividi, gestisciPannello } from "../utils/interfaccia.js";
 
-export async function showOverlayMatchResult(matchString, teamsSnapshot, matchday) {
+/*
+===================================
+DETTAGLIO PARTITA
+===================================
+Pannello con risultato e marcatori di una partita giocata.
+Si chiude con la X, con Esc o con il tasto "indietro" del telefono.
+
+opzioni = { partite, calendario, divisione }: con i dati già in pagina
+(aggiornamenti in tempo reale) non serve una nuova lettura.
+*/
+
+export async function showOverlayMatchResult(
+    matchString,
+    teamsSnapshot,
+    matchday,
+    { partite = null, calendario = null, divisione = null } = {}
+) {
+    let matchData = partite?.[matchday]?.[matchString] ?? null;
+    if (!matchData) {
+        const { matchesPath } = getPaths(divisione);
+        matchData = await getData(`${matchesPath}/${matchday}/${matchString}`);
+    }
+
+    const [homeTeam, awayTeam] = matchString.split(":");
+
+    // Risultato inserito nel calendario ma partita senza dettaglio: si mostra
+    // comunque il punteggio, senza marcatori
+    if (!matchData) {
+        const [golCasa, golOspite] = String(calendario?.[matchday]?.[matchString]?.Risultato || "")
+            .split(":")
+            .map((valore) => valore.trim());
+        matchData = {
+            SquadraCasa: homeTeam,
+            SquadraOspite: awayTeam,
+            GolSquadraCasa: golCasa ?? "-",
+            GolSquadraOspite: golOspite ?? "-",
+        };
+    }
+
+    const casa = matchData.SquadraCasa || homeTeam;
+    const ospite = matchData.SquadraOspite || awayTeam;
+
     // Crea l'overlay
     const overlay = document.createElement("div");
     overlay.classList.add("overlay");
+    overlay.setAttribute("aria-label", `${nomeSquadra(casa)} - ${nomeSquadra(ospite)}`);
 
-    // Aggiungi l'icona di chiusura
-    const closeIcon = document.createElement("i");
-    closeIcon.classList.add("fa-solid", "fa-xmark", "close-team-info");
-    overlay.appendChild(closeIcon);
+    const azioni = document.createElement("div");
+    azioni.className = "overlay-azioni";
 
-    const { matchesPath } = getPaths();
-    const matchPath = `${matchesPath}/${matchday}/${matchString}`;
-    const matchData = await getData(matchPath);
+    const shareButton = document.createElement("button");
+    shareButton.type = "button";
+    shareButton.className = "overlay-pulsante";
+    shareButton.setAttribute("aria-label", "Condividi il risultato");
+    shareButton.innerHTML = `<i class="icona icona-share" aria-hidden="true"></i>`;
+
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "overlay-pulsante";
+    closeButton.setAttribute("aria-label", "Chiudi");
+    closeButton.innerHTML = `<i class="icona icona-xmark" aria-hidden="true"></i>`;
+
+    azioni.append(shareButton, closeButton);
+    overlay.appendChild(azioni);
 
     // Crea il contenuto dell'overlay
     const content = document.createElement("div");
     content.classList.add("overlay-content");
 
-    // DIV MATCH INFO
+    // Squadre
     const matchInfoDiv = document.createElement("div");
     matchInfoDiv.classList.add("match-info-div");
+    matchInfoDiv.append(
+        bloccoSquadra(casa, teamsSnapshot),
+        bloccoSquadra(ospite, teamsSnapshot)
+    );
 
-    // Squadra Casa
-    const homeTeamDiv = document.createElement("div");
-    homeTeamDiv.className = "team-div";
-    matchInfoDiv.appendChild(homeTeamDiv);
-
-    // logo
-    const homeLogoDiv = document.createElement("div");
-    homeLogoDiv.className = "logo-div";
-    homeTeamDiv.appendChild(homeLogoDiv);
-
-    const homeLogoImg = document.createElement("img");
-    homeLogoImg.className = "logo-img";
-    const homeTeam = matchData.SquadraCasa;
-    homeLogoImg.src = teamsSnapshot[homeTeam]?.Logo || "";
-    homeLogoDiv.appendChild(homeLogoImg);
-
-    // nome
-    const homeTeamName = document.createElement("span");
-    homeTeamName.className = "team-name";
-
-    homeTeamName.innerText = matchData.SquadraCasa.replace(/_/g, ".");
-    homeTeamDiv.appendChild(homeTeamName);
-
-    // Squadra Ospite
-    const awayTeamDiv = document.createElement("div");
-    awayTeamDiv.className = "team-div";
-    matchInfoDiv.appendChild(awayTeamDiv);
-
-    // logo
-    const awayLogoDiv = document.createElement("div");
-    awayLogoDiv.className = "logo-div";
-    awayTeamDiv.appendChild(awayLogoDiv);
-
-    const awayLogoImg = document.createElement("img");
-    awayLogoImg.className = "logo-img";
-    const awayTeam = matchData.SquadraOspite;
-    awayLogoImg.src = teamsSnapshot[awayTeam]?.Logo || "";
-    awayLogoDiv.appendChild(awayLogoImg);
-
-    // nome
-    const awayTeamName = document.createElement("span");
-    awayTeamName.className = "team-name";
-
-    awayTeamName.innerText = matchData.SquadraOspite.replace(/_/g, ".");
-    awayTeamDiv.appendChild(awayTeamName);
-
-    // GOL DIV
+    // Gol
     const golDiv = document.createElement("div");
     golDiv.className = "gols-div";
+    golDiv.append(numeroGol(matchData.GolSquadraCasa), numeroGol(matchData.GolSquadraOspite));
 
-    // casa
-    const homeGolDiv = document.createElement("div");
-    homeGolDiv.className = "gol-div";
-    golDiv.appendChild(homeGolDiv);
-
-    const homeGoalEl = document.createElement("span");
-    homeGoalEl.className = "gol-number";
-    homeGoalEl.innerText = matchData.GolSquadraCasa;
-    homeGolDiv.appendChild(homeGoalEl);
-
-    // gol
-    const awayGolDiv = document.createElement("div");
-    awayGolDiv.className = "gol-div";
-    golDiv.appendChild(awayGolDiv);
-
-    const awayGoalEl = document.createElement("span");
-    awayGoalEl.className = "gol-number";
-    awayGoalEl.innerText = matchData.GolSquadraOspite;
-    awayGolDiv.appendChild(awayGoalEl);
-
-    // Div per i marcatori
+    // Marcatori
     const scorersDiv = document.createElement("div");
     scorersDiv.classList.add("scorers-div");
+    scorersDiv.append(
+        listaMarcatori(matchData?.Marcatori?.MarcatoriCasa, "home-scorers", false),
+        listaMarcatori(matchData?.Marcatori?.MarcatoriOspite, "away-scorers", true)
+    );
 
-    // Sottodiv per i marcatori di casa
-    const homeScorersDiv = document.createElement("div");
-    homeScorersDiv.classList.add("home-scorers");
-
-    const homeScorers = matchData?.Marcatori?.MarcatoriCasa || {};
-    const { normalScorers: homeNormalScorers, ownGoals: homeOwnGoals } =
-        separateScorers(homeScorers);
-
-    const homeScorersList = document.createElement("ul");
-
-    homeNormalScorers.forEach(({ name, count }) => {
-        const listItem = document.createElement("li");
-
-        const playerNameSpan = document.createElement("span");
-        playerNameSpan.textContent = abbreviateName(name) + " ";
-        listItem.appendChild(playerNameSpan);
-
-        if (count > 3) {
-            const goalIcon = document.createElement("i");
-            goalIcon.classList.add("fa", "fa-soccer-ball-o");
-            listItem.appendChild(goalIcon);
-
-            const goalsCountSpan = document.createElement("span");
-            goalsCountSpan.className = "goals-count";
-            goalsCountSpan.textContent = ` ${count}`;
-            listItem.appendChild(goalsCountSpan);
-        } else {
-            for (let i = 0; i < count; i++) {
-                const goalIcon = document.createElement("i");
-                goalIcon.classList.add("fa", "fa-soccer-ball-o");
-                listItem.appendChild(goalIcon);
-
-                if (i < count - 1) {
-                    const space = document.createElement("span");
-                    space.style.marginRight = "5px";
-                    listItem.appendChild(space);
-                }
-            }
-        }
-
-        homeScorersList.appendChild(listItem);
-    });
-
-    // Aggiungi gli autogol alla fine della lista
-    homeOwnGoals.forEach(({ name, count }) => {
-        const listItem = document.createElement("li");
-
-        const playerNameSpan = document.createElement("span");
-        playerNameSpan.textContent = name + " ";
-        listItem.appendChild(playerNameSpan);
-
-        if (count > 3) {
-            const goalsCountSpan = document.createElement("span");
-            goalsCountSpan.className = "goals-count";
-            goalsCountSpan.textContent = `${count} `;
-            listItem.appendChild(goalsCountSpan);
-
-            const goalIcon = document.createElement("i");
-            goalIcon.classList.add("fa", "fa-soccer-ball-o");
-            listItem.appendChild(goalIcon);
-        } else {
-            for (let i = 0; i < count; i++) {
-                const goalIcon = document.createElement("i");
-                goalIcon.classList.add("fa", "fa-soccer-ball-o");
-                listItem.appendChild(goalIcon);
-
-                if (i < count - 1) {
-                    const space = document.createElement("span");
-                    space.style.marginRight = "5px";
-                    listItem.appendChild(space);
-                }
-            }
-        }
-
-        homeScorersList.appendChild(listItem);
-    });
-
-    homeScorersDiv.appendChild(homeScorersList);
-
-    // Sottodiv per i marcatori Ospiti
-    const awayScorersDiv = document.createElement("div");
-    awayScorersDiv.classList.add("away-scorers");
-
-    const awayScorers = matchData?.Marcatori?.MarcatoriOspite || {};
-    const { normalScorers: awayNormalScorers, ownGoals: awayOwnGoals } =
-        separateScorers(awayScorers);
-
-    const awayScorersList = document.createElement("ul");
-
-    awayNormalScorers.forEach(({ name, count }) => {
-        const listItem = document.createElement("li");
-
-        if (count > 3) {
-            const goalsCountSpan = document.createElement("span");
-            goalsCountSpan.className = "goals-count";
-            goalsCountSpan.textContent = `${count} `;
-            listItem.appendChild(goalsCountSpan);
-
-            const goalIcon = document.createElement("i");
-            goalIcon.classList.add("fa", "fa-soccer-ball-o");
-            listItem.appendChild(goalIcon);
-        } else {
-            for (let i = 0; i < count; i++) {
-                const goalIcon = document.createElement("i");
-                goalIcon.classList.add("fa", "fa-soccer-ball-o");
-                listItem.appendChild(goalIcon);
-
-                if (i < count - 1) {
-                    const space = document.createElement("span");
-                    space.style.marginRight = "5px";
-                    listItem.appendChild(space);
-                }
-            }
-        }
-
-        const playerNameSpan = document.createElement("span");
-        playerNameSpan.textContent = " " + abbreviateName(name);
-        listItem.appendChild(playerNameSpan);
-
-        awayScorersList.appendChild(listItem);
-    });
-
-    // Aggiungi gli autogol alla fine della lista
-    awayOwnGoals.forEach(({ name, count }) => {
-        const listItem = document.createElement("li");
-
-        if (count > 3) {
-            const goalsCountSpan = document.createElement("span");
-            goalsCountSpan.className = "goals-count";
-            goalsCountSpan.textContent = `${count} `;
-            listItem.appendChild(goalsCountSpan);
-
-            const goalIcon = document.createElement("i");
-            goalIcon.classList.add("fa", "fa-soccer-ball-o");
-            listItem.appendChild(goalIcon);
-        } else {
-            for (let i = 0; i < count; i++) {
-                const goalIcon = document.createElement("i");
-                goalIcon.classList.add("fa", "fa-soccer-ball-o");
-                listItem.appendChild(goalIcon);
-
-                if (i < count - 1) {
-                    const space = document.createElement("span");
-                    space.style.marginRight = "5px";
-                    listItem.appendChild(space);
-                }
-            }
-        }
-
-        const playerNameSpan = document.createElement("span");
-        playerNameSpan.textContent = " " + name;
-        listItem.appendChild(playerNameSpan);
-
-        awayScorersList.appendChild(listItem);
-    });
-
-    awayScorersDiv.appendChild(awayScorersList);
-
-    // Aggiungi i sottodiv alla scorersDiv
-    scorersDiv.appendChild(homeScorersDiv);
-    scorersDiv.appendChild(awayScorersDiv);
-
-    // Aggiungi i div al contenuto dell'overlay
-    content.appendChild(matchInfoDiv);
-    content.appendChild(golDiv);
-    content.appendChild(scorersDiv);
-
-    // Aggiungi il contenuto all'overlay
+    content.append(matchInfoDiv, golDiv, scorersDiv);
     overlay.appendChild(content);
     document.body.appendChild(overlay);
+    document.body.style.overflow = "hidden";
 
-    // Inizialmente posiziona l'overlay fuori dalla vista
+    // Inizialmente posiziona l'overlay fuori dalla vista, poi lo fa salire
     overlay.style.bottom = "-100%";
     overlay.style.opacity = "0";
+    requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+            overlay.style.bottom = "0%";
+            overlay.style.opacity = "1";
+        })
+    );
 
-    // Mostra l'overlay
-    setTimeout(() => {
-        overlay.style.bottom = "0%";
-        overlay.style.opacity = "1";
-    }, 10); // Ritarda leggermente per applicare la transizione
-
-    // Chiudi l'overlay al clic
-    closeIcon.addEventListener("click", () => {
+    const chiudi = gestisciPannello(overlay, () => {
+        document.body.style.overflow = "";
         overlay.style.bottom = "-100%";
         overlay.style.opacity = "0";
-
-        // Rimuovi l'overlay dal DOM dopo la transizione
-        overlay.addEventListener(
-            "transitionend",
-            () => {
-                document.body.removeChild(overlay);
-            },
-            { once: true }
-        ); // { once: true } assicura che l'evento venga ascoltato solo una volta
+        // Rimuove l'overlay dopo la transizione (o subito se non c'è animazione)
+        const rimuovi = () => overlay.remove();
+        overlay.addEventListener("transitionend", rimuovi, { once: true });
+        setTimeout(rimuovi, 600);
     });
+
+    closeButton.addEventListener("click", () => chiudi());
+    closeButton.focus();
+
+    shareButton.addEventListener("click", () => {
+        const testo =
+            `${nomeSquadra(casa)} ${matchData.GolSquadraCasa}-${matchData.GolSquadraOspite} ` +
+            `${nomeSquadra(ospite)} · ${isNaN(matchday) ? matchday : `Giornata ${matchday}`} · COFTA`;
+        condividi({ titolo: "Risultato COFTA", testo, url: `${location.origin}/calendario.html` });
+    });
+}
+
+function bloccoSquadra(chiave, squadre) {
+    const teamDiv = document.createElement("div");
+    teamDiv.className = "team-div";
+
+    const logoDiv = document.createElement("div");
+    logoDiv.className = "logo-div";
+    const url = squadre?.[chiave]?.LogoLR || squadre?.[chiave]?.Logo;
+    if (url) {
+        const logo = document.createElement("img");
+        logo.className = "logo-img";
+        logo.src = url;
+        logo.alt = "";
+        logo.width = 110;
+        logo.height = 110;
+        logoDiv.appendChild(logo);
+    }
+
+    const nome = document.createElement("span");
+    nome.className = "team-name";
+    nome.textContent = nomeSquadra(chiave);
+
+    teamDiv.append(logoDiv, nome);
+    return teamDiv;
+}
+
+function numeroGol(gol) {
+    const contenitore = document.createElement("div");
+    contenitore.className = "gol-div";
+    const numero = document.createElement("span");
+    numero.className = "gol-number";
+    numero.textContent = gol ?? "-";
+    contenitore.appendChild(numero);
+    return contenitore;
+}
+
+// Palloni dopo il nome (casa) o prima (ospite); oltre 3 gol si scrive il numero
+function palloni(conteggio, numeroPrima) {
+    const frammento = document.createDocumentFragment();
+    const pallone = () => {
+        const icona = document.createElement("i");
+        icona.className = "icona icona-futbol pallone";
+        icona.setAttribute("aria-hidden", "true");
+        return icona;
+    };
+
+    if (conteggio > 3) {
+        const numero = document.createElement("span");
+        numero.className = "goals-count";
+        numero.textContent = numeroPrima ? `${conteggio} ` : ` ${conteggio}`;
+        if (numeroPrima) frammento.append(numero, pallone());
+        else frammento.append(pallone(), numero);
+    } else {
+        for (let i = 0; i < conteggio; i++) frammento.appendChild(pallone());
+    }
+    return frammento;
+}
+
+function listaMarcatori(marcatori, classe, ospite) {
+    const contenitore = document.createElement("div");
+    contenitore.classList.add(classe);
+    const lista = document.createElement("ul");
+
+    const { normalScorers, ownGoals } = separateScorers(
+        marcatori && typeof marcatori === "object" ? marcatori : {}
+    );
+
+    // Gli autogol vanno in fondo alla lista
+    for (const { name, count, autogol } of [
+        ...normalScorers,
+        ...ownGoals.map((voce) => ({ ...voce, autogol: true })),
+    ]) {
+        const conteggio = Number(count) || 0;
+        const voce = document.createElement("li");
+        voce.setAttribute("aria-label", `${name}: ${conteggio} gol`);
+
+        const nome = document.createElement("span");
+        nome.textContent = autogol ? name : abbreviateName(name);
+
+        if (ospite) {
+            voce.append(palloni(conteggio, true), " ", nome);
+        } else {
+            voce.append(nome, " ", palloni(conteggio, autogol));
+        }
+        lista.appendChild(voce);
+    }
+
+    contenitore.appendChild(lista);
+    return contenitore;
 }

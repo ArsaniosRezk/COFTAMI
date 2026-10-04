@@ -1,5 +1,6 @@
 import { getData } from "../firebase.js";
 import { edition } from "../divisionAndVariables.js";
+import { giornataCorrente } from "../utils/torneo.js";
 import {
     inizializzaPunteggi,
     aggiornaPunteggi,
@@ -67,7 +68,10 @@ export async function caricaDatiSocial(division) {
         squadre: squadre || {},
         partite: partite || {},
         giornate,
-        giornataDaMostrare: String(giornataDivisione ?? giornataGlobale ?? ""),
+        // "auto" o non impostata: la prima giornata con partite da giocare
+        giornataDaMostrare: String(
+            giornataCorrente(calendario, giornataDivisione ?? giornataGlobale) ?? ""
+        ),
     };
 }
 

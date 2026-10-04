@@ -1,5 +1,7 @@
 import { getData, setData } from "./firebase.js";
 import { edition } from "./divisionAndVariables.js";
+import { impostazioniPronte } from "./impostazioni.js";
+import { avviso, mostraToast } from "./utils/interfaccia.js";
 
 function getPaths() {
   // const edition = "2025"; // Removed hardcoded value
@@ -18,6 +20,9 @@ function getPaths() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // I percorsi dipendono dall'edizione corrente, letta dalle impostazioni
+  await impostazioniPronte;
+
   const divisionSelect = document.getElementById("division");
   const matchdaySelect = document.getElementById("matchday");
   const matchSelect = document.getElementById("match");
@@ -57,6 +62,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     mvpSelect.appendChild(placeholderMVP);
     mvpSelect.value = "";
 
+    if (!calendarSnapshot) {
+      mostraToast("Il calendario di questa divisione non è ancora disponibile.", { errore: true });
+      return;
+    }
     const matchdays = Object.keys(calendarSnapshot);
 
     matchdays.forEach((matchday) => {
@@ -94,7 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const matchesSnapshot = await getData(`/${calendarPath}/${matchday}`);
 
-    const matches = Object.keys(matchesSnapshot);
+    const matches = Object.keys(matchesSnapshot || {});
 
     matches.forEach((match) => {
       const option = document.createElement("option");
@@ -159,8 +168,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const awayTeamData = await getData(`${teamsPath}/${awayTeam}`);
 
     // Estrai i giocatori dalle rispettive chiavi "Giocatori"
-    const homePlayers = Object.keys(homeTeamData.Giocatori);
-    const awayPlayers = Object.keys(awayTeamData.Giocatori);
+    const homePlayers = Object.keys(homeTeamData?.Giocatori || {});
+    const awayPlayers = Object.keys(awayTeamData?.Giocatori || {});
 
     // Popola i giocatori e l'MVP
     populatePlayers(homePlayersDiv, homePlayers, awayTeam);
@@ -236,17 +245,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Verifica che il totale dei gol segnati corrisponda a quello inserito
       if (GolSquadraCasa !== totalGoalsHome + autogolCasa) {
-        alert(
-          `Errore: Il totale dei gol segnati dalla squadra di casa (${totalGoalsHome + autogolCasa
-          }) non corrisponde al totale dei gol inseriti (${GolSquadraCasa}).`
+        await avviso(
+          `Il totale dei gol dei marcatori della squadra di casa (${totalGoalsHome + autogolCasa
+          }) non corrisponde al risultato inserito (${GolSquadraCasa}).`,
+          { titolo: "Controlla i gol" }
         );
         return; // Interrompe l'invio del referto
       }
 
       if (GolSquadraOspite !== totalGoalsAway + autogolOspite) {
-        alert(
-          `Errore: Il totale dei gol segnati dalla squadra ospite (${totalGoalsAway + autogolOspite
-          }) non corrisponde al totale dei gol inseriti (${GolSquadraOspite}).`
+        await avviso(
+          `Il totale dei gol dei marcatori della squadra ospite (${totalGoalsAway + autogolOspite
+          }) non corrisponde al risultato inserito (${GolSquadraOspite}).`,
+          { titolo: "Controlla i gol" }
         );
         return; // Interrompe l'invio del referto
       }
@@ -273,14 +284,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         OraInvio: oraInvio,
       };
 
+      // Un secondo tocco durante l'invio non deve spedire due volte
+      const invia = event.submitter || document.querySelector("#match-report-form [type=submit]");
+      invia.disabled = true;
+
       try {
         const { matchesReportPath } = getPaths();
 
         await setData(`${matchesReportPath}/${matchday}/${match}`, matchReport);
-        alert("Referto inviato con successo!");
+        mostraToast("Referto inviato con successo!");
       } catch (error) {
         console.error("Errore durante l'invio del referto:", error);
-        alert("Errore durante l'invio del referto. Riprova.");
+        mostraToast("Errore durante l'invio del referto. Riprova.", { errore: true });
+      } finally {
+        invia.disabled = false;
       }
     });
 });
