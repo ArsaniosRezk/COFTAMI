@@ -1,6 +1,14 @@
-import { db, ref, remove, getData, setData, updateData } from "../firebase.js";
+import {
+  db,
+  ref,
+  remove,
+  update,
+  getData,
+  setData,
+  updateData,
+} from "../firebase.js";
 import { edition } from "../divisionAndVariables.js";
-import { formatDateTime } from "../utils/formatters.js";
+import { capitalize, formatDateTime } from "../utils/formatters.js";
 
 /*
 ===================================
@@ -17,10 +25,27 @@ const LOGO_DEFAULT =
 
 const iscrizioniPath = () => `Calcio/${edition}/Iscrizioni`;
 
+// [etichetta singolare, campo su Firebase]
+const RUOLI = [
+  ["Responsabile", "Responsabili"],
+  ["Allenatore", "Allenatori"],
+  ["Giocatore", "Giocatori"],
+  ["Arbitro", "Arbitri"],
+];
+
+// Stesse regole del modulo pubblico (iscrizione.js)
+const TELEFONO_REGEX = /^\+?\d{8,15}$/;
+
+// Caratteri che Firebase non accetta nelle chiavi delle squadre, più ":"
+// che separa le due squadre nelle chiavi delle partite (vedi teams.js)
+const CARATTERI_VIETATI = /[\/#$\[\]:]/;
+
 // Stato della vista (filtri)
 let filtroDivisione = "Tutte";
 let filtroTesto = "";
 let iscrizioniCache = [];
+// Card aperte: restano aperte quando l'elenco viene ridisegnato
+const carteAperte = new Set();
 
 /*
 -----------------------------------
@@ -32,6 +57,22 @@ HELPER
 function comeLista(valore) {
   if (!valore) return [];
   return Array.isArray(valore) ? valore.filter(Boolean) : Object.values(valore);
+}
+
+function normalizzaSpazi(valore) {
+  return valore.replace(/\s+/g, " ").trim();
+}
+
+function pulisciTelefono(telefono) {
+  return telefono.replace(/[\s.\-/()]/g, "");
+}
+
+// Stessa chiave generata dal modulo pubblico: {Divisione}-{NomeSquadra}
+function chiaveIscrizione(divisione, nomeSquadra) {
+  const nome = normalizzaSpazi(nomeSquadra)
+    .replace(/[.#$/[\]]/g, "_")
+    .replace(/\s/g, "_");
+  return `${divisione}-${nome}`;
 }
 
 // Le squadre usano "_" al posto dei punti (vedi teams.js)
@@ -258,9 +299,11 @@ function creaBarraStrumenti() {
 function creaCard(iscrizione) {
   const conteggi = conteggioPersone(iscrizione);
   const convertita = iscrizione.Stato === "Convertita";
+  const aperta = carteAperte.has(iscrizione.chiave);
 
   const card = document.createElement("div");
   card.className = "iscrizione-card";
+  card.classList.toggle("aperta", aperta);
 
   // ---- INTESTAZIONE ----
   const intestazione = document.createElement("div");
@@ -306,24 +349,44 @@ function creaCard(iscrizione) {
 
   // ---- DETTAGLIO ----
   const dettaglio = document.createElement("div");
-  dettaglio.className = "iscrizione-dettaglio hidden";
+  dettaglio.className = "iscrizione-dettaglio";
+  dettaglio.classList.toggle("hidden", !aperta);
+  mostraDettaglio(dettaglio, iscrizione);
+  card.appendChild(dettaglio);
 
-  dettaglio.appendChild(
-    creaTabellaPersone("Responsabili", comeLista(iscrizione.Responsabili))
-  );
-  dettaglio.appendChild(
-    creaTabellaPersone("Allenatori", comeLista(iscrizione.Allenatori))
-  );
-  dettaglio.appendChild(
-    creaTabellaPersone("Giocatori", comeLista(iscrizione.Giocatori))
-  );
-  dettaglio.appendChild(
-    creaTabellaPersone("Arbitri", comeLista(iscrizione.Arbitri))
-  );
+  intestazione.addEventListener("click", () => {
+    const chiusa = dettaglio.classList.toggle("hidden");
+    card.classList.toggle("aperta", !chiusa);
+    if (chiusa) carteAperte.delete(iscrizione.chiave);
+    else carteAperte.add(iscrizione.chiave);
+  });
+
+  return card;
+}
+
+function mostraDettaglio(dettaglio, iscrizione) {
+  const convertita = iscrizione.Stato === "Convertita";
+
+  dettaglio.replaceChildren();
+  dettaglio.classList.remove("in-modifica");
+
+  RUOLI.forEach(([, campo]) => {
+    dettaglio.appendChild(
+      creaTabellaPersone(campo, comeLista(iscrizione[campo]))
+    );
+  });
   dettaglio.appendChild(creaSezioneModulo(iscrizione.ModuloFirmato));
 
   const azioni = document.createElement("div");
   azioni.className = "iscrizione-azioni";
+
+  const modifica = document.createElement("button");
+  modifica.className = "custom-button";
+  modifica.innerHTML = '<i class="fa-solid fa-pen"></i> Modifica';
+  modifica.addEventListener("click", () =>
+    mostraModifica(dettaglio, iscrizione)
+  );
+  azioni.appendChild(modifica);
 
   const converti = document.createElement("button");
   converti.className = "custom-button";
@@ -347,14 +410,6 @@ function creaCard(iscrizione) {
   azioni.appendChild(elimina);
 
   dettaglio.appendChild(azioni);
-  card.appendChild(dettaglio);
-
-  intestazione.addEventListener("click", () => {
-    dettaglio.classList.toggle("hidden");
-    card.classList.toggle("aperta");
-  });
-
-  return card;
 }
 
 function creaSezioneModulo(modulo) {
@@ -429,6 +484,310 @@ function creaTabellaPersone(titolo, persone) {
 
   sezione.appendChild(lista);
   return sezione;
+}
+
+/*
+-----------------------------------
+MODIFICA
+-----------------------------------
+*/
+
+function creaInput(classe, valore, placeholder) {
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = `modifica-input ${classe}`;
+  input.value = valore || "";
+  input.placeholder = placeholder;
+  input.addEventListener("input", () => input.classList.remove("invalid"));
+  return input;
+}
+
+// Sostituisce il dettaglio della card con il modulo di modifica
+function mostraModifica(dettaglio, iscrizione) {
+  dettaglio.replaceChildren();
+  dettaglio.classList.add("in-modifica");
+
+  // ---- SQUADRA ----
+  const sezioneSquadra = document.createElement("div");
+  sezioneSquadra.className = "dettaglio-sezione modifica-squadra";
+
+  const titoloSquadra = document.createElement("h4");
+  titoloSquadra.textContent = "Squadra";
+  sezioneSquadra.appendChild(titoloSquadra);
+
+  const campiSquadra = document.createElement("div");
+  campiSquadra.className = "modifica-campi-squadra";
+
+  const nomeInput = creaInput(
+    "modifica-nome-squadra",
+    iscrizione.NomeSquadra,
+    "Nome squadra"
+  );
+  campiSquadra.appendChild(nomeInput);
+
+  const divisioneSelect = document.createElement("select");
+  divisioneSelect.className = "iscrizioni-select modifica-divisione";
+  DIVISIONI.forEach((divisione) => {
+    const opzione = document.createElement("option");
+    opzione.value = divisione;
+    opzione.textContent = divisione;
+    divisioneSelect.appendChild(opzione);
+  });
+  divisioneSelect.value = DIVISIONI.includes(iscrizione.Divisione)
+    ? iscrizione.Divisione
+    : DIVISIONI[0];
+  campiSquadra.appendChild(divisioneSelect);
+
+  sezioneSquadra.appendChild(campiSquadra);
+  dettaglio.appendChild(sezioneSquadra);
+
+  // ---- PERSONE ----
+  const editor = RUOLI.map(([singolare, campo]) => {
+    const sezione = creaEditorPersone(
+      campo,
+      singolare,
+      comeLista(iscrizione[campo])
+    );
+    dettaglio.appendChild(sezione.elemento);
+    return { campo, leggi: sezione.leggi };
+  });
+
+  // ---- AZIONI ----
+  const errore = document.createElement("p");
+  errore.className = "modifica-errore";
+
+  const azioni = document.createElement("div");
+  azioni.className = "iscrizione-azioni";
+
+  const testoSalva = '<i class="fa-solid fa-floppy-disk"></i> Salva modifiche';
+  const salva = document.createElement("button");
+  salva.className = "custom-button";
+  salva.innerHTML = testoSalva;
+
+  const annulla = document.createElement("button");
+  annulla.className = "custom-button button-elimina";
+  annulla.textContent = "Annulla";
+  annulla.addEventListener("click", () =>
+    mostraDettaglio(dettaglio, iscrizione)
+  );
+
+  salva.addEventListener("click", async () => {
+    errore.textContent = "";
+    const problemi = [];
+
+    const nomeSquadra = normalizzaSpazi(nomeInput.value);
+    if (nomeSquadra.length < 3) {
+      problemi.push("Il nome della squadra deve avere almeno 3 caratteri.");
+      nomeInput.classList.add("invalid");
+    } else if (CARATTERI_VIETATI.test(nomeSquadra)) {
+      problemi.push("Il nome della squadra non può contenere / # $ [ ] :");
+      nomeInput.classList.add("invalid");
+    }
+
+    const dati = {
+      NomeSquadra: nomeSquadra,
+      Divisione: divisioneSelect.value,
+    };
+    editor.forEach(({ campo, leggi }) => {
+      const risultato = leggi();
+      dati[campo] = risultato.persone;
+      problemi.push(...risultato.problemi);
+    });
+
+    if (problemi.length > 0) {
+      errore.textContent = problemi.join(" ");
+      dettaglio.querySelector(".invalid")?.focus();
+      return;
+    }
+
+    salva.disabled = true;
+    salva.textContent = "Salvataggio...";
+    const salvata = await salvaModifiche(iscrizione, dati);
+    if (!salvata) {
+      salva.disabled = false;
+      salva.innerHTML = testoSalva;
+    }
+  });
+
+  azioni.appendChild(salva);
+  azioni.appendChild(annulla);
+  dettaglio.appendChild(errore);
+  dettaglio.appendChild(azioni);
+
+  nomeInput.focus();
+}
+
+// Elenco modificabile di una sezione: nome + telefono, aggiungi/rimuovi
+function creaEditorPersone(campo, singolare, persone) {
+  const sezione = document.createElement("div");
+  sezione.className = "dettaglio-sezione";
+
+  const titolo = document.createElement("h4");
+  sezione.appendChild(titolo);
+
+  const lista = document.createElement("div");
+  lista.className = "modifica-lista";
+  sezione.appendChild(lista);
+
+  const aggiornaTitolo = () => {
+    titolo.textContent = `${campo} (${lista.children.length})`;
+  };
+
+  const aggiungiRiga = (persona = {}) => {
+    const riga = document.createElement("div");
+    riga.className = "modifica-riga";
+
+    const nome = creaInput("modifica-nome", persona.Nome, "Nome e Cognome");
+    const telefono = creaInput("modifica-tel", persona.Telefono, "Telefono");
+    telefono.type = "tel";
+
+    const rimuovi = document.createElement("button");
+    rimuovi.type = "button";
+    rimuovi.className = "modifica-rimuovi";
+    rimuovi.title = `Rimuovi ${singolare.toLowerCase()}`;
+    rimuovi.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    rimuovi.addEventListener("click", () => {
+      riga.remove();
+      aggiornaTitolo();
+    });
+
+    riga.append(nome, telefono, rimuovi);
+    lista.appendChild(riga);
+    aggiornaTitolo();
+    return nome;
+  };
+
+  persone.forEach((persona) => aggiungiRiga(persona));
+  aggiornaTitolo();
+
+  const aggiungi = document.createElement("button");
+  aggiungi.type = "button";
+  aggiungi.className = "modifica-aggiungi";
+  aggiungi.innerHTML = `<i class="fa-solid fa-plus"></i> Aggiungi ${singolare.toLowerCase()}`;
+  aggiungi.addEventListener("click", () => aggiungiRiga().focus());
+  sezione.appendChild(aggiungi);
+
+  // Le righe lasciate completamente vuote vengono ignorate
+  const leggi = () => {
+    const risultato = { persone: [], problemi: [] };
+    const nomiVisti = new Set();
+
+    lista.querySelectorAll(".modifica-riga").forEach((riga) => {
+      const nomeInput = riga.querySelector(".modifica-nome");
+      const telInput = riga.querySelector(".modifica-tel");
+      const nome = capitalize(normalizzaSpazi(nomeInput.value));
+      const telefono = pulisciTelefono(telInput.value);
+
+      if (!nome && !telefono) return;
+
+      if (!nome) {
+        nomeInput.classList.add("invalid");
+        risultato.problemi.push(`${campo}: manca il nome accanto a ${telefono}.`);
+        return;
+      }
+      // Il nome diventa una chiave della squadra su Firebase
+      if (CARATTERI_VIETATI.test(nome) || nome.includes(".")) {
+        nomeInput.classList.add("invalid");
+        risultato.problemi.push(
+          `${campo}: "${nome}" contiene caratteri non ammessi (. / # $ [ ] :).`
+        );
+        return;
+      }
+      if (telefono && !TELEFONO_REGEX.test(telefono)) {
+        telInput.classList.add("invalid");
+        risultato.problemi.push(
+          `${campo}: telefono di ${nome} non valido (8-15 cifre).`
+        );
+        return;
+      }
+      if (nomiVisti.has(nome.toLowerCase())) {
+        nomeInput.classList.add("invalid");
+        risultato.problemi.push(`${campo}: ${nome} è inserito due volte.`);
+        return;
+      }
+      nomiVisti.add(nome.toLowerCase());
+
+      risultato.persone.push({ Nome: nome, Telefono: telefono });
+    });
+
+    return risultato;
+  };
+
+  return { elemento: sezione, leggi };
+}
+
+// Salva l'iscrizione modificata. Se cambiano nome o divisione cambia anche
+// la chiave ({Divisione}-{NomeSquadra}), quindi il record viene spostato.
+async function salvaModifiche(iscrizione, dati) {
+  const { chiave: vecchiaChiave, ...datiAttuali } = iscrizione;
+  const nuovaChiave = chiaveIscrizione(dati.Divisione, dati.NomeSquadra);
+  const convertita = iscrizione.Stato === "Convertita";
+  const squadraCambiata =
+    chiaveSquadra(dati.NomeSquadra) !==
+      chiaveSquadra(iscrizione.NomeSquadra || "") ||
+    dati.Divisione !== iscrizione.Divisione;
+
+  if (convertita && squadraCambiata) {
+    const conferma = confirm(
+      `Questa iscrizione è già stata convertita: nel torneo la squadra resta "${iscrizione.NomeSquadra}" (${iscrizione.Divisione}).\n\n` +
+        "Per rinominarla usa la pagina Squadre, che aggiorna anche calendario e partite.\n" +
+        'Attenzione: "Riconverti in squadra" con il nuovo nome creerebbe una seconda squadra.\n\n' +
+        "Vuoi salvare comunque l'iscrizione?"
+    );
+    if (!conferma) return false;
+  }
+
+  const aggiornata = {
+    ...datiAttuali,
+    ...dati,
+    ModificataIl: new Date().toISOString(),
+  };
+
+  try {
+    if (nuovaChiave === vecchiaChiave) {
+      await setData(`${iscrizioniPath()}/${vecchiaChiave}`, aggiornata);
+    } else {
+      if (await getData(`${iscrizioniPath()}/${nuovaChiave}`)) {
+        alert(
+          `Esiste già un'iscrizione per "${dati.NomeSquadra}" (${dati.Divisione}).`
+        );
+        return false;
+      }
+      // Spostamento atomico: la nuova chiave viene scritta e la vecchia rimossa insieme
+      await update(ref(db, iscrizioniPath()), {
+        [vecchiaChiave]: null,
+        [nuovaChiave]: aggiornata,
+      });
+      carteAperte.delete(vecchiaChiave);
+    }
+    carteAperte.add(nuovaChiave);
+  } catch (error) {
+    console.error("Errore nel salvataggio dell'iscrizione:", error);
+    alert("Errore nel salvataggio. Riprova.");
+    return false;
+  }
+
+  // La squadra esiste già con lo stesso nome: si possono riportare subito le modifiche
+  if (convertita && !squadraCambiata) {
+    const allinea = confirm(
+      "Iscrizione salvata.\n\n" +
+        `Vuoi aggiornare anche responsabili, allenatori e giocatori della squadra "${dati.NomeSquadra}" nel torneo?\n` +
+        "(girone, logo e penalità restano invariati)"
+    );
+    if (allinea) {
+      try {
+        await scriviSquadra({ ...aggiornata, chiave: nuovaChiave }, true);
+      } catch (error) {
+        console.error("Errore nell'aggiornamento della squadra:", error);
+        alert(
+          'Iscrizione salvata, ma la squadra non è stata aggiornata. Usa "Riconverti in squadra".'
+        );
+      }
+    }
+  }
+
+  showIscrizioni();
+  return true;
 }
 
 /*
@@ -602,19 +961,12 @@ function esportaCsv() {
     ],
   ];
 
-  const ruoli = [
-    ["Responsabile", "Responsabili"],
-    ["Allenatore", "Allenatori"],
-    ["Giocatore", "Giocatori"],
-    ["Arbitro", "Arbitri"],
-  ];
-
   visibili.forEach((iscrizione) => {
     const dataInvio = iscrizione.OraInvio
       ? formatDateTime(iscrizione.OraInvio)
       : "";
 
-    ruoli.forEach(([etichetta, campo]) => {
+    RUOLI.forEach(([etichetta, campo]) => {
       comeLista(iscrizione[campo]).forEach((persona) => {
         righe.push([
           iscrizione.Divisione || "",
