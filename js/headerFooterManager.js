@@ -1,5 +1,7 @@
 import { paginaCorrente, nomePagina } from "./utils/percorso.js";
 import { avviaControlloManutenzione } from "./maintenance-guard.js";
+import { avviaMenuPagineAttive } from "./pagine-attive.js";
+import { osservaImpostazioni } from "./impostazioni.js";
 import {
   edizioneForzata,
   edizioneTest,
@@ -168,6 +170,9 @@ if (edizioneForzata && !edizioneTest) {
 
 // MANUTENZIONE //
 avviaControlloManutenzione();
+
+// PAGINE SPENTE DAL GESTIONALE: spariscono dai menu //
+avviaMenuPagineAttive(osservaImpostazioni);
 
 // SERVICE WORKER REGISTRATION (Cache)
 if ("serviceWorker" in navigator) {

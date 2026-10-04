@@ -193,7 +193,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!sequenzaEsecuzioneModule) return;
 
   // Prima di leggere i dati serve l'edizione corrente
-  const { impostazioniPronte } = await import("./impostazioni.js");
+  const { impostazioniPronte, osservaImpostazioni } = await import("./impostazioni.js");
   await impostazioniPronte;
   eseguiSequenza();
+
+  // Una pagina accesa o spenta dalla dashboard si aggiorna senza ricaricare
+  let pagineAttive = null;
+  osservaImpostazioni((impostazioni) => {
+    const attuali = JSON.stringify(impostazioni.pagineAttive || {});
+    if (pagineAttive !== null && attuali !== pagineAttive) eseguiSequenza();
+    pagineAttive = attuali;
+  });
 });

@@ -4,6 +4,53 @@ import { faseFinale } from "/js/components/final-phase.js";
 import { visualizzaSquadreConMembri } from "/js/components/teams.js";
 import { ref, get, update, db } from "/js/firebase.js";
 import { impostaEdizioneLocale } from "/js/edition-sync.js";
+import { PAGINE_CONTROLLABILI, paginaAttiva } from "/js/pagine-attive.js";
+import { mostraToast } from "/js/utils/interfaccia.js";
+
+// Un interruttore per ogni pagina pubblica (Impostazioni/pagineAttive/<pagina>)
+function creaInterruttoriPagine(settingsRef, impostazioni) {
+  const contenitore = document.getElementById("pagine-attive");
+  if (!contenitore) return;
+  contenitore.replaceChildren();
+
+  for (const { chiave, nome } of PAGINE_CONTROLLABILI) {
+    const voce = document.createElement("div");
+    voce.className = "setting-item";
+
+    const etichetta = document.createElement("span");
+    etichetta.className = "setting-label";
+    etichetta.id = `etichetta-pagina-${chiave}`;
+    etichetta.textContent = nome;
+
+    const interruttore = document.createElement("label");
+    interruttore.className = "modern-switch";
+
+    const casella = document.createElement("input");
+    casella.type = "checkbox";
+    casella.id = `toggle-pagina-${chiave}`;
+    casella.checked = paginaAttiva(impostazioni, chiave);
+    casella.setAttribute("aria-labelledby", etichetta.id);
+
+    const cursore = document.createElement("span");
+    cursore.className = "slider";
+
+    casella.addEventListener("change", async () => {
+      const attiva = casella.checked;
+      try {
+        await update(settingsRef, { [`pagineAttive/${chiave}`]: attiva });
+        mostraToast(`${nome}: ${attiva ? "visibile" : "nascosta"} sul sito`);
+      } catch (errore) {
+        console.error("Errore nel salvataggio della pagina:", errore);
+        casella.checked = !attiva;
+        mostraToast("Impossibile salvare. Riprova.", { errore: true });
+      }
+    });
+
+    interruttore.append(casella, cursore);
+    voce.append(etichetta, interruttore);
+    contenitore.appendChild(voce);
+  }
+}
 
 export const initDashboard = async () => {
   // Codice di inizializzazione per la sezione dashboard
@@ -32,6 +79,8 @@ export const initDashboard = async () => {
 
       // Iscrizioni aperte di default: si chiudono solo esplicitamente
       iscrizioniCheckbox.checked = data.iscrizioniAperte !== false;
+
+      creaInterruttoriPagine(settingsRef, data);
 
       // Set Edition (Default 2025)
       if (editionSelect) {

@@ -56,6 +56,7 @@ const ASSETS_TO_CACHE = [
     "/js/divisionAndVariables.js",
     "/js/headerFooterManager.js",
     "/js/maintenance-guard.js",
+    "/js/pagine-attive.js",
     "/js/funzioniHome.js",
     "/js/utils/percorso.js",
     "/js/utils/torneo.js",

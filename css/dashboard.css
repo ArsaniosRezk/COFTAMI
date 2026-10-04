@@ -710,3 +710,57 @@ select#matchday-to-show-input option {
         font-size: 1rem;
     }
 }
+
+/* =========================================
+   PAGINE VISIBILI SUL SITO
+   ========================================= */
+
+/* Sempre su una riga a sé, sotto le altre impostazioni */
+.pagine-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-basis: 100%;
+    width: 100%;
+    padding-top: 16px;
+    border-top: 1px solid var(--divider-color);
+}
+
+.pagine-intestazione {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pagine-titolo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.pagine-nota {
+    font-size: 0.8rem;
+    color: var(--text);
+    opacity: 0.7;
+}
+
+@media (min-width: 1025px) {
+    .pagine-group {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .pagine-group {
+        padding-top: 12px;
+    }
+
+    /* Le righe degli interruttori hanno già i loro separatori */
+    .pagine-group .settings-group {
+        border-top: none;
+        padding-top: 0;
+    }
+}

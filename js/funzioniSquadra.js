@@ -1,4 +1,5 @@
-import { impostazioniPronte } from "./impostazioni.js";
+import { impostazioniPronte, osservaImpostazioni } from "./impostazioni.js";
+import { paginaAttiva } from "./pagine-attive.js";
 import { DIVISIONI, getSelectedDivision, loadSavedOption } from "./divisionAndVariables.js";
 import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
 import { posizioneSquadra, calcolaMarcatori, squadraDeiGiocatori } from "./components/standings.js";
@@ -42,11 +43,14 @@ function crea(tag, classe = "", testo = null) {
     return elemento;
 }
 
-function squadraNonTrovata() {
-    document.title = "Squadra non trovata - Cofta";
-    $("nome-squadra").textContent = "Squadra non trovata";
-    $("dettagli-squadra").textContent =
-        "La squadra cercata non partecipa all'edizione in corso.";
+function squadraNonTrovata(
+    titolo = "Squadra non trovata",
+    testo = "La squadra cercata non partecipa all'edizione in corso."
+) {
+    document.title = `${titolo} - Cofta`;
+    $("nome-squadra").textContent = titolo;
+    $("dettagli-squadra").textContent = testo;
+    $("logo-squadra").hidden = true;
     $("azioni-squadra").replaceChildren();
     $("statistiche-squadra").replaceChildren();
     document.querySelectorAll(".sezione-dati-squadra").forEach((sezione) => (sezione.hidden = true));
@@ -244,11 +248,24 @@ async function avvia() {
     await impostazioniPronte;
 
     let ultimi = { calendario: null };
+    let paginaSpenta = false;
     preparaAzioni(() => ultimi);
+
+    // Con la pagina Squadre spenta dalla dashboard anche le singole squadre
+    // restano nascoste (la pagina si ricarica quando viene riaccesa)
+    osservaImpostazioni((impostazioni) => {
+        const spenta = !paginaAttiva(impostazioni, "squadre");
+        if (paginaSpenta && !spenta) location.reload();
+        paginaSpenta = spenta;
+        if (spenta) {
+            squadraNonTrovata("Disponibile a breve", "Le squadre del torneo saranno pubblicate qui a breve.");
+        }
+    });
 
     osservaDivisione(
         (dati) => {
             ultimi = dati;
+            if (paginaSpenta) return;
             const squadra = dati.squadre?.[chiave];
             if (!squadra) {
                 squadraNonTrovata();

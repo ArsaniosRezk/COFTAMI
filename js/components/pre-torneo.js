@@ -1,6 +1,7 @@
 import { getData, getPaths } from "../firebase.js";
 import { edition } from "../divisionAndVariables.js";
 import { leggiImpostazioni } from "../impostazioni.js";
+import { interruttoreDellaPagina, paginaAttiva } from "../pagine-attive.js";
 
 /*
 ===================================
@@ -42,7 +43,8 @@ function creaAvviso(main) {
 
 /*
  Mostra o nasconde l'avviso a seconda dello stato del torneo.
- Restituisce true se il torneo non è ancora iniziato, così la pagina
+ Restituisce true se il torneo non è ancora iniziato, oppure se la pagina è
+ stata spenta dalla dashboard (Impostazioni/pagineAttive), così la pagina
  chiamante può fermarsi prima di caricare classifiche e calendario.
 */
 export async function gestisciAttesaTorneo(squadre = undefined) {
@@ -54,7 +56,9 @@ export async function gestisciAttesaTorneo(squadre = undefined) {
         (el) => el.id !== ID_AVVISO
     );
 
-    const inAttesa = await torneoNonIniziato(squadre);
+    const impostazioni = await leggiImpostazioni();
+    const spenta = !paginaAttiva(impostazioni, interruttoreDellaPagina());
+    const inAttesa = spenta || (await torneoNonIniziato(squadre));
 
     if (!inAttesa) {
         document.getElementById(ID_AVVISO)?.remove();
@@ -66,12 +70,26 @@ export async function gestisciAttesaTorneo(squadre = undefined) {
 
     const avviso = document.getElementById(ID_AVVISO) || creaAvviso(main);
     const aperte = await iscrizioniAperte();
-    const invito = aperte
-        ? "Le iscrizioni sono aperte: c'è ancora tempo per portare la tua squadra in campo."
-        : "Le iscrizioni sono chiuse, il sorteggio dei gironi è in arrivo.";
     const cta = aperte
         ? `<a class="btn-pre-torneo" href="/iscrizione.html">Iscrivi la tua squadra</a>`
         : "";
+
+    // Squadre già caricate ma pagina spenta dal gestionale
+    if (spenta && !(await torneoNonIniziato(squadre))) {
+        avviso.innerHTML = `
+        <i class="icona icona-futbol icona-pre-torneo" aria-hidden="true"></i>
+        <p class="section-title">Disponibile a breve</p>
+        <p class="testo-pre-torneo">
+          Stiamo preparando squadre, calendario e classifiche del torneo ${edition}.
+          Torna a trovarci tra poco.
+        </p>
+        ${cta}`;
+        return true;
+    }
+
+    const invito = aperte
+        ? "Le iscrizioni sono aperte: c'è ancora tempo per portare la tua squadra in campo."
+        : "Le iscrizioni sono chiuse, il sorteggio dei gironi è in arrivo.";
 
     avviso.innerHTML = `
         <i class="icona icona-futbol icona-pre-torneo" aria-hidden="true"></i>
