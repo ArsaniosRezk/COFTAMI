@@ -1,0 +1,70 @@
+<div id="tabellone-gestione" class="tabellone-gestione">
+
+  <section class="pannello" aria-labelledby="titolo-formato">
+    <div>
+      <h2 class="pannello-titolo" id="titolo-formato"><i class="icona icona-trophy" aria-hidden="true"></i> Tabellone <span id="tabellone-divisione"></span></h2>
+      <p class="pannello-descrizione">
+        Scegli quante squadre partecipano, poi scrivi squadre, risultati, date e campi di ogni partita.
+        Sotto vedi l'anteprima: sul sito cambia solo quando premi "Salva e pubblica".
+      </p>
+    </div>
+
+    <div class="te-impostazione">
+      <div class="te-impostazione-testo">
+        <span class="etichetta" id="etichetta-visibile">Visibile sul sito</span>
+        <p class="suggerimento">Mostra il tabellone in cima a home e Campionato (per entrambe le divisioni).</p>
+      </div>
+      <label class="modern-switch">
+        <input type="checkbox" id="tabellone-visibile" aria-labelledby="etichetta-visibile" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="te-impostazione">
+      <div class="te-impostazione-testo">
+        <span class="etichetta" id="etichetta-formato">Squadre al primo turno</span>
+        <p class="suggerimento">Cambiando formato le partite dei turni in comune restano.</p>
+      </div>
+      <div class="te-formato" id="tabellone-formato" role="group" aria-labelledby="etichetta-formato"></div>
+    </div>
+
+    <div class="te-impostazione">
+      <div class="te-impostazione-testo">
+        <span class="etichetta" id="etichetta-terzo">Finale 3° posto</span>
+        <p class="suggerimento">Tra chi perde le semifinali.</p>
+      </div>
+      <label class="modern-switch">
+        <input type="checkbox" id="tabellone-terzo" aria-labelledby="etichetta-terzo" />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </section>
+
+  <div id="tabellone-turni" class="te-turni"></div>
+
+  <section class="pannello" aria-labelledby="titolo-anteprima">
+    <div class="pannello-testa">
+      <div>
+        <h2 class="pannello-titolo" id="titolo-anteprima"><i class="icona icona-eye" aria-hidden="true"></i> Anteprima</h2>
+        <p class="pannello-descrizione">Così apparirà sul sito.</p>
+      </div>
+      <button type="button" class="btn btn-testo btn-elimina" id="tabellone-svuota">Svuota tabellone</button>
+    </div>
+    <div id="tabellone-anteprima"></div>
+  </section>
+
+  <datalist id="tabellone-squadre"></datalist>
+  <datalist id="tabellone-luoghi"></datalist>
+
+  <div class="te-barra" role="region" aria-label="Salvataggio">
+    <p class="te-stato" id="tabellone-stato" aria-live="polite"></p>
+    <div class="te-barra-azioni">
+      <button type="button" class="btn" id="tabellone-avanti">
+        <i class="icona icona-arrow-right" aria-hidden="true"></i> Porta avanti le vincenti
+      </button>
+      <button type="button" class="btn btn-principale" id="tabellone-salva">
+        <i class="icona icona-floppy-disk" aria-hidden="true"></i> Salva e pubblica
+      </button>
+    </div>
+  </div>
+</div>

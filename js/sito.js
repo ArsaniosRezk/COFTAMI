@@ -1,6 +1,6 @@
 import { STAGING } from "./ambiente.js";
 import { avviaControlloManutenzione } from "./controllo-manutenzione.js";
-import { avviaMenuPagineAttive } from "./pagine-attive.js";
+import { avviaMenuPagineAttive, avviaPaginaSpenta } from "./pagine-attive.js";
 import { osservaImpostazioni } from "./impostazioni.js";
 import { avviaConsenso, apriPreferenzeCookie } from "./consenso.js";
 import { edizioneForzata, edizioneTest, tornaEdizioneCorrente } from "./divisione.js";
@@ -76,8 +76,9 @@ if (STAGING) avvisoInCima("<b>Sito di staging</b>: dati di prova (Calcio/Test)")
 // MANUTENZIONE //
 avviaControlloManutenzione();
 
-// PAGINE SPENTE DAL GESTIONALE: spariscono dai menu //
+// PAGINE SPENTE DAL GESTIONALE: spariscono dai menu e mostrano un avviso //
 avviaMenuPagineAttive(osservaImpostazioni);
+avviaPaginaSpenta(osservaImpostazioni);
 
 // COOKIE //
 avviaConsenso();

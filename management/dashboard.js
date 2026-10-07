@@ -15,8 +15,9 @@ import { vaiASezione, aggiornaConteggi } from "/js/utils/gestionale-eventi.js";
 ===================================
 DASHBOARD
 ===================================
-Cose da fare, impostazioni del sito pubblico, link per gli arbitri, accessi,
-registro delle modifiche e classifiche della divisione scelta.
+Cose da fare (solo se ce ne sono), classifiche della divisione scelta,
+impostazioni del sito pubblico, registro delle modifiche, link per gli
+arbitri e accessi.
 */
 
 const $ = (id) => document.getElementById(id);
@@ -69,14 +70,8 @@ async function mostraDaFare() {
     });
   }
 
-  if (!voci.length) {
-    const tutto = crea("li", "da-fare-vuoto");
-    tutto.append(crea("i", "icona icona-check"), " Tutto in ordine: nessun referto o iscrizione in attesa.");
-    tutto.firstChild.setAttribute("aria-hidden", "true");
-    elenco.replaceChildren(tutto);
-    return;
-  }
-
+  // Senza niente in attesa il pannello non occupa spazio
+  $("pannello-da-fare").hidden = !voci.length;
   elenco.replaceChildren(
     ...voci.map(({ testo, dettaglio, azione, sezione }) => {
       const voce = crea("li", "da-fare-voce");
@@ -114,7 +109,7 @@ async function preparaGiornata() {
   const select = crea("select", "input");
   select.id = "matchday-to-show-input";
   const opzione = (valore, testo) => select.appendChild(new Option(testo, valore));
-  opzione(GIORNATA_AUTOMATICA, automatica ? `Automatica (ora: ${automatica})` : "Automatica");
+  opzione(GIORNATA_AUTOMATICA, automatica ? `Auto (${automatica})` : "Automatica");
 
   const numerate = giornateNumerate(calendario);
   const speciali = Object.keys(calendario || {})

@@ -65,7 +65,7 @@ const PAGINE = [
     voce: "home",
     divisione: true,
     firebase: true,
-    css: ["home", "partite", "tabelle", "overlay-partite"],
+    css: ["home", "partite", "tabelle", "overlay-partite", "tabellone"],
     js: ["funzioniHome"],
     jsonld: [
       ORGANIZZAZIONE,
@@ -74,14 +74,14 @@ const PAGINE = [
   },
   {
     file: "campionato.html",
-    titolo: "Classifica, marcatori e statistiche - Cofta",
+    titolo: "Classifica e marcatori - Cofta",
     titoloSocial: "Classifica e marcatori - Cofta Milano",
     descrizione:
-      "Classifica aggiornata, classifica marcatori e statistiche del campionato di calcio diocesano Cofta Milano.",
+      "Classifica aggiornata e classifica marcatori del campionato di calcio diocesano Cofta Milano.",
     voce: "campionato",
     divisione: true,
     firebase: true,
-    css: ["campionato", "tabelle", "statistiche"],
+    css: ["campionato", "tabelle", "tabellone"],
     js: ["funzioniCampionato"],
   },
   {

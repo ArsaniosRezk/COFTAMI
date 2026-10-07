@@ -89,6 +89,7 @@ const GESTIONALE = {
   "circle-xmark": "solid/circle-xmark",
   "check-double": "solid/check-double",
   "arrow-up": "solid/arrow-up",
+  "arrow-right": "solid/arrow-right",
   "arrow-down": "solid/arrow-down",
   "right-from-bracket": "solid/right-from-bracket",
   "clock-rotate-left": "solid/clock-rotate-left",

@@ -5,7 +5,6 @@ import {
   scheletroMarcatori,
 } from "./components/classifiche.js";
 import { faseFinale } from "./components/fase-finale.js";
-import { statisticheCampionato } from "./components/statistiche.js";
 import { gestisciAttesaTorneo } from "./components/pre-torneo.js";
 import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
 
@@ -18,9 +17,6 @@ export async function sequenzaEsecuzione() {
   fermaAscolto?.();
   scheletroClassifica("classifica-squadre");
   scheletroMarcatori("classifica-gol");
-  scheletroMarcatori("statistiche");
-
-  let faseFinaleMostrata = false;
 
   fermaAscolto = osservaDivisione(
     async (dati) => {
@@ -28,15 +24,10 @@ export async function sequenzaEsecuzione() {
 
       classificaGirone("classifica-squadre", false, dati);
       classificaMarcatori("classifica-gol", dati);
-      statisticheCampionato("statistiche", dati);
-
-      if (!faseFinaleMostrata) {
-        faseFinaleMostrata = true;
-        faseFinale();
-      }
+      faseFinale(dati);
     },
     {
-      onLento: () => mostraErroreCaricamento(["classifica-squadre", "classifica-gol", "statistiche"]),
+      onLento: () => mostraErroreCaricamento(["classifica-squadre", "classifica-gol"]),
     }
   );
 }

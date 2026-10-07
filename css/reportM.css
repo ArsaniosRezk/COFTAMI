@@ -55,11 +55,16 @@
 .referto {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   padding: 18px;
   border: 1px solid var(--glass-border);
   border-radius: 14px;
   background-color: var(--superficie);
+}
+
+/* Da confermare: un filo giallo a sinistra la fa notare nella griglia */
+.referto.da-confermare {
+  border-left: 4px solid var(--accento);
 }
 
 .referto-testa {
@@ -76,62 +81,109 @@
   color: var(--testo-secondario);
 }
 
-.referto-punteggio {
+/* Tabellone: loghi e nomi ai lati, risultato al centro, marcatori sotto */
+.referto-tabellone {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  gap: 14px 10px;
+  padding: 16px 14px 14px;
+  border-radius: 12px;
+  background-color: var(--superficie-forte);
+}
+
+.referto-lato {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  min-width: 0;
+  text-align: center;
+}
+
+.referto-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.referto-logo.logo-segnaposto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accento);
+  border-radius: 50%;
+  color: var(--testo);
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 .referto-squadra {
   font-family: "nomeSquadra", "Bebas Neue", sans-serif;
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }
 
-.referto-squadra.ospite {
-  text-align: right;
-}
-
 .referto-gol {
-  font-size: 1.7rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: center;
+  padding-bottom: 22px;
+  font-size: 2rem;
   font-weight: 800;
+  line-height: 1;
   color: var(--accento);
   white-space: nowrap;
 }
 
-.referto-differenza {
-  padding: 8px 12px;
-  border-radius: 8px;
-  background-color: rgba(255, 180, 168, 0.12);
-  color: var(--errore-chiaro);
-  font-size: 0.85rem;
-  font-weight: 600;
+.referto-trattino {
+  font-weight: 400;
+  color: var(--testo-tenue);
 }
 
-.referto-colonne {
+/* Marcatori: ognuno sotto la sua squadra, il pallone a fare da separatore */
+.referto-marcatori-righe {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: start;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider-color);
 }
 
-.referto-etichetta {
-  margin-bottom: 4px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+.referto-pallone {
+  justify-self: center;
+  margin-top: 2px;
   color: var(--testo-tenue);
 }
 
 .referto-marcatori {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
   list-style: none;
   font-size: 0.9rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
-.referto-marcatori li + li {
-  margin-top: 2px;
+.referto-marcatori.casa {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.referto-marcatori.ospite {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.referto-volte {
+  margin-left: 4px;
+  color: var(--accento);
 }
 
 .referto-marcatori .autogol,
@@ -140,38 +192,82 @@
   font-style: italic;
 }
 
-.referto-dettagli {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 4px 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--divider-color);
+.referto-differenza {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 180, 168, 0.12);
+  color: var(--errore-chiaro);
   font-size: 0.88rem;
+  font-weight: 600;
+}
+
+/* Dettagli: una riga per voce, etichetta a sinistra e valore a destra */
+.referto-dettagli {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+}
+
+.referto-dettaglio {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.referto-dettaglio:last-child {
+  border-bottom: none;
 }
 
 .referto-dettagli dt {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
   color: var(--testo-tenue);
 }
 
+.referto-dettagli dt .icona {
+  width: 1rem;
+  color: var(--accento);
+}
+
 .referto-dettagli dd {
-  font-weight: 600;
+  font-weight: 700;
+  text-align: right;
   overflow-wrap: anywhere;
 }
 
 /* Segnalazioni: le cose da leggere con attenzione */
 .referto-note {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   padding: 12px 14px;
   border-left: 4px solid var(--orange);
   border-radius: 8px;
   background-color: rgba(242, 106, 27, 0.12);
 }
 
-.referto-note .referto-etichetta {
+.referto-note-titolo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   color: #ffc9a8;
 }
 
 .referto-note p {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
   white-space: pre-line;
   overflow-wrap: anywhere;
 }

@@ -56,6 +56,7 @@
           "Partite": { ".read": true },
           "Calendario": { ".read": true },
           "GiornataDaMostrare": { ".read": true },
+          "FaseFinale": { ".read": true },
 
           "Referti": {
             /* Leggibili da tutti: le pagine dei referti per i padri non chiedono l'accesso */

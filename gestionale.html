@@ -47,18 +47,26 @@
         <button type="button" data-division="Giovani">Giovani</button>
       </div>
 
-      <!-- Su smartphone questa lista diventa la barra di navigazione in basso -->
+      <!-- Su smartphone questa lista diventa la barra in basso: restano le voci più usate
+           durante il torneo, le altre (nav-secondaria) si aprono da "Menu" -->
       <ul class="nav-links">
         <li class="nav-gruppo" aria-hidden="true">Torneo</li>
         <li><a href="#dashboard" id="nav-dashboard"><i class="icona icona-gauge-high" aria-hidden="true"></i><span>Dashboard</span></a></li>
         <li><a href="#partite" id="nav-partite"><i class="icona icona-futbol" aria-hidden="true"></i><span>Risultati</span></a></li>
-        <li><a href="#report" id="nav-report"><i class="icona icona-file-lines" aria-hidden="true"></i><span>Referti</span><b class="nav-conteggio" id="conteggio-report" hidden></b></a></li>
+        <li><a href="#report" id="nav-report"><i class="icona icona-file-lines" aria-hidden="true"></i><span>Referti</span><b class="nav-conteggio" data-conteggio="report" hidden></b></a></li>
+        <li class="nav-secondaria"><a href="#tabellone" id="nav-tabellone"><i class="icona icona-trophy" aria-hidden="true"></i><span>Fase finale</span></a></li>
         <li class="nav-gruppo" aria-hidden="true">Preparazione</li>
-        <li><a href="#iscrizioni" id="nav-iscrizioni"><i class="icona icona-clipboard-list" aria-hidden="true"></i><span>Iscrizioni</span><b class="nav-conteggio" id="conteggio-iscrizioni" hidden></b></a></li>
-        <li><a href="#squadre" id="nav-squadre"><i class="icona icona-users" aria-hidden="true"></i><span>Squadre</span></a></li>
-        <li><a href="#calendario" id="nav-calendario"><i class="icona icona-calendar-days" aria-hidden="true"></i><span>Calendario</span></a></li>
+        <li class="nav-secondaria"><a href="#iscrizioni" id="nav-iscrizioni"><i class="icona icona-clipboard-list" aria-hidden="true"></i><span>Iscrizioni</span><b class="nav-conteggio" data-conteggio="iscrizioni" hidden></b></a></li>
+        <li class="nav-secondaria"><a href="#squadre" id="nav-squadre"><i class="icona icona-users" aria-hidden="true"></i><span>Squadre</span></a></li>
+        <li class="nav-secondaria"><a href="#calendario" id="nav-calendario"><i class="icona icona-calendar-days" aria-hidden="true"></i><span>Calendario</span></a></li>
         <li class="nav-gruppo" aria-hidden="true">Comunicazione</li>
         <li><a href="#social" id="nav-social"><i class="icona icona-images" aria-hidden="true"></i><span>Social</span></a></li>
+        <li class="nav-solo-mobile">
+          <button type="button" id="apri-menu" aria-haspopup="dialog" aria-controls="menu-mobile">
+            <i class="icona icona-bars" aria-hidden="true"></i><span>Menu</span>
+            <b class="nav-punto" id="menu-punto" hidden></b>
+          </button>
+        </li>
       </ul>
 
       <div class="app-account">
@@ -85,6 +93,25 @@
     <main>
       <div id="content"></div>
     </main>
+
+    <!-- Menu completo su smartphone: si apre dal basso con il pulsante "Menu" -->
+    <dialog class="menu-mobile" id="menu-mobile" aria-labelledby="menu-mobile-titolo">
+      <div class="menu-mobile-maniglia" aria-hidden="true"></div>
+      <div class="menu-mobile-testa">
+        <h2 id="menu-mobile-titolo">Menu</h2>
+        <button type="button" class="menu-mobile-chiudi" id="chiudi-menu" aria-label="Chiudi il menu">
+          <i class="icona icona-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+      <nav id="menu-mobile-sezioni" aria-label="Tutte le sezioni"></nav>
+      <div class="menu-mobile-account">
+        <span class="menu-mobile-email" id="menu-mobile-email"></span>
+        <div class="menu-mobile-azioni">
+          <a href="/" target="_blank" rel="noopener" class="btn"><i class="icona icona-globe" aria-hidden="true"></i> Apri il sito</a>
+          <button type="button" class="btn" id="esci-mobile"><i class="icona icona-right-from-bracket" aria-hidden="true"></i> Esci</button>
+        </div>
+      </div>
+    </dialog>
   </div>
 
   <script type="module" src="/js/gestionale.js"></script>

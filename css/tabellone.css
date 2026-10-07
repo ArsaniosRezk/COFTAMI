@@ -1,0 +1,554 @@
+/*
+===================================
+ TABELLONE DELLA FASE FINALE
+===================================
+Usato dal sito (home e campionato) e dall'anteprima nel gestionale.
+Stile delle grafiche social: fondo nero, giallo, Bebas Neue. Resta scuro
+anche con il tema chiaro, come un poster dentro la pagina.
+
+Tabellone a specchio quando c'è spazio (il contenitore, non lo schermo:
+nel gestionale la colonna è più stretta), altrimenti un turno sotto l'altro.
+*/
+
+/* Le sezioni del sito centrano i figli: il contenitore va allargato */
+.fase-finale-contenuto,
+#tabellone-anteprima {
+  width: 100%;
+  min-width: 0;
+}
+
+.tabellone {
+  --tb-giallo: #f3e600;
+  --tb-nero: #0b0b0c;
+  --tb-carta: #18191c;
+  --tb-carta-fine: #111214;
+  --tb-testo: #ffffff;
+  --tb-tenue: rgba(255, 255, 255, 0.68);
+  --tb-bordo: rgba(255, 255, 255, 0.09);
+  --tb-linea: rgba(243, 230, 0, 0.6);
+  --tb-stacco: 14px;
+
+  /* Con container-type la larghezza non viene dal contenuto: va data */
+  container-type: inline-size;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px 24px 32px;
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(243, 230, 0, 0.13), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(255, 255, 255, 0.05), transparent 70%), var(--tb-nero);
+  color: var(--tb-testo);
+  font-family: Montserrat, sans-serif;
+  text-align: left;
+}
+
+/* Righe diagonali leggere, come la grana delle grafiche */
+.tabellone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.022) 0 2px, transparent 2px 16px);
+  pointer-events: none;
+}
+
+.tb-turno {
+  margin: 0;
+  overflow: hidden;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--tb-giallo);
+}
+
+.tb-turno .icona {
+  margin-right: 4px;
+}
+
+/*
+-----------------------------------
+CAMPIONE
+-----------------------------------
+*/
+
+.tb-campione {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-top: 2px solid var(--tb-giallo);
+  border-bottom: 2px solid var(--tb-giallo);
+  background: linear-gradient(90deg, transparent, rgba(243, 230, 0, 0.16) 30% 70%, transparent);
+}
+
+.tb-campione-coppa {
+  flex-shrink: 0;
+  font-size: 2.4rem;
+  color: var(--tb-giallo);
+}
+
+.tb-campione-logo {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55));
+}
+
+.tb-campione-testo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tb-campione-etichetta {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  line-height: 1;
+  color: var(--tb-tenue);
+}
+
+.tb-campione-nome {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.3rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  line-height: 1;
+  overflow-wrap: anywhere;
+  color: var(--tb-giallo);
+}
+
+/*
+-----------------------------------
+PARTITA
+-----------------------------------
+*/
+
+.tb-partita {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--tb-bordo);
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--tb-carta), var(--tb-carta-fine));
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+.tb-riga {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding-left: 10px;
+}
+
+.tb-riga + .tb-riga {
+  border-top: 1px solid var(--tb-bordo);
+}
+
+.tb-logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.tb-logo.logo-segnaposto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--tb-giallo);
+  border-radius: 50%;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: var(--tb-testo);
+}
+
+.tb-logo-vuoto {
+  border: 2px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+}
+
+.tb-nome {
+  padding: 6px 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.tb-vuota .tb-nome {
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--tb-tenue);
+}
+
+.tb-gol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  gap: 3px;
+  min-width: 40px;
+  padding: 0 8px;
+  background-color: rgba(255, 255, 255, 0.06);
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.tb-rigori {
+  font-size: 0.7em;
+  opacity: 0.85;
+}
+
+.tb-vince .tb-gol {
+  background-color: var(--tb-giallo);
+  color: var(--tb-nero);
+}
+
+.tb-perde {
+  opacity: 0.5;
+}
+
+.tb-quando {
+  margin: 0;
+  padding: 6px 10px 5px;
+  border-top: 1px solid rgba(243, 230, 0, 0.22);
+  background-color: rgba(243, 230, 0, 0.09);
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 0.98rem;
+  letter-spacing: 0.6px;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--tb-giallo);
+}
+
+/* La finale: più grande e con il bordo giallo */
+.tb-grande {
+  border: 2px solid var(--tb-giallo);
+  box-shadow:
+    0 0 0 4px rgba(243, 230, 0, 0.12),
+    0 14px 30px rgba(0, 0, 0, 0.55);
+}
+
+.tb-grande .tb-riga {
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  min-height: 52px;
+}
+
+.tb-grande .tb-logo {
+  width: 34px;
+  height: 34px;
+}
+
+.tb-grande .tb-nome {
+  font-size: 0.86rem;
+}
+
+.tb-grande .tb-gol {
+  min-width: 48px;
+  font-size: 2rem;
+}
+
+/*
+-----------------------------------
+TABELLONE A SPECCHIO (schermi larghi)
+-----------------------------------
+Ogni colonna ha le sue partite distribuite in altezza: due partite che si
+affrontano dopo stanno in una "coppia", unita da una linea verticale.
+*/
+
+.tb-albero {
+  display: none;
+  column-gap: calc(var(--tb-stacco) * 2);
+}
+
+.tb-colonna {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tb-partite {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.tb-coppia {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.tb-slot {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 8px 0;
+}
+
+/* Linee: uscita verso il centro, ingresso dall'esterno */
+.tb-slot::before,
+.tb-slot::after,
+.tb-coppia::before,
+.tb-coppia::after {
+  content: none;
+  position: absolute;
+  border-color: var(--tb-linea);
+  border-style: solid;
+  border-width: 0;
+}
+
+.tb-sinistra .tb-slot {
+  padding-right: var(--tb-stacco);
+}
+
+.tb-destra .tb-slot {
+  padding-left: var(--tb-stacco);
+}
+
+.tb-sinistra .tb-slot::after,
+.tb-destra .tb-slot::after {
+  content: "";
+  top: 50%;
+  width: var(--tb-stacco);
+  border-top-width: 2px;
+}
+
+.tb-sinistra .tb-slot::after {
+  right: 0;
+}
+
+.tb-destra .tb-slot::after {
+  left: 0;
+}
+
+/* Una sola partita per lato (le semifinali): la linea arriva fino alla finale */
+.tb-sinistra .tb-singolo::after {
+  right: calc(var(--tb-stacco) * -1);
+  width: calc(var(--tb-stacco) * 2);
+}
+
+.tb-destra .tb-singolo::after {
+  left: calc(var(--tb-stacco) * -1);
+  width: calc(var(--tb-stacco) * 2);
+}
+
+.tb-sinistra .tb-coppia::before,
+.tb-destra .tb-coppia::before {
+  content: "";
+  top: 25%;
+  bottom: 25%;
+}
+
+.tb-sinistra .tb-coppia::before {
+  right: 0;
+  border-right-width: 2px;
+}
+
+.tb-destra .tb-coppia::before {
+  left: 0;
+  border-left-width: 2px;
+}
+
+.tb-sinistra .tb-coppia::after,
+.tb-destra .tb-coppia::after {
+  content: "";
+  top: 50%;
+  width: var(--tb-stacco);
+  border-top-width: 2px;
+}
+
+.tb-sinistra .tb-coppia::after {
+  right: calc(var(--tb-stacco) * -1);
+}
+
+.tb-destra .tb-coppia::after {
+  left: calc(var(--tb-stacco) * -1);
+}
+
+/* Ingresso: dal secondo turno in poi la partita riceve la linea dall'esterno */
+.tb-sinistra ~ .tb-sinistra .tb-slot {
+  padding-left: var(--tb-stacco);
+}
+
+.tb-sinistra ~ .tb-sinistra .tb-slot::before {
+  content: "";
+  top: 50%;
+  left: calc(var(--tb-stacco) * -1);
+  width: calc(var(--tb-stacco) * 2);
+  border-top-width: 2px;
+}
+
+.tb-destra:has(~ .tb-destra) .tb-slot {
+  padding-right: var(--tb-stacco);
+}
+
+.tb-destra:has(~ .tb-destra) .tb-slot::before {
+  content: "";
+  top: 50%;
+  right: calc(var(--tb-stacco) * -1);
+  width: calc(var(--tb-stacco) * 2);
+  border-top-width: 2px;
+}
+
+/* La finale riceve una linea da ogni lato */
+.tb-sinistra ~ .tb-centro .tb-slot {
+  padding: 8px var(--tb-stacco);
+}
+
+.tb-sinistra ~ .tb-centro .tb-slot::before,
+.tb-sinistra ~ .tb-centro .tb-slot::after {
+  content: "";
+  top: 50%;
+  width: calc(var(--tb-stacco) * 2);
+  border-top-width: 2px;
+}
+
+.tb-sinistra ~ .tb-centro .tb-slot::before {
+  left: calc(var(--tb-stacco) * -1);
+}
+
+.tb-sinistra ~ .tb-centro .tb-slot::after {
+  right: calc(var(--tb-stacco) * -1);
+}
+
+/*
+-----------------------------------
+UN TURNO SOTTO L'ALTRO (smartphone)
+-----------------------------------
+*/
+
+.tb-elenco {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tb-elenco-turno {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tb-elenco-partite {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 12px;
+}
+
+.tb-elenco-finale .tb-elenco-partite {
+  grid-template-columns: minmax(0, 340px);
+  justify-content: center;
+}
+
+/* Finale per il 3° posto, sotto il tabellone */
+.tb-terzo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.tb-terzo .tb-turno {
+  font-size: 1.15rem;
+  color: var(--tb-tenue);
+}
+
+.tb-terzo .tb-partita {
+  max-width: 300px;
+}
+
+/* Quando c'è spazio: tabellone a specchio (larghezza in base ai turni) */
+@container (min-width: 300px) {
+  .tabellone[data-colonne="1"] .tb-albero {
+    display: grid;
+    justify-content: center;
+  }
+
+  .tabellone[data-colonne="1"] .tb-elenco {
+    display: none;
+  }
+}
+
+@container (min-width: 600px) {
+  .tabellone[data-colonne="3"] .tb-albero {
+    display: grid;
+  }
+
+  .tabellone[data-colonne="3"] .tb-elenco {
+    display: none;
+  }
+}
+
+@container (min-width: 900px) {
+  .tabellone[data-colonne="5"] .tb-albero {
+    display: grid;
+  }
+
+  .tabellone[data-colonne="5"] .tb-elenco {
+    display: none;
+  }
+}
+
+@container (min-width: 1180px) {
+  .tabellone[data-colonne="7"] .tb-albero {
+    display: grid;
+  }
+
+  .tabellone[data-colonne="7"] .tb-elenco {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .tabellone {
+    gap: 22px;
+    padding: 22px 14px 24px;
+    border-radius: 16px;
+  }
+
+  .tb-campione {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .tb-campione-coppa {
+    font-size: 1.8rem;
+  }
+
+  .tb-campione-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .tb-campione-nome {
+    font-size: 1.8rem;
+  }
+}

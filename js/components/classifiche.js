@@ -372,8 +372,11 @@ function tabellaMarcatori(righe, divisione) {
 
     const giocatore = document.createElement("td");
     giocatore.textContent = player;
+    // Nelle colonne strette il nome si accorcia: intero passandoci sopra
+    giocatore.title = player;
 
     const cellaSquadra = document.createElement("td");
+    if (squadra) cellaSquadra.title = nomeSquadra(squadra);
     if (squadra && link) {
       const a = document.createElement("a");
       a.href = linkSquadra(squadra, divisione);

@@ -4,7 +4,6 @@ import { prossimaGiornata, scheletroProssimaGiornata } from "./components/calend
 import { gestisciAttesaTorneo } from "./components/pre-torneo.js";
 import { laTuaSquadra } from "./components/squadra-preferita.js";
 import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
-import { leggiImpostazioni } from "./impostazioni.js";
 
 // Ascolto dei dati della divisione mostrata: va fermato quando si cambia divisione
 let fermaAscolto = null;
@@ -16,20 +15,13 @@ export async function sequenzaEsecuzione() {
   scheletroClassifica("classifica-squadre");
   scheletroProssimaGiornata("prossima-giornata");
 
-  let faseFinaleMostrata = false;
-
   fermaAscolto = osservaDivisione(
     async (dati) => {
       // Se il torneo dell'edizione corrente non è ancora iniziato mostra
       // l'avviso d'attesa al posto di classifica e prossima giornata
       if (await gestisciAttesaTorneo(dati.squadre)) return;
 
-      if (!faseFinaleMostrata) {
-        faseFinaleMostrata = true;
-        const impostazioni = await leggiImpostazioni();
-        if (impostazioni.faseFinale) faseFinale();
-      }
-
+      faseFinale(dati);
       laTuaSquadra(dati);
       classificaGirone("classifica-squadre", false, dati);
       prossimaGiornata(dati);

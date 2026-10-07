@@ -30,6 +30,11 @@ const SEZIONI = {
     descrizione: "Referti inviati dagli arbitri: controllali e conferma il risultato",
     stile: "/css/reportM.css",
   },
+  tabellone: {
+    titolo: "Fase finale",
+    descrizione: "Tabellone della fase finale: squadre, risultati, date e campi",
+    stile: "/css/tabelloneM.css",
+  },
   iscrizioni: {
     titolo: "Iscrizioni",
     descrizione: "Iscrizioni arrivate dal modulo pubblico: controllale e trasformale in squadre",
@@ -145,12 +150,15 @@ function mostraSezione(sezione) {
   sezioneCorrente = sezione;
   const { titolo, descrizione } = SEZIONI[sezione];
 
-  document.querySelectorAll(".nav-links a").forEach((link) => {
-    const attiva = link.id === `nav-${sezione}`;
+  document.querySelectorAll(".nav-links a, .menu-mobile [data-sezione]").forEach((link) => {
+    const attiva = link.id === `nav-${sezione}` || link.dataset.sezione === sezione;
     link.classList.toggle("active", attiva);
     if (attiva) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   });
+  // Su smartphone: se la sezione non è nella barra in basso si accende "Menu"
+  const secondaria = document.getElementById(`nav-${sezione}`)?.closest(".nav-secondaria");
+  document.getElementById("apri-menu").classList.toggle("active", Boolean(secondaria));
   document.getElementById("current-section").textContent = titolo;
   document.getElementById("descrizione-sezione").textContent = descrizione;
   document.title = `${titolo} - Gestionale Cofta`;
@@ -165,18 +173,24 @@ function vaiASezione(sezione) {
 }
 
 // Numeri accanto a Referti e Iscrizioni: cose che aspettano qualcuno
+// (nella barra laterale e nel menu dello smartphone)
 async function aggiornaConteggi() {
   try {
     const conteggi = await contaDaFare();
+    let nelMenu = 0;
     for (const [chiave, numero] of Object.entries({
       report: conteggi.refertiDaConfermare,
       iscrizioni: conteggi.iscrizioniNuove,
     })) {
-      const badge = document.getElementById(`conteggio-${chiave}`);
-      badge.textContent = numero;
-      badge.hidden = !numero;
-      badge.setAttribute("aria-label", `${numero} da controllare`);
+      document.querySelectorAll(`[data-conteggio="${chiave}"]`).forEach((badge) => {
+        badge.textContent = numero;
+        badge.hidden = !numero;
+        badge.setAttribute("aria-label", `${numero} da controllare`);
+      });
+      if (document.getElementById(`nav-${chiave}`)?.closest(".nav-secondaria")) nelMenu += numero;
     }
+    // Un pallino su "Menu" se qualcosa aspetta in una sezione che non è nella barra
+    document.getElementById("menu-punto").hidden = !nelMenu;
   } catch (errore) {
     console.error("Conteggi non aggiornati:", errore);
   }
@@ -201,6 +215,54 @@ document.querySelectorAll(".division-switch").forEach((selettore) => {
   });
 });
 
+// --- MENU SU SMARTPHONE ---
+// Le voci sono le stesse della barra laterale, divise negli stessi gruppi
+const menuMobile = document.getElementById("menu-mobile");
+
+function preparaMenuMobile() {
+  const contenitore = document.getElementById("menu-mobile-sezioni");
+  let griglia = null;
+  document.querySelectorAll(".nav-links > li").forEach((voce) => {
+    if (voce.classList.contains("nav-gruppo")) {
+      const titolo = document.createElement("h3");
+      titolo.className = "menu-mobile-gruppo";
+      titolo.textContent = voce.textContent;
+      griglia = document.createElement("div");
+      griglia.className = "menu-mobile-griglia";
+      contenitore.append(titolo, griglia);
+      return;
+    }
+    const link = voce.querySelector("a");
+    if (!link || !griglia) return;
+
+    const tessera = document.createElement("a");
+    tessera.href = link.getAttribute("href");
+    tessera.className = "menu-mobile-voce";
+    tessera.dataset.sezione = link.id.replace("nav-", "");
+    tessera.append(link.querySelector(".icona").cloneNode(), link.querySelector("span").cloneNode(true));
+    const badge = link.querySelector(".nav-conteggio");
+    if (badge) tessera.appendChild(badge.cloneNode(true));
+    tessera.addEventListener("click", (evento) => {
+      evento.preventDefault();
+      menuMobile.close();
+      vaiASezione(tessera.dataset.sezione);
+    });
+    griglia.appendChild(tessera);
+  });
+}
+
+preparaMenuMobile();
+document.getElementById("apri-menu").addEventListener("click", () => menuMobile.showModal());
+document.getElementById("chiudi-menu").addEventListener("click", () => menuMobile.close());
+// Tocco sullo sfondo scuro: chiude
+menuMobile.addEventListener("click", (evento) => {
+  if (evento.target === menuMobile) menuMobile.close();
+});
+// Tornando al computer (finestra allargata) il menu dello smartphone non serve
+matchMedia("(min-width: 1025px)").addEventListener("change", (evento) => {
+  if (evento.matches) menuMobile.close();
+});
+
 // --- TASTIERA SU SMARTPHONE ---
 // Con la tastiera aperta la barra in basso ruberebbe spazio ai campi
 const campoDiTesto = (el) =>
@@ -219,7 +281,9 @@ document.addEventListener("focusout", () => {
 // --- AVVIO ---
 const utente = await accessoAmministratore();
 document.getElementById("account-email").textContent = utente.email;
+document.getElementById("menu-mobile-email").textContent = utente.email;
 document.getElementById("esci").addEventListener("click", esci);
+document.getElementById("esci-mobile").addEventListener("click", esci);
 
 // I percorsi Firebase dipendono dall'edizione corrente
 await impostazioniPronte;

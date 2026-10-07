@@ -43,14 +43,6 @@
   font-size: 1rem;
 }
 
-.da-fare-vuoto {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--ok);
-  font-weight: 600;
-}
-
 /* Impostazioni: testo a sinistra, controllo a destra */
 .impostazione {
   display: flex;
@@ -250,6 +242,31 @@ table thead th:last-child {
   white-space: nowrap;
 }
 
+/* Marcatori: colonne fisse, così i nomi lunghi si accorciano con "…"
+   invece di allargare la tabella e nascondere la colonna dei gol */
+.scorers-table {
+  table-layout: fixed;
+}
+
+.scorers-table th:nth-child(1) {
+  width: 40px;
+}
+
+.scorers-table th:nth-child(3) {
+  width: 42%;
+}
+
+.scorers-table th:nth-child(4) {
+  width: 48px;
+}
+
+.scorers-table th:nth-child(2),
+.scorers-table td:nth-child(2),
+.scorers-table th:nth-child(3),
+.scorers-table td:nth-child(3) {
+  max-width: none;
+}
+
 .ranking-table td:nth-child(n + 3):not(:last-child),
 .scorers-table td:nth-child(3) {
   color: var(--testo-tenue);
@@ -303,6 +320,10 @@ table thead th:last-child {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+}
+
+.contenuto-marcatori table {
+  align-self: stretch;
 }
 
 .pagination {

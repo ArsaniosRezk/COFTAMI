@@ -1,9 +1,10 @@
-import { db, ref, update, remove } from "../firebase.js";
-import { edition } from "../divisione.js";
+import { db, ref, update, remove, getData } from "../firebase.js";
+import { edition, DIVISIONI } from "../divisione.js";
 import { formatDateTime } from "../utils/formattazione.js";
 import { nomeSquadra } from "../utils/torneo.js";
 import { mostraToast, conferma } from "../utils/interfaccia.js";
 import { aggiornaConteggi } from "../utils/gestionale-eventi.js";
+import { creaLogo } from "../utils/logo.js";
 import { leggiReferti, refertoConfermato } from "./da-fare.js";
 
 /*
@@ -39,8 +40,8 @@ function icona(nome) {
 const nomeGiornata = (giornata) => (/^\d+$/.test(giornata) ? `Giornata ${giornata}` : giornata);
 
 // { nome: gol } -> righe "Nome ×2", autogol a parte
-function elencoMarcatori(marcatori, autogolDi) {
-  const elenco = crea("ul", "referto-marcatori");
+function elencoMarcatori(marcatori, autogolDi, lato) {
+  const elenco = crea("ul", `referto-marcatori ${lato}`);
   let autogol = 0;
   for (const [nome, gol] of Object.entries(typeof marcatori === "object" && marcatori ? marcatori : {})) {
     if (nome.startsWith("Autogol")) {
@@ -48,7 +49,7 @@ function elencoMarcatori(marcatori, autogolDi) {
       continue;
     }
     const voce = crea("li", "", nome);
-    if (Number(gol) > 1) voce.appendChild(crea("b", "", ` ×${gol}`));
+    if (Number(gol) > 1) voce.appendChild(crea("b", "referto-volte", `×${gol}`));
     elenco.appendChild(voce);
   }
   if (autogol)
@@ -65,62 +66,90 @@ function stato(referto, partita) {
   return { classe: "badge-attesa", testo: "Da confermare" };
 }
 
-function schedaReferto(voce, { azioni = false, conCommenti = true, ridisegna = null } = {}) {
+// Squadre di entrambe le divisioni, per i loghi: { Superiori: {...}, Giovani: {...} }
+async function leggiSquadre() {
+  const elenchi = await Promise.all(
+    DIVISIONI.map((divisione) => getData(`Calcio/${edition}/${divisione}/Squadre`).catch(() => null))
+  );
+  return Object.fromEntries(DIVISIONI.map((divisione, i) => [divisione, elenchi[i] || {}]));
+}
+
+/*
+ Scheda: in alto dove e stato, poi il tabellone (loghi, nomi, risultato) con i
+ marcatori ognuno sotto la sua squadra, poi i dettagli e le segnalazioni.
+*/
+function schedaReferto(voce, { azioni = false, conCommenti = true, ridisegna = null, squadre = {} } = {}) {
   const { divisione, giornata, referto, partita } = voce;
   const casa = referto.SquadraCasa;
   const ospite = referto.SquadraOspite;
   const { classe, testo } = stato(referto, partita);
+  const squadreDivisione = squadre[divisione];
 
   const scheda = crea("article", "referto");
+  if (azioni && !refertoConfermato(referto, partita)) scheda.classList.add("da-confermare");
 
   const testa = crea("header", "referto-testa");
   testa.appendChild(crea("span", "referto-dove", `${divisione} · ${nomeGiornata(giornata)}`));
   if (azioni) testa.appendChild(crea("span", `badge ${classe}`, testo));
   scheda.appendChild(testa);
 
-  const punteggio = crea("div", "referto-punteggio");
-  punteggio.append(
-    crea("span", "referto-squadra casa", nomeSquadra(casa)),
-    crea("span", "referto-gol", `${referto.GolSquadraCasa ?? "-"} – ${referto.GolSquadraOspite ?? "-"}`),
-    crea("span", "referto-squadra ospite", nomeSquadra(ospite))
-  );
-  scheda.appendChild(punteggio);
-
-  if (azioni && partita && !refertoConfermato(referto, partita)) {
-    scheda.appendChild(
-      crea("p", "referto-differenza", `Sul sito ora: ${partita.GolSquadraCasa} – ${partita.GolSquadraOspite}`)
+  const tabellone = crea("div", "referto-tabellone");
+  const lato = (squadra, posizione) => {
+    const blocco = crea("div", `referto-lato ${posizione}`);
+    blocco.append(
+      creaLogo(squadreDivisione, squadra, "referto-logo"),
+      crea("span", "referto-squadra", nomeSquadra(squadra))
     );
-  }
-
-  const marcatori = crea("div", "referto-colonne");
-  const colonna = (squadra, dati, avversaria) => {
-    const blocco = crea("div");
-    blocco.append(crea("h3", "referto-etichetta", nomeSquadra(squadra)), elencoMarcatori(dati, avversaria));
     return blocco;
   };
-  marcatori.append(
-    colonna(casa, referto.Marcatori?.MarcatoriCasa, ospite),
-    colonna(ospite, referto.Marcatori?.MarcatoriOspite, casa)
+  const gol = crea("div", "referto-gol");
+  gol.append(
+    crea("span", "", String(referto.GolSquadraCasa ?? "-")),
+    crea("span", "referto-trattino", "–"),
+    crea("span", "", String(referto.GolSquadraOspite ?? "-"))
   );
-  scheda.appendChild(marcatori);
+  gol.setAttribute("aria-label", `${referto.GolSquadraCasa ?? "-"} a ${referto.GolSquadraOspite ?? "-"}`);
+  tabellone.append(lato(casa, "casa"), gol, lato(ospite, "ospite"));
+
+  const marcatori = crea("div", "referto-marcatori-righe");
+  marcatori.setAttribute("aria-label", "Marcatori");
+  marcatori.append(
+    elencoMarcatori(referto.Marcatori?.MarcatoriCasa, ospite, "casa"),
+    crea("i", "icona icona-futbol referto-pallone"),
+    elencoMarcatori(referto.Marcatori?.MarcatoriOspite, casa, "ospite")
+  );
+  marcatori.children[1].setAttribute("aria-hidden", "true");
+  tabellone.appendChild(marcatori);
+  scheda.appendChild(tabellone);
+
+  if (azioni && partita && !refertoConfermato(referto, partita)) {
+    const differenza = crea("p", "referto-differenza");
+    differenza.append(
+      icona("triangle-exclamation"),
+      ` Sul sito ora c'è ${partita.GolSquadraCasa} – ${partita.GolSquadraOspite}`
+    );
+    scheda.appendChild(differenza);
+  }
 
   const dettagli = crea("dl", "referto-dettagli");
-  const dettaglio = (termine, valore) => {
+  const dettaglio = (nomeIcona, termine, valore) => {
     if (!valore) return;
-    dettagli.append(crea("dt", "", termine), crea("dd", "", valore));
+    const riga = crea("div", "referto-dettaglio");
+    const etichetta = crea("dt", "", termine);
+    etichetta.prepend(icona(nomeIcona));
+    riga.append(etichetta, crea("dd", "", valore));
+    dettagli.appendChild(riga);
   };
-  dettaglio("Migliore in campo", referto.MVP);
-  dettaglio("Arbitro", referto.NomeArbitro);
-  dettaglio("Ricevuto", referto.OraInvio ? formatDateTime(referto.OraInvio) : "");
+  dettaglio("star", "Migliore in campo", referto.MVP);
+  dettaglio("whistle", "Arbitro", referto.NomeArbitro);
+  dettaglio("clock", "Ricevuto", referto.OraInvio ? formatDateTime(referto.OraInvio) : "");
   scheda.appendChild(dettagli);
 
   if (conCommenti && referto.Commenti?.trim()) {
     const note = crea("div", "referto-note");
-    note.append(
-      crea("h3", "referto-etichetta", "Segnalazioni dell'arbitro"),
-      crea("p", "", referto.Commenti)
-    );
-    note.firstChild.prepend(icona("triangle-exclamation"), " ");
+    const titolo = crea("h3", "referto-note-titolo", "Segnalazioni dell'arbitro");
+    titolo.prepend(icona("triangle-exclamation"));
+    note.append(titolo, crea("p", "", referto.Commenti));
     scheda.appendChild(note);
   }
 
@@ -250,7 +279,7 @@ export async function showReportOptions() {
   const contenitore = document.getElementById("report-content");
 
   const disegna = async () => {
-    const referti = await leggiReferti();
+    const [referti, squadre] = await Promise.all([leggiReferti(), leggiSquadre()]);
     const daConfermare = referti.filter(({ referto, partita }) => !refertoConfermato(referto, partita));
     // Alla prima apertura: quelli da confermare, se ce ne sono
     filtri.stato ??= daConfermare.length ? "da-confermare" : "tutti";
@@ -277,7 +306,7 @@ export async function showReportOptions() {
 
     const griglia = crea("div", "referti-griglia");
     visibili.forEach((voce) =>
-      griglia.appendChild(schedaReferto(voce, { azioni: true, ridisegna: disegna }))
+      griglia.appendChild(schedaReferto(voce, { azioni: true, ridisegna: disegna, squadre }))
     );
     contenitore.appendChild(griglia);
   };
@@ -292,12 +321,12 @@ PAGINE DEI REFERTI (referti.html, referti-social.html)
 */
 
 export async function mostraRefertiPubblici(contenitore, { conCommenti = true } = {}) {
-  const referti = await leggiReferti();
+  const [referti, squadre] = await Promise.all([leggiReferti(), leggiSquadre()]);
   if (!referti.length) {
     contenitore.replaceChildren(crea("p", "vuoto", "Nessun referto ricevuto per questa edizione."));
     return;
   }
   const griglia = crea("div", "referti-griglia");
-  referti.forEach((voce) => griglia.appendChild(schedaReferto(voce, { conCommenti })));
+  referti.forEach((voce) => griglia.appendChild(schedaReferto(voce, { conCommenti, squadre })));
   contenitore.replaceChildren(griglia);
 }

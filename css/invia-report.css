@@ -13,12 +13,20 @@ body.pagina-referto {
   color: var(--testo);
 }
 
+/* Larghezza fissa (quella dello schermo, fino a 560px): non cambia con il contenuto */
 .referto {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
   max-width: 560px;
   margin: 0 auto;
+}
+
+#match-report-form,
+.referto-gruppo,
+.referto-esito {
+  width: 100%;
 }
 
 .referto-testata {
@@ -27,6 +35,11 @@ body.pagina-referto {
   align-items: center;
   gap: 8px;
   text-align: center;
+}
+
+/* Il logo ha le scritte nere: sul verde della pagina (in entrambi i temi) va schiarito */
+.referto-testata img {
+  filter: invert(1) hue-rotate(180deg);
 }
 
 .referto-testata h1 {

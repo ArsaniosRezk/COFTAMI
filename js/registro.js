@@ -145,6 +145,7 @@ const NOMI_NODI = {
   Referti: "Referto",
   GiornataDaMostrare: "Giornata da mostrare",
   Iscrizioni: "Iscrizione",
+  FaseFinale: "Fase finale",
 };
 
 export function descriviPercorso(percorso) {

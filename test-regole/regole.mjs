@@ -94,7 +94,7 @@ const referto = (extra = {}) => ({
 
 // --- LETTURE PUBBLICHE ---
 
-test("il pubblico legge impostazioni, albo d'oro, squadre, calendario, partite, giornata e referti", async () => {
+test("il pubblico legge impostazioni, albo d'oro, squadre, calendario, partite, giornata, fase finale e referti", async () => {
   const db = anonimo();
   for (const percorso of [
     "Impostazioni",
@@ -105,6 +105,7 @@ test("il pubblico legge impostazioni, albo d'oro, squadre, calendario, partite, 
     "Calcio/2026/Superiori/Calendario",
     "Calcio/2026/Superiori/Partite",
     "Calcio/2026/Superiori/Referti",
+    "Calcio/2026/Superiori/FaseFinale",
   ]) {
     await assertSucceeds(get(ref(db, percorso)));
   }
@@ -133,6 +134,7 @@ test("il pubblico NON scrive i dati del torneo né le impostazioni", async () =>
   await assertFails(set(ref(db, "Calcio/2026/Superiori/Squadre/C"), { Girone: "A" }));
   await assertFails(set(ref(db, "Amministratori/hacker@x,com"), true));
   await assertFails(remove(ref(db, "Calcio/2026/Superiori/Calendario")));
+  await assertFails(set(ref(db, "Calcio/2026/Superiori/FaseFinale/Squadre"), 2));
 });
 
 // --- ISCRIZIONI ---

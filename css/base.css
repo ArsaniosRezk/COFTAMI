@@ -606,6 +606,13 @@ main [id] {
   color: var(--secondary);
 }
 
+/* Il verde scuro sul fondo quasi nero del tema scuro non si leggerebbe */
+@media (prefers-color-scheme: dark) {
+  #overlay-menu li a[aria-current="page"] {
+    color: #7fd1a6;
+  }
+}
+
 #overlay-menu .logo {
   width: 150px;
   margin-bottom: 20px;

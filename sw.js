@@ -46,7 +46,6 @@ const ASSETS_TO_CACHE = [
   "/css/squadre.css",
   "/css/squadra.css",
   "/css/campionato.css",
-  "/css/statistiche.css",
   "/js/firebase.js",
   "/js/ambiente.js",
   "/js/impostazioni.js",

@@ -3,6 +3,7 @@ import { getSelectedDivision } from "../divisione.js";
 import { giornateNumerate, giornataCorrente, haRisultato, nomeSquadra } from "../utils/torneo.js";
 import { mostraToast, conferma } from "../utils/interfaccia.js";
 import { aggiornaConteggi } from "../utils/gestionale-eventi.js";
+import { creaLogo } from "../utils/logo.js";
 
 /*
 ===================================
@@ -153,15 +154,24 @@ function rigaPartita(giornata, chiave, calendario, dati, ridisegna) {
 
   const riga = crea("div", "risultato-riga");
 
+  // Casa · punteggio · ospite: i nomi stanno attaccati al punteggio, come su un tabellone
+  const squadra = (chiaveSquadra, lato) => {
+    const blocco = crea("div", `risultato-squadra ${lato}`);
+    blocco.append(
+      creaLogo(dati.squadre, chiaveSquadra, "risultato-logo"),
+      crea("span", "risultato-nome", nomeSquadra(chiaveSquadra))
+    );
+    return blocco;
+  };
   const squadre = crea("div", "risultato-squadre");
   squadre.append(
-    crea("span", "risultato-squadra", nomeSquadra(casa)),
+    squadra(casa, "casa"),
     crea(
       "span",
       `risultato-punteggio${giocata ? "" : " da-giocare"}`,
       giocata ? punteggioDi(partita, calendario) : "–"
     ),
-    crea("span", "risultato-squadra ospite", nomeSquadra(ospite))
+    squadra(ospite, "ospite")
   );
 
   const info = crea("div", "risultato-info");
@@ -175,7 +185,7 @@ function rigaPartita(giornata, chiave, calendario, dati, ridisegna) {
     )
   );
 
-  const apri = crea("button", `btn${!aperta && !giocata ? " btn-principale" : ""}`);
+  const apri = crea("button", `btn risultato-azione${!aperta && !giocata ? " btn-principale" : ""}`);
   apri.type = "button";
   apri.setAttribute("aria-expanded", String(aperta));
   apri.append(
@@ -281,7 +291,11 @@ function editorRisultato(giornata, chiave, partita, squadre, ridisegna) {
   const golOspite = contatore(partita?.GolSquadraOspite, `gol ${nomeSquadra(ospite)}`, { grande: true });
   const lato = (squadra, campo) => {
     const blocco = crea("div", "editor-lato");
-    blocco.append(crea("span", "editor-squadra", nomeSquadra(squadra)), campo.gruppo);
+    blocco.append(
+      creaLogo(squadre, squadra, "editor-logo"),
+      crea("span", "editor-squadra", nomeSquadra(squadra)),
+      campo.gruppo
+    );
     return blocco;
   };
   tabellino.append(lato(casa, golCasa), crea("span", "editor-trattino", "–"), lato(ospite, golOspite));

@@ -1,0 +1,288 @@
+@import url("/css/tabellone.css");
+
+/*
+===================================
+ FASE FINALE (gestionale)
+===================================
+*/
+
+.tabellone-gestione {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1400px;
+  padding: 24px 32px 0;
+}
+
+/* Impostazioni: testo a sinistra, controllo a destra */
+.te-impostazione {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--divider-color);
+}
+
+.te-impostazione-testo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Formato: quattro pulsanti affiancati */
+.te-formato {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.18);
+}
+
+.te-formato-scelta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 84px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--testo-secondario);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.te-formato-scelta b {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.te-formato-scelta span {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.te-formato-scelta[aria-pressed="true"] {
+  background-color: var(--accento);
+  color: var(--inchiostro);
+}
+
+/* Turni */
+.te-turni {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.te-turno-finale {
+  border-color: var(--accento);
+}
+
+.te-turno-testa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.te-turno-testa .campo {
+  flex: 0 1 320px;
+}
+
+.te-turno-nome {
+  font-weight: 700;
+}
+
+.te-partite {
+  align-items: start;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 14px;
+}
+
+/* Una partita */
+.te-partita {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background-color: var(--superficie);
+}
+
+.te-titolo {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--accento);
+}
+
+.te-squadra {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 8px;
+}
+
+.te-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.te-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.te-logo-img.logo-segnaposto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accento);
+  border-radius: 50%;
+  color: var(--testo);
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.te-logo-vuoto {
+  width: 28px;
+  height: 28px;
+  border: 2px dashed var(--input-border);
+  border-radius: 50%;
+}
+
+.te-gol {
+  width: 100%;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.te-gol::-webkit-outer-spin-button,
+.te-gol::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.te-rigori {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background-color: rgba(252, 235, 0, 0.1);
+}
+
+.te-rigori-etichetta {
+  margin-right: auto;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.te-rigori .te-gol {
+  width: 56px;
+}
+
+.te-trattino {
+  font-weight: 800;
+}
+
+.te-quando {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--divider-color);
+}
+
+.te-luogo {
+  grid-column: 1 / -1;
+}
+
+.te-quando .campo label {
+  font-size: 0.78rem;
+}
+
+.btn-elimina {
+  color: var(--errore-chiaro);
+}
+
+/* Barra in basso: sempre a portata di mano mentre si scorre */
+.te-barra {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin: 0 -32px;
+  padding: 14px 32px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--glass-border);
+  background-color: var(--superficie-forte);
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.te-stato {
+  font-size: 0.88rem;
+  color: var(--testo-secondario);
+}
+
+.te-stato.da-salvare {
+  font-weight: 700;
+  color: var(--accento);
+}
+
+.te-barra-azioni {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 1024px) {
+  .tabellone-gestione {
+    padding: 16px 12px 0;
+  }
+
+  .te-barra {
+    margin: 0 -12px;
+    padding: 12px;
+  }
+
+  .te-barra-azioni,
+  .te-barra-azioni .btn {
+    flex: 1 1 auto;
+  }
+
+  .te-formato {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .te-formato-scelta {
+    min-width: 0;
+    padding: 8px 4px;
+  }
+}
