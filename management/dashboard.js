@@ -1,129 +1,460 @@
-import { editMatchdayToShow, prossimaGiornata, recuperaCalendario } from "/js/components/calendar.js";
-import { classificaGirone, classificaMarcatori } from "/js/components/standings.js";
-import { faseFinale } from "/js/components/final-phase.js";
-import { visualizzaSquadreConMembri } from "/js/components/teams.js";
-import { PERCORSO_IMPOSTAZIONI } from "/js/ambiente.js";
-import { ref, get, update, db } from "/js/firebase.js";
-import { impostaEdizioneLocale } from "/js/edition-sync.js";
+import { classificaGirone, classificaMarcatori } from "/js/components/classifiche.js";
+import { PERCORSO_IMPOSTAZIONI, PERCORSO_AMMINISTRATORI } from "/js/ambiente.js";
+import { db, ref, get, set, update, remove, getData } from "/js/firebase.js";
+import { edition, getSelectedDivision } from "/js/divisione.js";
+import { impostaEdizioneLocale } from "/js/edizione-locale.js";
 import { PAGINE_CONTROLLABILI, paginaAttiva } from "/js/pagine-attive.js";
-import { mostraToast } from "/js/utils/interfaccia.js";
+import { utente, esci, chiaveEmail } from "/js/accesso.js";
+import { leggiRegistro, annullaVoce, annullabile, descriviPercorso } from "/js/registro.js";
+import { contaDaFare } from "/js/components/da-fare.js";
+import { giornateNumerate, giornataCorrente, GIORNATA_AUTOMATICA } from "/js/utils/torneo.js";
+import { mostraToast, conferma } from "/js/utils/interfaccia.js";
+import { vaiASezione, aggiornaConteggi } from "/js/utils/gestionale-eventi.js";
 
-// Un interruttore per ogni pagina pubblica (Impostazioni/pagineAttive/<pagina>)
-function creaInterruttoriPagine(settingsRef, impostazioni) {
-  const contenitore = document.getElementById("pagine-attive");
-  if (!contenitore) return;
-  contenitore.replaceChildren();
+/*
+===================================
+DASHBOARD
+===================================
+Cose da fare, impostazioni del sito pubblico, link per gli arbitri, accessi,
+registro delle modifiche e classifiche della divisione scelta.
+*/
 
-  for (const { chiave, nome } of PAGINE_CONTROLLABILI) {
-    const voce = document.createElement("div");
-    voce.className = "setting-item";
+const $ = (id) => document.getElementById(id);
+const settingsRef = () => ref(db, PERCORSO_IMPOSTAZIONI);
 
-    const etichetta = document.createElement("span");
-    etichetta.className = "setting-label";
-    etichetta.id = `etichetta-pagina-${chiave}`;
-    etichetta.textContent = nome;
+function crea(tag, classe = "", testo = null) {
+  const elemento = document.createElement(tag);
+  if (classe) elemento.className = classe;
+  if (testo !== null) elemento.textContent = testo;
+  return elemento;
+}
 
-    const interruttore = document.createElement("label");
-    interruttore.className = "modern-switch";
-
-    const casella = document.createElement("input");
-    casella.type = "checkbox";
-    casella.id = `toggle-pagina-${chiave}`;
-    casella.checked = paginaAttiva(impostazioni, chiave);
-    casella.setAttribute("aria-labelledby", etichetta.id);
-
-    const cursore = document.createElement("span");
-    cursore.className = "slider";
-
-    casella.addEventListener("change", async () => {
-      const attiva = casella.checked;
-      try {
-        await update(settingsRef, { [`pagineAttive/${chiave}`]: attiva });
-        mostraToast(`${nome}: ${attiva ? "visibile" : "nascosta"} sul sito`);
-      } catch (errore) {
-        console.error("Errore nel salvataggio della pagina:", errore);
-        casella.checked = !attiva;
-        mostraToast("Impossibile salvare. Riprova.", { errore: true });
-      }
-    });
-
-    interruttore.append(casella, cursore);
-    voce.append(etichetta, interruttore);
-    contenitore.appendChild(voce);
+// Salva un'impostazione e lo dice; se non riesce rimette com'era
+async function salvaImpostazione(valori, messaggio, ripristina) {
+  try {
+    await update(settingsRef(), valori);
+    mostraToast(messaggio);
+  } catch (errore) {
+    console.error("Impostazione non salvata:", errore);
+    ripristina?.();
+    mostraToast("Impossibile salvare. Riprova.", { errore: true });
   }
 }
 
-export const initDashboard = async () => {
-  // Codice di inizializzazione per la sezione dashboard: la promessa restituita
-  // si risolve quando tutto è disegnato, così il gestionale mostra la sezione completa
-  const contenutiPronti = Promise.all([
-    editMatchdayToShow(),
-    classificaGirone("classifica-squadre", true),
-    classificaMarcatori("classifica-gol"),
-  ]);
+/*
+-----------------------------------
+DA FARE
+-----------------------------------
+*/
 
-  // Gestione Impostazioni
-  const settingsRef = ref(db, PERCORSO_IMPOSTAZIONI);
-  const faseFinaleCheckbox = document.getElementById("toggle-fase-finale");
-  const manutenzioneCheckbox = document.getElementById("toggle-manutenzione");
-  const iscrizioniCheckbox = document.getElementById("toggle-iscrizioni");
+async function mostraDaFare() {
+  const elenco = $("da-fare");
+  const { refertiDaConfermare, iscrizioniNuove } = await contaDaFare();
 
-  const editionSelect = document.getElementById("edition-select");
-
-  // Le iscrizioni sono considerate aperte finché non vengono chiuse esplicitamente
-  iscrizioniCheckbox.checked = true;
-
-  // Recupera stato iniziale
-  try {
-    const snapshot = await get(settingsRef);
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      faseFinaleCheckbox.checked = data.faseFinale || false;
-      manutenzioneCheckbox.checked = data.manutenzione || false;
-
-      // Iscrizioni aperte di default: si chiudono solo esplicitamente
-      iscrizioniCheckbox.checked = data.iscrizioniAperte !== false;
-
-      creaInterruttoriPagine(settingsRef, data);
-
-      // Set Edition (Default 2025)
-      if (editionSelect) {
-        editionSelect.value = data.edizioneCorrente || "2025";
-      }
-
-      // Check for Admin PIN and set default if missing (BOOTSTRAP)
-      if (!data.adminPin) {
-        update(settingsRef, { adminPin: "COFTA" });
-        console.log("Admin PIN set to default: COFTA");
-      }
-    }
-  } catch (error) {
-    console.error("Errore recupero impostazioni:", error);
+  const voci = [];
+  if (refertiDaConfermare) {
+    voci.push({
+      testo: `${refertiDaConfermare} ${refertiDaConfermare === 1 ? "referto da confermare" : "referti da confermare"}`,
+      dettaglio: "Il risultato sul sito non è ancora quello del referto.",
+      azione: "Apri i referti",
+      sezione: "report",
+    });
   }
-
-  // Listener aggiornamenti
-  faseFinaleCheckbox.addEventListener("change", () => {
-    update(settingsRef, { faseFinale: faseFinaleCheckbox.checked });
-  });
-
-  manutenzioneCheckbox.addEventListener("change", () => {
-    update(settingsRef, { manutenzione: manutenzioneCheckbox.checked });
-  });
-
-  iscrizioniCheckbox.addEventListener("change", () => {
-    update(settingsRef, { iscrizioniAperte: iscrizioniCheckbox.checked });
-  });
-
-  if (editionSelect) {
-    editionSelect.addEventListener("change", async () => {
-      await update(settingsRef, { edizioneCorrente: editionSelect.value });
-
-      // I moduli già caricati hanno letto l'edizione vecchia: senza ricarica
-      // il gestionale continuerebbe a scrivere sull'annata precedente
-      impostaEdizioneLocale(editionSelect.value);
-      location.reload();
+  if (iscrizioniNuove) {
+    voci.push({
+      testo: `${iscrizioniNuove} ${iscrizioniNuove === 1 ? "iscrizione da convertire" : "iscrizioni da convertire"}`,
+      dettaglio: "Arrivate dal modulo, non ancora diventate squadre.",
+      azione: "Apri le iscrizioni",
+      sezione: "iscrizioni",
     });
   }
 
-  await contenutiPronti;
+  if (!voci.length) {
+    const tutto = crea("li", "da-fare-vuoto");
+    tutto.append(crea("i", "icona icona-check"), " Tutto in ordine: nessun referto o iscrizione in attesa.");
+    tutto.firstChild.setAttribute("aria-hidden", "true");
+    elenco.replaceChildren(tutto);
+    return;
+  }
+
+  elenco.replaceChildren(
+    ...voci.map(({ testo, dettaglio, azione, sezione }) => {
+      const voce = crea("li", "da-fare-voce");
+      const descrizione = crea("div");
+      descrizione.append(crea("strong", "", testo), crea("p", "suggerimento", dettaglio));
+      const pulsante = crea("button", "btn btn-principale", azione);
+      pulsante.type = "button";
+      pulsante.addEventListener("click", () => vaiASezione(sezione));
+      voce.append(descrizione, pulsante);
+      return voce;
+    })
+  );
+}
+
+/*
+-----------------------------------
+SITO PUBBLICO
+-----------------------------------
+*/
+
+// Giornata in evidenza in home, per la divisione scelta
+async function preparaGiornata() {
+  const divisione = getSelectedDivision();
+  $("divisione-giornata").textContent = `(${divisione})`;
+  const percorso = `Calcio/${edition}/${divisione}/GiornataDaMostrare`;
+
+  const [perDivisione, globale, calendario] = await Promise.all([
+    getData(percorso),
+    getData(`Calcio/${edition}/GiornataDaMostrare`),
+    getData(`Calcio/${edition}/${divisione}/Calendario`),
+  ]);
+  const impostata = perDivisione ?? globale;
+  const automatica = giornataCorrente(calendario, null);
+
+  const select = crea("select", "input");
+  select.id = "matchday-to-show-input";
+  const opzione = (valore, testo) => select.appendChild(new Option(testo, valore));
+  opzione(GIORNATA_AUTOMATICA, automatica ? `Automatica (ora: ${automatica})` : "Automatica");
+
+  const numerate = giornateNumerate(calendario);
+  const speciali = Object.keys(calendario || {})
+    .filter((g) => !numerate.includes(g))
+    .sort();
+  [...numerate, ...speciali].forEach((giornata) =>
+    opzione(giornata, /^\d+$/.test(giornata) ? `Giornata ${giornata}` : giornata)
+  );
+
+  // Un valore salvato che non è più nel calendario resta visibile
+  const attuale =
+    impostata === null || impostata === undefined || impostata === ""
+      ? GIORNATA_AUTOMATICA
+      : String(impostata);
+  if (![...select.options].some((o) => o.value === attuale)) opzione(attuale, attuale);
+  select.value = attuale;
+
+  select.addEventListener("change", async () => {
+    try {
+      await set(ref(db, percorso), select.value);
+      mostraToast(`Giornata in evidenza (${divisione}) salvata`);
+    } catch (errore) {
+      console.error("Giornata non salvata:", errore);
+      mostraToast("Impossibile salvare. Riprova.", { errore: true });
+    }
+  });
+
+  $("matchday-selection").replaceChildren(select);
+}
+
+// Anni dal 2024 fino al prossimo, più quello salvato se fosse fuori da questo intervallo
+function anniEdizione(corrente) {
+  const ultimo = Math.max(new Date().getFullYear() + 1, Number(corrente) || 0);
+  const anni = [];
+  for (let anno = ultimo; anno >= 2024; anno--) anni.push(String(anno));
+  if (corrente && !anni.includes(String(corrente))) anni.unshift(String(corrente));
+  return anni;
+}
+
+function preparaImpostazioni(impostazioni) {
+  const edizione = $("edition-select");
+  const corrente = String(impostazioni.edizioneCorrente || edition);
+  anniEdizione(corrente).forEach((anno) => edizione.appendChild(new Option(anno, anno)));
+  edizione.value = corrente;
+
+  edizione.addEventListener("change", async () => {
+    const scelta = edizione.value;
+    const ok = await conferma(
+      `Il sito pubblico mostrerà l'edizione ${scelta} e il gestionale lavorerà su quella. Continuare?`,
+      { titolo: "Cambiare edizione?", ok: `Passa al ${scelta}` }
+    );
+    if (!ok) {
+      edizione.value = corrente;
+      return;
+    }
+    await salvaImpostazione({ edizioneCorrente: scelta }, `Edizione ${scelta} impostata`);
+    // I moduli già caricati hanno letto l'edizione vecchia: senza ricarica
+    // il gestionale continuerebbe a scrivere sull'annata precedente
+    impostaEdizioneLocale(scelta);
+    location.reload();
+  });
+
+  const interruttori = [
+    [
+      "toggle-iscrizioni",
+      "iscrizioniAperte",
+      impostazioni.iscrizioniAperte !== false,
+      "Iscrizioni aperte",
+      "Iscrizioni chiuse",
+    ],
+    [
+      "toggle-fase-finale",
+      "faseFinale",
+      Boolean(impostazioni.faseFinale),
+      "Fase finale visibile",
+      "Fase finale nascosta",
+    ],
+    [
+      "toggle-manutenzione",
+      "manutenzione",
+      Boolean(impostazioni.manutenzione),
+      "Manutenzione attiva: il sito è coperto",
+      "Manutenzione disattivata",
+    ],
+  ];
+
+  for (const [id, chiave, valore, testoAcceso, testoSpento] of interruttori) {
+    const casella = $(id);
+    casella.checked = valore;
+    casella.addEventListener("change", async () => {
+      const acceso = casella.checked;
+      if (chiave === "manutenzione" && acceso) {
+        const ok = await conferma(
+          "Tutto il sito pubblico verrà coperto da un avviso finché non la disattivi.",
+          {
+            titolo: "Attivare la manutenzione?",
+            ok: "Attiva",
+            pericolosa: true,
+          }
+        );
+        if (!ok) {
+          casella.checked = false;
+          return;
+        }
+      }
+      await salvaImpostazione({ [chiave]: acceso }, acceso ? testoAcceso : testoSpento, () => {
+        casella.checked = !acceso;
+      });
+    });
+  }
+
+  // Un interruttore per ogni pagina pubblica (Impostazioni/pagineAttive/<pagina>)
+  $("pagine-attive").replaceChildren(
+    ...PAGINE_CONTROLLABILI.map(({ chiave, nome }) => {
+      const voce = crea("div", "impostazione");
+      const etichetta = crea("span", "etichetta", nome);
+      etichetta.id = `etichetta-pagina-${chiave}`;
+      const testo = crea("div", "impostazione-testo");
+      testo.appendChild(etichetta);
+
+      const interruttore = crea("label", "modern-switch");
+      const casella = crea("input");
+      casella.type = "checkbox";
+      casella.checked = paginaAttiva(impostazioni, chiave);
+      casella.setAttribute("aria-labelledby", etichetta.id);
+      casella.addEventListener("change", () => {
+        const attiva = casella.checked;
+        salvaImpostazione(
+          { [`pagineAttive/${chiave}`]: attiva },
+          `${nome}: ${attiva ? "visibile" : "nascosta"} sul sito`,
+          () => {
+            casella.checked = !attiva;
+          }
+        );
+      });
+      interruttore.append(casella, crea("span", "slider"));
+      voce.append(testo, interruttore);
+      return voce;
+    })
+  );
+}
+
+/*
+-----------------------------------
+ARBITRI
+-----------------------------------
+*/
+
+function preparaArbitri() {
+  $("copia-link-referto").addEventListener("click", async () => {
+    const link = `${location.origin}/invia-report.html`;
+    try {
+      await navigator.clipboard.writeText(link);
+      mostraToast("Link copiato: incollalo nel gruppo degli arbitri");
+    } catch (errore) {
+      mostraToast(link);
+    }
+  });
+}
+
+/*
+-----------------------------------
+ACCESSI
+-----------------------------------
+*/
+
+const emailDaChiave = (chiave) => chiave.replace(/,/g, ".");
+
+async function mostraAccessi() {
+  const amministratori = await getData(PERCORSO_AMMINISTRATORI);
+  const io = chiaveEmail(utente()?.email);
+
+  $("elenco-accessi").replaceChildren(
+    ...Object.keys(amministratori || {}).map((chiave) => {
+      const riga = crea("div", "accesso");
+      riga.appendChild(crea("span", "accesso-email", emailDaChiave(chiave)));
+
+      if (chiave === io) {
+        riga.appendChild(crea("span", "suggerimento", "Sei tu"));
+      } else {
+        const togli = crea("button", "btn btn-testo", "Togli");
+        togli.type = "button";
+        togli.setAttribute("aria-label", `Togli l'accesso a ${emailDaChiave(chiave)}`);
+        togli.addEventListener("click", async () => {
+          const ok = await conferma(`${emailDaChiave(chiave)} non potrà più entrare nel gestionale.`, {
+            titolo: "Togliere l'accesso?",
+            ok: "Togli",
+            pericolosa: true,
+          });
+          if (!ok) return;
+          try {
+            await remove(ref(db, `${PERCORSO_AMMINISTRATORI}/${chiave}`));
+            mostraToast("Accesso tolto");
+            mostraAccessi();
+          } catch (errore) {
+            console.error(errore);
+            mostraToast("Impossibile togliere l'accesso. Riprova.", { errore: true });
+          }
+        });
+        riga.appendChild(togli);
+      }
+      return riga;
+    })
+  );
+}
+
+function preparaAccessi() {
+  $("email-dashboard").textContent = utente()?.email || "";
+  $("esci-dashboard").addEventListener("click", esci);
+
+  $("aggiungi-accesso").addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    const email = $("nuovo-accesso-email").value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      mostraToast("Scrivi un indirizzo email valido", { errore: true });
+      return;
+    }
+    try {
+      await set(ref(db, `${PERCORSO_AMMINISTRATORI}/${chiaveEmail(email)}`), true);
+      mostraToast(`${email} può entrare nel gestionale`);
+      $("nuovo-accesso-email").value = "";
+      mostraAccessi();
+    } catch (errore) {
+      console.error(errore);
+      mostraToast("Impossibile aggiungere l'accesso. Riprova.", { errore: true });
+    }
+  });
+
+  return mostraAccessi();
+}
+
+/*
+-----------------------------------
+REGISTRO DELLE MODIFICHE
+-----------------------------------
+*/
+
+const QUANTE_MODIFICHE = 15;
+const formatoData = new Intl.DateTimeFormat("it-IT", {
+  day: "2-digit",
+  month: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+let ultimaVoceMostrata = null;
+
+function rigaRegistro(voce) {
+  const riga = crea("li", "registro-voce");
+
+  const testo = crea("div", "registro-testo");
+  const cosa = [...new Set((voce.modifiche || []).map((m) => descriviPercorso(m.percorso)))];
+  const titolo =
+    cosa.length > 2 ? `${cosa.slice(0, 2).join(", ")} e altre ${cosa.length - 2}` : cosa.join(", ");
+  testo.appendChild(
+    crea("strong", "", voce.tipo === "remove" ? `Eliminato: ${titolo}` : titolo || "Modifica")
+  );
+  const chi = `${voce.quando ? formatoData.format(new Date(voce.quando)) : ""} · ${voce.chi || "?"}`;
+  testo.appendChild(crea("span", "suggerimento", chi));
+  riga.appendChild(testo);
+
+  if (annullabile(voce)) {
+    const annulla = crea("button", "btn btn-testo", "Annulla");
+    annulla.type = "button";
+    annulla.addEventListener("click", async () => {
+      const ok = await conferma(`I dati torneranno come prima di questa modifica:\n${titolo}`, {
+        titolo: "Annullare la modifica?",
+        ok: "Annulla la modifica",
+        annulla: "Lascia così",
+      });
+      if (!ok) return;
+      try {
+        let esito = await annullaVoce(voce);
+        if (esito.modificatoDopo) {
+          const forza = await conferma(
+            "Questi dati sono stati cambiati di nuovo dopo questa modifica. Annullandola si perdono anche le modifiche successive.",
+            {
+              titolo: "Modificati di nuovo",
+              ok: "Annulla comunque",
+              annulla: "Lascia così",
+              pericolosa: true,
+            }
+          );
+          if (!forza) return;
+          esito = await annullaVoce(voce, { forza: true });
+        }
+        mostraToast("Modifica annullata");
+        mostraRegistro();
+      } catch (errore) {
+        console.error(errore);
+        mostraToast("Impossibile annullare. Riprova.", { errore: true });
+      }
+    });
+    riga.appendChild(annulla);
+  }
+  return riga;
+}
+
+async function mostraRegistro({ continua = false } = {}) {
+  const elenco = $("registro");
+  if (!elenco) return;
+  const voci = await leggiRegistro(QUANTE_MODIFICHE, continua ? ultimaVoceMostrata : null);
+  if (!continua) elenco.replaceChildren();
+
+  if (!voci.length && !continua) {
+    elenco.appendChild(crea("li", "vuoto", "Nessuna modifica registrata."));
+  }
+  voci.forEach((voce) => elenco.appendChild(rigaRegistro(voce)));
+  ultimaVoceMostrata = voci.at(-1)?.id ?? ultimaVoceMostrata;
+  $("altre-modifiche").hidden = voci.length < QUANTE_MODIFICHE;
+}
+
+/*
+-----------------------------------
+AVVIO
+-----------------------------------
+*/
+
+export const initDashboard = async () => {
+  const impostazioni = (await get(settingsRef())).val() || {};
+
+  // Il vecchio PIN era leggibile da chiunque: con l'accesso Google non serve più
+  if (impostazioni.adminPin !== undefined) {
+    update(settingsRef(), { adminPin: null }).catch(() => {});
+  }
+
+  preparaImpostazioni(impostazioni);
+  $("divisione-classifiche").textContent = `· ${getSelectedDivision()}`;
+  $("aggiorna-registro").addEventListener("click", () => mostraRegistro());
+  $("altre-modifiche").addEventListener("click", () => mostraRegistro({ continua: true }));
+
+  // La sezione compare quando tutto è disegnato
+  await Promise.all([
+    mostraDaFare(),
+    preparaGiornata(),
+    preparaArbitri(),
+    preparaAccessi(),
+    mostraRegistro(),
+    classificaGirone("classifica-squadre", true),
+    classificaMarcatori("classifica-gol"),
+  ]).catch((errore) => console.error("Dashboard incompleta:", errore));
+
+  aggiornaConteggi();
 };

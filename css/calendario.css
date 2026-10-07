@@ -6,7 +6,7 @@
   flex-wrap: wrap;
 
   width: 100%;
-  gap: 10px;
+  gap: 16px;
 }
 
 .giornata {
@@ -46,7 +46,9 @@
 
   background: var(--matchesGradient);
 
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+  transition:
+    transform 0.3s ease-in-out,
+    box-shadow 0.3s;
 }
 
 .partita-div:hover {
@@ -119,7 +121,7 @@
 }
 
 .partita-venue p {
-  color: var(--text);
+  color: var(--testo);
   font-size: 0.4rem;
   font-weight: 500;
 }
@@ -161,14 +163,16 @@
 }
 
 @media (min-width: 992px) {
+  /* Due giornate per riga, alla stessa distanza in orizzontale e in verticale */
   #giornate {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 24px;
   }
 
   .giornata {
-    width: 48%;
+    width: auto;
     height: auto;
   }
 
@@ -231,31 +235,10 @@
   }
 }
 
-/* Istruzioni */
-.instruction {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.6rem;
-  width: 100%;
-  margin: 10px;
-}
+/* Istruzioni sotto i titoli: stile unico in base.css */
 
-section .section-title {
-  margin-bottom: 0;
+@media (min-width: 1440px) {
 }
-
-@media (min-width: 576px) {
-  .instruction {
-    font-size: 0.7rem;
-  }
-}
-
-@media (min-width: 992px) {
-  .instruction {
-    font-size: 1rem;
-  }
-}
-
-@media (min-width: 1440px) {}
 /*
 ===================================
 FILTRO SQUADRA
@@ -269,7 +252,6 @@ FILTRO SQUADRA
   justify-content: center;
   gap: 10px;
   width: 100%;
-  margin: 10px 0 5px;
 }
 
 .barra-calendario:empty {
@@ -279,7 +261,7 @@ FILTRO SQUADRA
 .filtro-squadra {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 #filtro-squadra {
@@ -288,13 +270,13 @@ FILTRO SQUADRA
   border: 1px solid var(--white-50);
   border-radius: 8px;
   background-color: var(--secondary);
-  color: var(--text);
+  color: var(--testo);
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
 #filtro-squadra option {
-  color: var(--darkText);
+  color: var(--inchiostro);
   background-color: var(--white);
 }

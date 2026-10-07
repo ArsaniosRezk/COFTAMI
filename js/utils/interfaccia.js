@@ -78,11 +78,11 @@ const STILI = `
 `;
 
 function aggiungiStili() {
-    if (document.getElementById("ui-stili")) return;
-    const stile = document.createElement("style");
-    stile.id = "ui-stili";
-    stile.textContent = STILI;
-    document.head.appendChild(stile);
+  if (document.getElementById("ui-stili")) return;
+  const stile = document.createElement("style");
+  stile.id = "ui-stili";
+  stile.textContent = STILI;
+  document.head.appendChild(stile);
 }
 
 /*
@@ -94,22 +94,22 @@ TOAST
 let timerToast = null;
 
 export function mostraToast(testo, { errore = false, durata = 3500 } = {}) {
-    aggiungiStili();
-    let toast = document.querySelector(".ui-toast");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.className = "ui-toast";
-        toast.setAttribute("role", "status");
-        toast.setAttribute("aria-live", "polite");
-        document.body.appendChild(toast);
-    }
-    toast.textContent = testo;
-    toast.classList.toggle("errore", errore);
-    // Il reflow fa ripartire l'animazione anche se il toast era già visibile
-    void toast.offsetWidth;
-    toast.classList.add("visibile");
-    clearTimeout(timerToast);
-    timerToast = setTimeout(() => toast.classList.remove("visibile"), durata);
+  aggiungiStili();
+  let toast = document.querySelector(".ui-toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "ui-toast";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    document.body.appendChild(toast);
+  }
+  toast.textContent = testo;
+  toast.classList.toggle("errore", errore);
+  // Il reflow fa ripartire l'animazione anche se il toast era già visibile
+  void toast.offsetWidth;
+  toast.classList.add("visibile");
+  clearTimeout(timerToast);
+  timerToast = setTimeout(() => toast.classList.remove("visibile"), durata);
 }
 
 /*
@@ -119,74 +119,74 @@ FINESTRE (conferma / avviso)
 */
 
 function finestra({ titolo, testo, pulsanti }) {
-    aggiungiStili();
-    return new Promise((resolve) => {
-        const dialogo = document.createElement("dialog");
-        dialogo.className = "ui-dialogo";
+  aggiungiStili();
+  return new Promise((resolve) => {
+    const dialogo = document.createElement("dialog");
+    dialogo.className = "ui-dialogo";
 
-        if (titolo) {
-            const intestazione = document.createElement("h3");
-            intestazione.textContent = titolo;
-            dialogo.appendChild(intestazione);
-        }
+    if (titolo) {
+      const intestazione = document.createElement("h3");
+      intestazione.textContent = titolo;
+      dialogo.appendChild(intestazione);
+    }
 
-        const corpo = document.createElement("p");
-        corpo.textContent = testo;
-        dialogo.appendChild(corpo);
+    const corpo = document.createElement("p");
+    corpo.textContent = testo;
+    dialogo.appendChild(corpo);
 
-        const piede = document.createElement("footer");
-        let risultato = false;
+    const piede = document.createElement("footer");
+    let risultato = false;
 
-        for (const { testo: etichetta, valore, classe } of pulsanti) {
-            const pulsante = document.createElement("button");
-            pulsante.type = "button";
-            pulsante.className = classe;
-            pulsante.textContent = etichetta;
-            pulsante.addEventListener("click", () => {
-                risultato = valore;
-                dialogo.close();
-            });
-            piede.appendChild(pulsante);
-        }
-        dialogo.appendChild(piede);
+    for (const { testo: etichetta, valore, classe } of pulsanti) {
+      const pulsante = document.createElement("button");
+      pulsante.type = "button";
+      pulsante.className = classe;
+      pulsante.textContent = etichetta;
+      pulsante.addEventListener("click", () => {
+        risultato = valore;
+        dialogo.close();
+      });
+      piede.appendChild(pulsante);
+    }
+    dialogo.appendChild(piede);
 
-        // Esc o clic sullo sfondo: come "Annulla"
-        dialogo.addEventListener("click", (evento) => {
-            if (evento.target === dialogo) dialogo.close();
-        });
-        dialogo.addEventListener("close", () => {
-            dialogo.remove();
-            resolve(risultato);
-        });
-
-        document.body.appendChild(dialogo);
-        dialogo.showModal();
-        piede.lastElementChild?.focus();
+    // Esc o clic sullo sfondo: come "Annulla"
+    dialogo.addEventListener("click", (evento) => {
+      if (evento.target === dialogo) dialogo.close();
     });
+    dialogo.addEventListener("close", () => {
+      dialogo.remove();
+      resolve(risultato);
+    });
+
+    document.body.appendChild(dialogo);
+    dialogo.showModal();
+    piede.lastElementChild?.focus();
+  });
 }
 
 // Sostituisce confirm(): restituisce una Promise<boolean>
 export function conferma(
-    testo,
-    { titolo = "Conferma", ok = "Conferma", annulla = "Annulla", pericolosa = false } = {}
+  testo,
+  { titolo = "Conferma", ok = "Conferma", annulla = "Annulla", pericolosa = false } = {}
 ) {
-    return finestra({
-        titolo,
-        testo,
-        pulsanti: [
-            { testo: annulla, valore: false, classe: "ui-secondario" },
-            { testo: ok, valore: true, classe: `ui-principale${pericolosa ? " pericoloso" : ""}` },
-        ],
-    });
+  return finestra({
+    titolo,
+    testo,
+    pulsanti: [
+      { testo: annulla, valore: false, classe: "ui-secondario" },
+      { testo: ok, valore: true, classe: `ui-principale${pericolosa ? " pericoloso" : ""}` },
+    ],
+  });
 }
 
 // Sostituisce alert() per i messaggi lunghi da leggere con calma
 export function avviso(testo, { titolo = "Attenzione" } = {}) {
-    return finestra({
-        titolo,
-        testo,
-        pulsanti: [{ testo: "OK", valore: true, classe: "ui-principale" }],
-    });
+  return finestra({
+    titolo,
+    testo,
+    pulsanti: [{ testo: "OK", valore: true, classe: "ui-principale" }],
+  });
 }
 
 /*
@@ -196,22 +196,22 @@ CONDIVISIONE
 */
 
 export async function condividi({ titolo, testo, url = location.href }) {
-    if (navigator.share) {
-        try {
-            await navigator.share({ title: titolo, text: testo, url });
-            return;
-        } catch (errore) {
-            // Condivisione annullata dall'utente: niente da fare
-            if (errore.name === "AbortError") return;
-        }
-    }
-
+  if (navigator.share) {
     try {
-        await navigator.clipboard.writeText(testo ? `${testo}\n${url}` : url);
-        mostraToast("Link copiato negli appunti");
+      await navigator.share({ title: titolo, text: testo, url });
+      return;
     } catch (errore) {
-        mostraToast("Impossibile condividere da questo browser", { errore: true });
+      // Condivisione annullata dall'utente: niente da fare
+      if (errore.name === "AbortError") return;
     }
+  }
+
+  try {
+    await navigator.clipboard.writeText(testo ? `${testo}\n${url}` : url);
+    mostraToast("Link copiato negli appunti");
+  } catch (errore) {
+    mostraToast("Impossibile condividere da questo browser", { errore: true });
+  }
 }
 
 /*
@@ -222,16 +222,16 @@ ACCESSIBILITÀ
 
 // Un elemento non nativamente cliccabile diventa un "pulsante" per tastiera e screen reader
 export function rendiCliccabile(elemento, azione, etichetta = null) {
-    elemento.setAttribute("role", "button");
-    elemento.tabIndex = 0;
-    if (etichetta) elemento.setAttribute("aria-label", etichetta);
-    elemento.addEventListener("click", azione);
-    elemento.addEventListener("keydown", (evento) => {
-        if (evento.key === "Enter" || evento.key === " ") {
-            evento.preventDefault();
-            azione(evento);
-        }
-    });
+  elemento.setAttribute("role", "button");
+  elemento.tabIndex = 0;
+  if (etichetta) elemento.setAttribute("aria-label", etichetta);
+  elemento.addEventListener("click", azione);
+  elemento.addEventListener("keydown", (evento) => {
+    if (evento.key === "Enter" || evento.key === " ") {
+      evento.preventDefault();
+      azione(evento);
+    }
+  });
 }
 
 /*
@@ -240,35 +240,35 @@ export function rendiCliccabile(elemento, azione, etichetta = null) {
  Il tasto "indietro" chiude il pannello invece di lasciare la pagina.
 */
 export function gestisciPannello(pannello, onChiuso, { sfondo = null } = {}) {
-    const focusPrecedente = document.activeElement;
-    let chiuso = false;
+  const focusPrecedente = document.activeElement;
+  let chiuso = false;
 
-    const chiudi = ({ daCronologia = false } = {}) => {
-        if (chiuso) return;
-        chiuso = true;
-        document.removeEventListener("keydown", suTasto);
-        window.removeEventListener("popstate", suIndietro);
-        if (!daCronologia && history.state?.pannello) history.back();
-        onChiuso();
-        if (focusPrecedente instanceof HTMLElement) focusPrecedente.focus();
-    };
+  const chiudi = ({ daCronologia = false } = {}) => {
+    if (chiuso) return;
+    chiuso = true;
+    document.removeEventListener("keydown", suTasto);
+    window.removeEventListener("popstate", suIndietro);
+    if (!daCronologia && history.state?.pannello) history.back();
+    onChiuso();
+    if (focusPrecedente instanceof HTMLElement) focusPrecedente.focus();
+  };
 
-    const suTasto = (evento) => {
-        if (evento.key === "Escape") chiudi();
-    };
-    const suIndietro = () => chiudi({ daCronologia: true });
+  const suTasto = (evento) => {
+    if (evento.key === "Escape") chiudi();
+  };
+  const suIndietro = () => chiudi({ daCronologia: true });
 
-    document.addEventListener("keydown", suTasto);
-    history.pushState({ pannello: true }, "");
-    window.addEventListener("popstate", suIndietro);
+  document.addEventListener("keydown", suTasto);
+  history.pushState({ pannello: true }, "");
+  window.addEventListener("popstate", suIndietro);
 
-    if (sfondo) {
-        sfondo.addEventListener("click", (evento) => {
-            if (evento.target === sfondo) chiudi();
-        });
-    }
+  if (sfondo) {
+    sfondo.addEventListener("click", (evento) => {
+      if (evento.target === sfondo) chiudi();
+    });
+  }
 
-    pannello.setAttribute("role", "dialog");
-    pannello.setAttribute("aria-modal", "true");
-    return chiudi;
+  pannello.setAttribute("role", "dialog");
+  pannello.setAttribute("aria-modal", "true");
+  return chiudi;
 }

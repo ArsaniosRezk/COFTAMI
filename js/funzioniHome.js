@@ -1,6 +1,6 @@
-import { classificaGirone, scheletroClassifica } from "./components/standings.js";
-import { faseFinale } from "./components/final-phase.js";
-import { prossimaGiornata, scheletroProssimaGiornata } from "./components/calendar.js";
+import { classificaGirone, scheletroClassifica } from "./components/classifiche.js";
+import { faseFinale } from "./components/fase-finale.js";
+import { prossimaGiornata, scheletroProssimaGiornata } from "./components/calendario.js";
 import { gestisciAttesaTorneo } from "./components/pre-torneo.js";
 import { laTuaSquadra } from "./components/squadra-preferita.js";
 import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
@@ -10,7 +10,7 @@ import { leggiImpostazioni } from "./impostazioni.js";
 let fermaAscolto = null;
 
 // Sequenza esecuzione dei contenuti della pagina
-// Chiamata da divisionAndVariables.js all'avvio e a ogni cambio di divisione
+// Chiamata da divisione.js all'avvio e a ogni cambio di divisione
 export async function sequenzaEsecuzione() {
   fermaAscolto?.();
   scheletroClassifica("classifica-squadre");

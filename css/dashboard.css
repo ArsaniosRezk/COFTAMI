@@ -1,763 +1,379 @@
-/* DASHBOARD LAYOUT */
+/*
+===================================
+ DASHBOARD (gestionale)
+===================================
+*/
 
-#dashboard-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-    padding: 30px;
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1200px;
+  padding: 24px 32px 40px;
 }
+
+.dashboard-griglia {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+}
+
+/* Da fare */
+.da-fare-elenco {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+
+.da-fare-voce {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--orange);
+  border-radius: 10px;
+  background-color: rgba(242, 106, 27, 0.12);
+}
+
+.da-fare-voce strong {
+  font-size: 1rem;
+}
+
+.da-fare-vuoto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ok);
+  font-weight: 600;
+}
+
+/* Impostazioni: testo a sinistra, controllo a destra */
+.impostazione {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--divider-color);
+}
+
+.elenco-impostazioni .impostazione:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.impostazione-testo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.impostazione-controllo {
+  flex-shrink: 0;
+}
+
+.impostazione-controllo select {
+  min-width: 170px;
+}
+
+.impostazione-pericolosa .etichetta {
+  color: var(--errore-chiaro);
+}
+
+.elenco-impostazioni {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.riga-campo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.riga-campo .input {
+  flex: 1 1 200px;
+  width: auto;
+}
+
+/* Accessi */
+.elenco-accessi {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+.accesso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 8px 6px 14px;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.accesso:last-child {
+  border-bottom: none;
+}
+
+.accesso-chi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  min-width: 0;
+}
+
+.accesso-email {
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+
+.aggiungi-accesso {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.esci-dashboard {
+  align-self: flex-start;
+}
+
+/* Registro delle modifiche */
+.registro-elenco {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.registro-voce {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.registro-voce:last-child {
+  border-bottom: none;
+}
+
+.registro-testo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.registro-testo strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* ===================================
+   CLASSIFICHE
+   =================================== */
 
 #rankings {
-    display: flex;
-    gap: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 24px;
 }
 
-/* DASHBOARD CONTROLS REDESIGN */
-
-/* Wrapper to center/align card */
-#match-to-show-div.dashboard-controls-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
-    background: transparent;
-    border: none;
-    padding: 0;
-}
-
-/* Glassmorphism Card */
-.dashboard-controls-card {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 16px;
-    padding: 20px 30px;
-    width: 100%;
-}
-
-@media (max-width: 768px) {
-    .dashboard-controls-card {
-        flex-direction: column;
-        gap: 24px;
-        padding: 20px;
-    }
-}
-
-/* Common Control Group */
-.control-group {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-/* Vertical Divider */
-.vertical-divider {
-    width: 1px;
-    height: 40px;
-    background-color: var(--divider-color);
-}
-
-@media (max-width: 768px) {
-    .vertical-divider {
-        display: none;
-        /* Hide on mobile stack */
-    }
-}
-
-/* MATCHDAY SECTION (Left) */
-.matchday-group div {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.matchday-group label {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text);
-    white-space: nowrap;
-}
-
-/* Input Styling */
-#matchday-to-show-input {
-    width: 60px;
-    padding: 8px 12px;
-    font-size: 1rem;
-    font-weight: 700;
-    text-align: center;
-    color: var(--text);
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
-    outline: none;
-    transition: all 0.2s ease;
-}
-
-#matchday-to-show-input:focus {
-    background: var(--input-focus-bg);
-    border-color: var(--tertiary);
-    box-shadow: 0 0 0 3px rgba(var(--tertiary-rgb), 0.2);
-}
-
-/* Button Styling (Salva) - IMPROVED */
-.custom-button {
-    background-color: var(--mainText);
-    /* Yellow */
-    color: var(--primary);
-    /* Dark green (primary) for contrast */
-    border: none;
-    padding: 8px 24px;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: var(--button-shadow);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.custom-button:hover {
-    background-color: var(--button-hover-yellow);
-    color: var(--black);
-    /* Black text on hover */
-    transform: translateY(-2px);
-    box-shadow: var(--button-hover-shadow);
-}
-
-.custom-button:active {
-    transform: translateY(0);
-}
-
-
-/* SETTINGS SECTION (Right) */
-.settings-group {
-    display: flex;
-    gap: 30px;
-}
-
-.setting-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.setting-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text);
-    opacity: 0.9;
-}
-
-/* Modern Switch Toggle (iOS style) */
-.modern-switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 26px;
-}
-
-.modern-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--slider-bg);
-    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    border-radius: 34px;
-    border: 1px solid var(--glass-border);
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 2px;
-    background-color: var(--white);
-    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-input:checked+.slider {
-    background-color: var(--tertiary);
-    border-color: var(--tertiary);
-}
-
-input:checked+.slider:before {
-    transform: translateX(20px);
-}
-
-/* Adjustments for disabled state if needed */
-input:disabled+.slider {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-
-/* TABLES STYLES (Restored) */
-
-caption {
-    letter-spacing: 1.2px;
-    font-weight: 400;
-    font-size: 1.9rem;
-    margin: 10px 0 20px 0;
-    color: var(--text);
+#rankings > div {
+  min-width: 0;
+  overflow-x: auto;
 }
 
 table {
-    width: auto;
-    border-collapse: collapse;
-    font-family: "roboto", sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    background-color: var(--table);
-    color: var(--text);
-    border-radius: 10px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background-color: var(--table);
+  color: var(--testo);
+  border-radius: 10px;
 }
 
 table tr {
-    border-bottom: 1px solid var(--white-20);
-    text-align: center;
+  border-bottom: 1px solid var(--white-20);
+  text-align: center;
+}
+
+table tbody tr:last-child {
+  border-bottom: none;
 }
 
 table th,
 table td {
-    padding: 8px;
-    width: 35px;
+  padding: 9px 6px;
 }
 
 table th {
-    font-size: 1.4rem;
-    font-weight: 500;
-    font-family: "Bebas Neue", sans-serif;
-    color: var(--mainText);
-    background-color: var(--secondary);
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--accento);
+  background-color: var(--secondary);
 }
 
 table thead th:first-child {
-    border-top-left-radius: 10px;
+  border-top-left-radius: 10px;
 }
 
 table thead th:last-child {
-    border-top-right-radius: 10px;
+  border-top-right-radius: 10px;
 }
-
-table tbody tr:last-child {
-    border-bottom: none;
-}
-
-/* TABELLA CLASSIFICA SQUADRE  */
 
 .ranking-table th:nth-child(2),
-.ranking-table td:nth-child(2) {
-    text-align: left;
-    width: 200px;
-    max-width: 200px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.ranking-table td:nth-child(3),
-.ranking-table td:nth-child(4),
-.ranking-table td:nth-child(5),
-.ranking-table td:nth-child(6),
-.ranking-table td:nth-child(7),
-.ranking-table td:nth-child(8),
-.ranking-table td:nth-child(9) {
-    color: var(--testoTrasparente);
-}
-
-.girone-section {
-    margin-bottom: 10px;
-}
-
-.girone-section h3 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-}
-
-/* TABELLA MARCATORI  */
-
+.ranking-table td:nth-child(2),
 .scorers-table th:nth-child(2),
 .scorers-table td:nth-child(2),
 .scorers-table th:nth-child(3),
 .scorers-table td:nth-child(3) {
-    text-align: left;
-    width: 200px;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+.ranking-table td:nth-child(n + 3):not(:last-child),
 .scorers-table td:nth-child(3) {
-    color: var(--testoTrasparente);
+  color: var(--testo-tenue);
 }
 
-.pagination {
-    display: flex;
-    justify-content: end;
-    width: fit-content;
-    border-radius: 5px;
-    background-color: var(--secondary);
-    overflow: hidden;
-    margin-top: 5px;
+.girone-section {
+  margin-bottom: 16px;
 }
 
-.pagination a {
-    display: inline-block;
-    padding: 5px 12px;
-    text-decoration: none;
-    font-size: 0.55rem;
-    border-right: 1px solid var(--white-20);
-    color: var(--testoTrasparente);
+.girone-section h3,
+.titolo-girone {
+  margin-bottom: 8px;
+  font-size: 1rem;
 }
 
-.pagination a:last-child {
-    border-right: none;
-}
-
-.pagination a.active {
-    color: var(--text) !important;
-    background-color: var(--tertiary);
-}
-
-/* Penalità */
 .penalty-message {
-    margin-top: 10px;
-    text-align: right;
-    font-size: 0.8rem;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  text-align: right;
 }
 
-/* Edition Select */
-.dashboard-select {
-    padding: 2px 10px;
-    height: 26px;
-    /* Match height of modern-switch */
-    border-radius: 20px;
-    border: 1px solid var(--input-border);
-    background-color: var(--input-bg);
-    color: var(--text);
-    font-family: inherit;
-    font-weight: 600;
-    cursor: pointer;
-    outline: none;
-    text-align: center;
-}
-
-.dashboard-select option {
-    color: var(--black);
-    background-color: var(--white);
-}
-
-/* =========================================
-   RESPONSIVE / MOBILE LAYOUT
-   ========================================= */
-
-@media (max-width: 1024px) {
-    #dashboard-content {
-        padding: 16px;
-        gap: 24px;
-    }
-
-    /* 1. CONTROLS CARD */
-    #match-to-show-div.dashboard-controls-wrapper {
-        width: 100%;
-        margin: 0;
-    }
-
-    .dashboard-controls-card {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
-        padding: 16px;
-        width: 100%;
-    }
-
-    /* Force each control group to be full width */
-    .control-group {
-        flex-direction: column;
-        width: 100%;
-        gap: 12px;
-    }
-
-    /* Matchday Selector Row */
-    .matchday-group div {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    #matchday-to-show-input {
-        width: 72px;
-        height: 48px;
-        font-size: 1.2rem;
-    }
-
-    /* Settings Group: una riga per impostazione, tutta la riga è toccabile */
-    .settings-group {
-        flex-direction: column;
-        width: 100%;
-        gap: 0;
-        padding-top: 4px;
-        border-top: 1px solid var(--divider-color);
-    }
-
-    .setting-item {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        min-height: 56px;
-        border-bottom: 1px solid var(--divider-color);
-    }
-
-    .setting-item:last-child {
-        border-bottom: none;
-    }
-
-    .setting-label {
-        font-size: 1rem;
-        font-weight: 600;
-    }
-
-    .modern-switch {
-        width: 56px;
-        height: 32px;
-    }
-
-    .slider:before {
-        width: 26px;
-        height: 26px;
-    }
-
-    input:checked+.slider:before {
-        transform: translateX(24px);
-    }
-
-    .dashboard-select {
-        height: 40px;
-        padding: 0 16px;
-        font-size: 16px;
-    }
-
-    .vertical-divider {
-        display: none;
-    }
-
-    /* Save Button Full Width */
-    .custom-button {
-        width: 100%;
-        min-height: 48px;
-        padding: 12px;
-    }
-
-    .custom-button:hover {
-        transform: none;
-        color: var(--primary);
-        background-color: var(--mainText);
-    }
-
-    /* 2. RANKINGS & TABLES */
-    #rankings {
-        flex-direction: column;
-        width: 100%;
-        gap: 30px;
-    }
-
-    #rankings>div {
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    caption {
-        font-size: 1.5rem;
-        margin: 6px 0 12px 0;
-    }
-
-    table {
-        font-size: 0.8rem;
-        width: 100%;
-        min-width: unset;
-    }
-
-    table th {
-        font-size: 1.1rem;
-        padding: 8px 5px;
-    }
-
-    table td {
-        padding: 10px 5px;
-    }
-
-    /* Classifica Squadre Columns */
-    .ranking-table th:nth-child(2),
-    .ranking-table td:nth-child(2) {
-        width: 40%;
-        min-width: 120px;
-        max-width: 150px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /* Hiding extra columns on mobile like tabelle.css */
-    .ranking-table th:nth-child(7),
-    .ranking-table th:nth-child(8),
-    .ranking-table th:nth-child(9),
-    .ranking-table td:nth-child(7),
-    .ranking-table td:nth-child(8),
-    .ranking-table td:nth-child(9) {
-        display: none;
-    }
-
-    /* Scorer Table Matches */
-    .scorers-table th:nth-child(2),
-    .scorers-table td:nth-child(2) {
-        width: 45%;
-        min-width: 120px;
-        max-width: 150px;
-    }
-
-    .scorers-table th:nth-child(3),
-    .scorers-table td:nth-child(3) {
-        width: 115px;
-        max-width: 115px;
-    }
-
-    /* Paginazione: pulsanti grandi abbastanza per il dito */
-    .pagination a {
-        min-width: 40px;
-        padding: 10px 12px;
-        font-size: 0.85rem;
-        text-align: center;
-    }
-}
-
-/* Giornata da mostrare: elenco con "Automatica" e tutte le giornate */
-select#matchday-to-show-input {
-    /* Il margine dei select generici del gestionale (css/gestionale.css) qui non serve */
-    margin: 0;
-    width: auto;
-    min-width: 110px;
-    max-width: 240px;
-    text-align: left;
-    cursor: pointer;
-}
-
-select#matchday-to-show-input option {
-    color: var(--black);
-    background-color: var(--white);
-}
-
-/* =========================================
-   DESKTOP: card delle impostazioni
-   ========================================= */
-
-@media (min-width: 1025px) {
-    #match-to-show-div.dashboard-controls-wrapper {
-        width: 100%;
-        max-width: 1100px;
-    }
-
-    /* Se lo spazio non basta le impostazioni vanno a capo, senza uscire dalla card */
-    .dashboard-controls-card {
-        flex-wrap: wrap;
-        row-gap: 20px;
-    }
-
-    .dashboard-controls-card {
-        column-gap: 40px;
-    }
-
-    /* Il divisore resterebbe da solo in fondo alla riga quando le
-       impostazioni vanno a capo: basta lo spazio tra i gruppi */
-    .vertical-divider {
-        display: none;
-    }
-
-    .settings-group {
-        align-items: flex-start;
-        gap: 28px;
-    }
-
-    /* Etichette sulla stessa riga, controlli centrati in una riga di altezza fissa */
-    .setting-item {
-        display: grid;
-        grid-template-rows: auto 30px;
-        justify-items: center;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .setting-label {
-        white-space: nowrap;
-    }
-
-    .dashboard-select {
-        height: 28px;
-    }
-}
-
-/* =========================================
-   CLASSIFICA MARCATORI: ricerca e pagine
-   ========================================= */
-
+/* Classifica marcatori: ricerca e pagine */
 .ricerca-marcatori {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
-    background: var(--input-bg);
-    color: var(--testoTrasparente);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--input-bg);
+  color: var(--testo-tenue);
 }
 
 .ricerca-marcatori:focus-within {
-    border-color: var(--mainText);
+  border-color: var(--accento);
 }
 
 .ricerca-marcatori input {
-    flex: 1;
-    min-width: 0;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 0.95rem;
-}
-
-.ricerca-marcatori input::placeholder {
-    color: var(--testoTrasparente);
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--testo);
+  font-size: 0.95rem;
 }
 
 .contenuto-marcatori {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.pagination {
+  display: flex;
+  width: fit-content;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--secondary);
 }
 
 .pagination button {
-    min-width: 32px;
-    padding: 6px 10px;
-    border: none;
-    border-right: 1px solid var(--white-20);
-    background: transparent;
-    color: var(--testoTrasparente);
-    font-family: inherit;
-    font-size: 0.85rem;
-    cursor: pointer;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border: none;
+  border-right: 1px solid var(--white-20);
+  background: transparent;
+  color: var(--testo-secondario);
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .pagination button:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 .pagination button:disabled {
-    opacity: 0.35;
-    cursor: default;
+  opacity: 0.35;
+  cursor: default;
 }
 
 .pagination button.active {
-    color: var(--text);
-    background-color: var(--tertiary);
-    font-weight: 700;
+  background-color: var(--tertiary);
+  color: var(--testo);
+  font-weight: 700;
+}
+
+.posizione-indicatore {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-griglia,
+  #rankings {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 1024px) {
-    .pagination button {
-        min-width: 40px;
-        padding: 10px 12px;
-    }
-}
+  .dashboard {
+    gap: 16px;
+    padding: 16px 12px 32px;
+  }
 
-/* Smartphone: etichetta sopra e menu della giornata a tutta larghezza,
-   come il pulsante Salva (accanto all'etichetta verrebbe troncato) */
-@media (max-width: 1024px) {
-    .matchday-group div {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-    }
+  .impostazione {
+    align-items: flex-start;
+  }
 
-    select#matchday-to-show-input {
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        height: 48px;
-        font-size: 1rem;
-    }
-}
+  .impostazione-giornata {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-/* =========================================
-   PAGINE VISIBILI SUL SITO
-   ========================================= */
-
-/* Card a sé in fondo alla dashboard, larga come quella delle impostazioni */
-.pagine-wrapper {
+  .impostazione-controllo select {
     width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-}
+  }
 
-.pagine-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.pagine-intestazione {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.pagine-titolo {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text);
-}
-
-.pagine-nota {
-    font-size: 0.8rem;
-    color: var(--text);
-    opacity: 0.7;
-}
-
-@media (min-width: 1025px) {
-    .pagine-group {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 30px;
-    }
-}
-
-@media (max-width: 1024px) {
-    /* Separatore tra titolo e interruttori, come nella card delle impostazioni */
-    .pagine-group .settings-group {
-        padding-top: 4px;
-    }
+  /* Su smartphone si vedono meno colonne: posizione, squadra, partite, punti */
+  .ranking-table th:nth-child(n + 4):nth-child(-n + 9),
+  .ranking-table td:nth-child(n + 4):nth-child(-n + 9) {
+    display: none;
+  }
 }

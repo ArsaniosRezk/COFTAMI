@@ -3,6 +3,25 @@
   "private": true,
   "scripts": {
     "dev": "npx --yes serve -l 3000 .",
-    "staging": "node scripts/pubblica-staging.mjs"
-  }
+    "staging": "node scripts/pubblica-staging.mjs",
+    "pagine": "node scripts/aggiorna-pagine.mjs",
+    "icone": "node scripts/genera-icone.mjs",
+    "sitemap": "node scripts/genera-sitemap.mjs",
+    "test": "node --test",
+    "lint": "eslint .",
+    "formatta": "prettier --write .",
+    "controlla": "eslint . && node --test && prettier --check . && node scripts/controlla-percorsi.mjs && node scripts/aggiorna-pagine.mjs --verifica",
+    "regole": "npx --yes firebase-tools deploy --only database,storage",
+    "percorsi": "node scripts/controlla-percorsi.mjs",
+    "test:regole": "npx --yes firebase-tools emulators:exec --only database --project demo-cofta \"node --test test-regole/regole.mjs\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "eslint": "^9.39.5",
+    "firebase": "^12.19.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.9"
+  },
+  "type": "module"
 }

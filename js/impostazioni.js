@@ -1,6 +1,6 @@
 import { PERCORSO_IMPOSTAZIONI } from "./ambiente.js";
 import { db, ref, onValue } from "./firebase.js";
-import { impostaEdizione, edizioneForzata } from "./divisionAndVariables.js";
+import { impostaEdizione, edizioneForzata } from "./divisione.js";
 
 /*
 ===================================

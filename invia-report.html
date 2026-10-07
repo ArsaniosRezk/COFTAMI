@@ -3,76 +3,129 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Invia Report Partita</title>
-  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Referto partita - Cofta</title>
+  <meta name="description" content="Modulo per gli arbitri del torneo Cofta Milano: invio del referto di una partita." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#2e684e" />
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
 
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="css/colors.css" />
-  <link rel="stylesheet" href="css/invia-report.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400..800&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/invia-report.css" />
 </head>
 
-<body>
-  <h2>REPORT PARTITA</h2>
-  <form id="match-report-form">
-    <div id="match-info-div">
-      <div class="form-group">
-        <input type="text" id="referee-name" placeholder="Nome Arbitro" required />
+<body class="pagina-referto">
+  <main class="referto">
+    <header class="referto-testata">
+      <img src="/assets/images/LOGO_COFTA_SITO_3.svg" alt="Cofta Milano" width="60" height="65" />
+      <h1>Referto partita</h1>
+      <p>Compila un referto per ogni partita che hai arbitrato.</p>
+    </header>
 
-        <div class="two-columns-div">
-          <select id="division" required>
-            <option value="" disabled selected hidden>- Divisione -</option>
-            <option value="Superiori">Superiori</option>
-            <option value="Giovani">Giovani</option>
-          </select>
-
-          <select id="matchday" required>
-            <option value="" disabled selected hidden>- Giornata -</option>
-          </select>
-        </div>
-
-        <select id="match" required>
-          <option value="" disabled selected hidden>
-            - Seleziona Partita -
-          </option>
-        </select>
-
-        <div class="two-columns-div">
-          <input type="number" id="home-gol-score" placeholder="Gol Casa" required />
-
-          <input type="number" id="away-gol-score" placeholder="Gol Ospite" required />
-        </div>
-      </div>
-
-      <div class="form-group hidden" id="scorers-mvp">
-        <label>Marcatori e MVP</label>
-        <div class="team-section" id="team-home">
-          <p id="home-team-name">Squadra Casa</p>
-          <div id="home-players"></div>
-        </div>
-
-        <div class="team-section" id="team-away">
-          <p id="away-team-name"></p>
-          <div id="away-players"></div>
-        </div>
-
-        <select id="mvp" required>
-          <option value="" disabled selected hidden>- Seleziona MVP -</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="comments">Commenti, Segnalazioni, Espulsioni</label>
-        <textarea id="comments" rows="5"
-          placeholder="Cose da segnalare: comportamenti particolarmente scorretti, comportamenti di fairplay, espulsioni, ecc."></textarea>
-      </div>
+    <div id="referto-inviato" class="referto-esito" hidden>
+      <i class="icona icona-check" aria-hidden="true"></i>
+      <h2>Referto inviato</h2>
+      <p id="referto-inviato-testo"></p>
+      <button type="button" class="referto-btn" id="nuovo-referto">Compila un altro referto</button>
     </div>
 
-    <div>
-      <button type="submit" class="btn">Invia Referto</button>
-    </div>
-  </form>
-  <script type="module" src="js/inviaReport.js"></script>
+    <form id="match-report-form" novalidate>
+      <fieldset class="referto-gruppo">
+        <legend>Partita</legend>
+
+        <div class="campo">
+          <label for="referee-name">Il tuo nome e cognome</label>
+          <input type="text" id="referee-name" autocomplete="name" maxlength="80" required />
+        </div>
+
+        <div class="due-colonne">
+          <div class="campo">
+            <label for="division">Divisione</label>
+            <select id="division" required disabled>
+              <option value="" disabled selected hidden>Scegli</option>
+              <option value="Superiori">Superiori</option>
+              <option value="Giovani">Giovani</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="matchday">Giornata</label>
+            <select id="matchday" required disabled>
+              <option value="" disabled selected hidden>Scegli</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="match">Partita</label>
+          <select id="match" required disabled>
+            <option value="" disabled selected hidden>Scegli prima divisione e giornata</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="referto-gruppo" id="gruppo-risultato" hidden>
+        <legend>Risultato</legend>
+
+        <div class="tabellino">
+          <div class="tabellino-squadra">
+            <label for="home-gol-score" id="home-team-name">Casa</label>
+            <input type="number" id="home-gol-score" inputmode="numeric" min="0" max="99" placeholder="0" required />
+          </div>
+          <span class="tabellino-sep" aria-hidden="true">–</span>
+          <div class="tabellino-squadra">
+            <label for="away-gol-score" id="away-team-name">Ospite</label>
+            <input type="number" id="away-gol-score" inputmode="numeric" min="0" max="99" placeholder="0" required />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="referto-gruppo" id="scorers-mvp" hidden>
+        <legend>Marcatori</legend>
+        <p class="suggerimento">Scrivi quanti gol ha segnato ogni giocatore. La somma deve corrispondere al
+          risultato.</p>
+
+        <div class="team-section">
+          <h2 class="team-titolo" id="home-team-title"></h2>
+          <div id="home-players" class="lista-giocatori"></div>
+        </div>
+
+        <div class="team-section">
+          <h2 class="team-titolo" id="away-team-title"></h2>
+          <div id="away-players" class="lista-giocatori"></div>
+        </div>
+
+        <div class="campo">
+          <label for="mvp">Migliore in campo (MVP)</label>
+          <select id="mvp" required>
+            <option value="" disabled selected hidden>Scegli un giocatore</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="referto-gruppo">
+        <legend>Note</legend>
+        <div class="campo">
+          <label for="comments">Commenti, segnalazioni, espulsioni</label>
+          <textarea id="comments" rows="5" maxlength="3000"
+            placeholder="Comportamenti scorretti, gesti di fair play, espulsioni…"></textarea>
+        </div>
+      </fieldset>
+
+      <p class="referto-errore" id="referto-errore" role="alert"></p>
+
+      <button type="submit" class="referto-btn">Invia referto</button>
+    </form>
+  </main>
+
+  <script type="module" src="/js/invia-referto.js"></script>
 </body>
 
 </html>

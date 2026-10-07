@@ -1,0 +1,50 @@
+rules_version = '2';
+
+/*
+  REGOLE DI FIREBASE STORAGE
+  Si pubblicano con "npm run regole" oppure incollandole in
+  Firebase console > Storage > Regole > Pubblica.
+
+  Le regole di Storage non possono leggere il Realtime Database, quindi
+  l'elenco degli amministratori va ripetuto qui sotto (stessi indirizzi di
+  Amministratori nel database).
+
+  I link già salvati (con "token=" nell'indirizzo) continuano a funzionare:
+  il token vale indipendentemente da queste regole.
+*/
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function amministratore() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower() in [
+          "arsanios.rezk@gmail.com"
+        ];
+    }
+
+    // Tutto il resto: solo gli amministratori (list compreso)
+    match /{allPaths=**} {
+      allow read, write: if amministratore();
+    }
+
+    // Moduli di partecipazione firmati, caricati dal modulo pubblico di iscrizione.
+    // Chiunque può caricarne uno nuovo (niente sovrascritture); li aprono solo gli
+    // amministratori dal gestionale: dentro ci sono firme e dati personali.
+    match /Moduli/{edizione}/{file} {
+      allow create: if request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('application/pdf|image/jpeg|image/png');
+    }
+
+    // Loghi delle squadre: li vede chiunque (sito pubblico), li carica solo il gestionale.
+    // Percorso: Loghi/{edizione}/{divisione}/{squadra}-{codice}.png (+ versione -LR.png).
+    // Il gestionale converte sempre il logo in PNG da max 600px, quindi 2 MB bastano.
+    match /Loghi/{edizione}/{divisione}/{file} {
+      allow get: if true;
+      allow create: if amministratore()
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType == 'image/png';
+    }
+  }
+}

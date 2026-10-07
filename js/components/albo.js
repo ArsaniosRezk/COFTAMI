@@ -1,111 +1,99 @@
 import { getDataCached } from "../firebase.js";
+import { nomeSquadra } from "../utils/torneo.js";
 
 /*
 ===================================
 ALBO D'ORO
 ===================================
+Calcio/AlboOro/{Divisione}/{anno} = { PrimoClassificato, SecondoClassificato }
+Una tabella per anno, dal più recente, con il link alle classifiche di quell'edizione.
 */
 
+const DIVISIONI = ["Superiori", "Giovani"];
+
+function crea(tag, classe, testo = null) {
+  const elemento = document.createElement(tag);
+  if (classe) elemento.className = classe;
+  if (testo !== null) elemento.textContent = testo;
+  return elemento;
+}
+
+function scheletro(container) {
+  container.replaceChildren(
+    ...[1, 2].map(() => {
+      const blocco = crea("div", "albo-table-container");
+      blocco.append(crea("div", "skeleton skeleton-title"), crea("div", "skeleton skeleton-albo-table"));
+      return blocco;
+    })
+  );
+}
+
+function piazzamento(medaglia, squadra) {
+  return squadra ? `${medaglia} ${nomeSquadra(squadra)}` : "-";
+}
+
+function tabellaAnno(anno, albo) {
+  const blocco = crea("div", "albo-table-container");
+  blocco.appendChild(crea("h2", "albo-table-title", anno));
+
+  const tabella = crea("table", "albo-table");
+  const intestazione = tabella.createTHead().insertRow();
+  DIVISIONI.forEach((divisione) => {
+    const th = crea("th", "albo-table-header", divisione);
+    th.scope = "col";
+    intestazione.appendChild(th);
+  });
+
+  const corpo = tabella.createTBody();
+  [
+    ["🥇", "PrimoClassificato"],
+    ["🥈", "SecondoClassificato"],
+  ].forEach(([medaglia, campo]) => {
+    const riga = corpo.insertRow();
+    DIVISIONI.forEach((divisione) => {
+      riga.appendChild(
+        crea("td", "albo-table-cell", piazzamento(medaglia, albo[divisione]?.[anno]?.[campo]))
+      );
+    });
+  });
+  blocco.appendChild(tabella);
+
+  const link = crea("a", "link-edizione", `Rivedi classifiche e risultati del ${anno} `);
+  link.href = `/campionato.html?edizione=${encodeURIComponent(anno)}`;
+  link.appendChild(crea("i", "icona icona-chevron-right"));
+  link.lastChild.setAttribute("aria-hidden", "true");
+  blocco.appendChild(link);
+
+  return blocco;
+}
+
 export async function getAlboOro() {
-    try {
-        let container = document.getElementById("albo-d'oro");
-        if (container) {
-            container.innerHTML = `
-            <div class="albo-table-container">
-                <div class="skeleton skeleton-title"></div>
-                <div class="skeleton skeleton-albo-table"></div>
-            </div>
-            <div class="albo-table-container">
-                <div class="skeleton skeleton-title"></div>
-                <div class="skeleton skeleton-albo-table"></div>
-            </div>`;
-        }
+  const container = document.getElementById("albo-doro");
+  if (!container) return;
+  scheletro(container);
 
-        // Recupero tutti gli anni disponibili sotto il nodo Calcio/AlboOro (cache di un'ora:
-        // cambia una volta l'anno, ma il giorno della finale il vincitore deve comparire presto)
-        let alboOroData = await getDataCached("Calcio/AlboOro", 60);
+  try {
+    // Cache di un'ora: cambia una volta l'anno, ma il giorno della finale
+    // il vincitore deve comparire presto
+    const albo = (await getDataCached("Calcio/AlboOro", 60)) || {};
 
-        if (!container) {
-            console.error("Elemento #albo-d'oro non trovato.");
-            return;
-        }
+    const anni = new Set();
+    Object.values(albo).forEach((perAnno) => Object.keys(perAnno || {}).forEach((anno) => anni.add(anno)));
 
-        container.innerHTML = ""; // Pulisce il contenuto prima di stampare i dati
-
-        let anniDisponibili = new Set();
-
-        // Scansioniamo tutte le categorie per trovare tutti gli anni
-        for (let categoria in alboOroData) {
-            for (let anno in alboOroData[categoria]) {
-                anniDisponibili.add(anno);
-            }
-        }
-
-        // Ordiniamo gli anni dal più recente al più vecchio
-        let anniOrdinati = Array.from(anniDisponibili).sort((a, b) =>
-            b.localeCompare(a)
-        );
-
-        // Per ogni anno disponibile, creiamo una tabella con le classi corrette
-        anniOrdinati.forEach((anno) => {
-            let superiori = alboOroData.Superiori?.[anno] || {};
-            let giovani = alboOroData.Giovani?.[anno] || {};
-
-            // Sostituiamo "_" con "." nei nomi delle squadre
-            let superioriPrimo = superiori.PrimoClassificato
-                ? `🥇 ${superiori.PrimoClassificato.replace(/_/g, ".")}`
-                : "-";
-
-            let superioriSecondo = superiori.SecondoClassificato
-                ? `🥈 ${superiori.SecondoClassificato.replace(/_/g, ".")}`
-                : "-";
-
-            let giovaniPrimo = giovani.PrimoClassificato
-                ? `🥇 ${giovani.PrimoClassificato.replace(/_/g, ".")}`
-                : "-";
-
-            let giovaniSecondo = giovani.SecondoClassificato
-                ? `🥈 ${giovani.SecondoClassificato.replace(/_/g, ".")}`
-                : "-";
-
-            // Creiamo il blocco HTML con la tabella, utilizzando le classi già definite nel sito
-            let block = document.createElement("div");
-            block.classList.add("albo-table-container"); // Classe per il contenitore della tabella
-
-            block.innerHTML = `
-            <h3 class="albo-table-title">${anno}</h3>
-            <table class="albo-table">
-                <thead>
-                    <tr>
-                        <th class="albo-table-header">Superiori</th>
-                        <th class="albo-table-header">Giovani</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="albo-table-cell">${superioriPrimo}</td>
-                        <td class="albo-table-cell">${giovaniPrimo}</td>
-                    </tr>
-                    <tr>
-                        <td class="albo-table-cell">${superioriSecondo}</td>
-                        <td class="albo-table-cell">${giovaniSecondo}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <a class="link-edizione" href="/campionato.html?edizione=${encodeURIComponent(anno)}">
-                Rivedi classifiche e risultati del ${anno}
-                <i class="icona icona-chevron-right" aria-hidden="true"></i>
-            </a>
-        `;
-
-            container.appendChild(block);
-        });
-    } catch (error) {
-        console.error("Errore nel recupero dell'Albo d'Oro:", error);
-        let container = document.getElementById("albo-d'oro");
-        if (container) {
-            container.innerHTML =
-                "<p class='error-message'>⚠️ Nessun dato disponibile.</p>";
-        }
+    if (!anni.size) {
+      container.replaceChildren(
+        crea("p", "avviso-vuoto", "L'albo d'oro sarà pubblicato dopo la prima finale.")
+      );
+      return;
     }
+
+    container.replaceChildren(
+      ...[...anni].sort((a, b) => b.localeCompare(a)).map((anno) => tabellaAnno(anno, albo))
+    );
+  } catch (error) {
+    console.error("Errore nel recupero dell'Albo d'Oro:", error);
+    container.replaceChildren(
+      crea("p", "avviso-vuoto", "Impossibile caricare l'albo d'oro. Riprova più tardi.")
+    );
+  }
 }

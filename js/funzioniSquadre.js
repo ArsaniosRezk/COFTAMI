@@ -1,4 +1,4 @@
-import { visualizzaSquadreConMembri } from "./components/teams.js";
+import { visualizzaSquadreConMembri } from "./components/squadre.js";
 import { gestisciAttesaTorneo } from "./components/pre-torneo.js";
 import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
 
@@ -6,14 +6,12 @@ import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
 let fermaAscolto = null;
 
 // Sequenza esecuzione dei contenuti della pagina
-// Chiamata da divisionAndVariables.js all'avvio e a ogni cambio di divisione
+// Chiamata da divisione.js all'avvio e a ogni cambio di divisione
 export async function sequenzaEsecuzione() {
   fermaAscolto?.();
   const contenitore = document.getElementById("teams-container");
   if (contenitore) {
-    contenitore.innerHTML = Array(6)
-      .fill('<div class="squadra skeleton" aria-hidden="true"></div>')
-      .join("");
+    contenitore.innerHTML = Array(6).fill('<div class="squadra skeleton" aria-hidden="true"></div>').join("");
   }
 
   fermaAscolto = osservaDivisione(

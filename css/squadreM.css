@@ -18,7 +18,7 @@
   height: 240px;
 
   border-radius: 10px;
-  border: var(--bordoGiallo);
+  border: 1px solid var(--glass-border);
 
   overflow: hidden;
   background-color: var(--secondary);
@@ -43,7 +43,7 @@
   font-size: 1rem;
   font-weight: 700;
   text-align: center;
-  color: var(--text);
+  color: var(--testo);
 }
 
 .team-card:hover,
@@ -51,7 +51,7 @@
 #add-team-button:hover {
   background-color: var(--orange);
 
-  /* color: var(--darkText); */
+  /* color: var(--inchiostro); */
   border: none;
 }
 
@@ -71,7 +71,7 @@
   overflow: hidden;
   background-color: var(--secondary);
 
-  color: var(--text);
+  color: var(--testo);
   font-size: 1rem;
   font-weight: bold;
 }
@@ -104,7 +104,7 @@
 
   border-radius: 10px;
   overflow: hidden;
-  border: var(--interaction);
+  border: 1px solid var(--glass-border);
   background-color: var(--secondary);
 }
 
@@ -128,7 +128,7 @@
   gap: 20px;
 
   border-radius: 10px;
-  border: var(--interaction);
+  border: 1px solid var(--glass-border);
   background-color: var(--secondary);
 
   font-weight: bold;
@@ -166,7 +166,7 @@
   width: 100%;
   height: auto;
   border-radius: 10px;
-  border: var(--interaction);
+  border: 1px solid var(--glass-border);
 
   padding: 20px;
   gap: 10px;
@@ -263,7 +263,7 @@ textarea {
 
   padding: 15px 20px;
   border-radius: 10px;
-  border: var(--interaction);
+  border: 1px solid var(--glass-border);
   background-color: var(--secondary);
 }
 
@@ -327,7 +327,7 @@ textarea {
 .girone-intestazione {
   padding: 8px 12px;
   font-weight: bold;
-  border-bottom: var(--interaction);
+  border-bottom: 1px solid var(--divider-color);
 }
 
 .girone-conteggio {

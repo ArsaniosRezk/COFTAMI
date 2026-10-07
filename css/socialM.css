@@ -71,8 +71,8 @@
 }
 
 .social-tutte {
-  color: var(--darkText);
-  background-color: var(--mainText);
+  color: var(--inchiostro);
+  background-color: var(--accento);
 }
 
 .custom-button:disabled {
@@ -89,7 +89,7 @@
 
   border-radius: 10px;
   background-color: var(--glass-bg);
-  border-left: 4px solid var(--mainText);
+  border-left: 4px solid var(--accento);
   line-height: 1.5;
 }
 
@@ -170,13 +170,13 @@
 }
 
 .social-anteprima.selezionata .social-selettore {
-  border-color: var(--mainText);
+  border-color: var(--accento);
 }
 
 .social-anteprima.selezionata .social-spunta {
-  border-color: var(--mainText);
-  background-color: var(--mainText);
-  color: var(--darkText);
+  border-color: var(--accento);
+  background-color: var(--accento);
+  color: var(--inchiostro);
 }
 
 .social-scarica-singola {
@@ -184,7 +184,7 @@
   align-items: center;
   gap: 8px;
 
-  color: var(--text);
+  color: var(--testo);
   font-size: 0.75rem;
   font-weight: 600;
   text-decoration: none;
@@ -192,7 +192,7 @@
 }
 
 .social-scarica-singola:hover {
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 @media (max-width: 1024px) {
@@ -243,7 +243,7 @@
   }
 
   .social-anteprima.selezionata .social-selettore:hover {
-    border-color: var(--mainText);
+    border-color: var(--accento);
   }
 
   .social-anteprime {
@@ -253,7 +253,7 @@
 
   /* Il "Tutte" giallo non deve perdere il colore dopo il tocco */
   .social-tutte:hover {
-    color: var(--darkText);
-    background-color: var(--mainText);
+    color: var(--inchiostro);
+    background-color: var(--accento);
   }
 }

@@ -1,11 +1,6 @@
 import { initSocial } from "../management/social.js";
 import { impostazioniPronte } from "./impostazioni.js";
-import {
-  edition,
-  loadSavedOption,
-  getSelectedDivision,
-  setSelectedDivision,
-} from "./divisionAndVariables.js";
+import { edition, loadSavedOption, getSelectedDivision, setSelectedDivision } from "./divisione.js";
 
 /*
 ===================================

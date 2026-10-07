@@ -1,4 +1,4 @@
-import { caricaDatiSocial, generaGrafiche } from "/js/components/social-graphics.js";
+import { caricaDatiSocial, generaGrafiche } from "/js/components/grafiche-social.js";
 
 // Immagini generate: { nome, blob, url, selezionata }
 let immaginiCorrenti = [];
@@ -62,13 +62,9 @@ export const initSocial = async () => {
     aggiornaSelezione();
   });
 
-  document
-    .getElementById("social-scarica")
-    .addEventListener("click", () => scarica(selezionate()));
+  document.getElementById("social-scarica").addEventListener("click", () => scarica(selezionate()));
 
-  document
-    .getElementById("social-condividi")
-    .addEventListener("click", () => condividi(selezionate()));
+  document.getElementById("social-condividi").addEventListener("click", () => condividi(selezionate()));
 };
 
 function selezionate() {
@@ -91,7 +87,7 @@ function mostraRisultato({ immagini, messaggi, loghiMancanti }) {
       `Loghi non caricati (sostituiti dalle iniziali): <b>${loghiMancanti.join(", ")}</b>.<br>` +
         "Se mancano tutti, il bucket di Firebase Storage non ha il CORS abilitato. " +
         "Va fatto una volta sola dalla Cloud Shell di Google Cloud:" +
-        "<code>echo '[{\"origin\":[\"*\"],\"method\":[\"GET\"],\"maxAgeSeconds\":3600}]' > cors.json\n" +
+        '<code>echo \'[{"origin":["*"],"method":["GET"],"maxAgeSeconds":3600}]\' > cors.json\n' +
         "gsutil cors set cors.json gs://cofta-mi.appspot.com</code>"
     );
   }
@@ -136,7 +132,7 @@ function mostraAnteprime(immagini) {
 
     const spunta = document.createElement("span");
     spunta.className = "social-spunta";
-    spunta.innerHTML = '<i class="fa-solid fa-check"></i>';
+    spunta.innerHTML = '<i class="icona icona-check-semplice" aria-hidden="true"></i>';
 
     selettore.append(img, spunta);
     selettore.addEventListener("click", () => {
@@ -149,7 +145,7 @@ function mostraAnteprime(immagini) {
     link.className = "social-scarica-singola";
     link.href = immagine.url;
     link.download = immagine.nome;
-    link.innerHTML = '<i class="fa-solid fa-download"></i>';
+    link.innerHTML = '<i class="icona icona-download" aria-hidden="true"></i>';
     link.append(immagine.nome);
 
     scheda.append(selettore, link);
@@ -166,9 +162,7 @@ function aggiornaSelezione() {
   const numero = scelte.length;
   const tutte = numero === immaginiCorrenti.length && numero > 0;
 
-  immaginiCorrenti.forEach((img) =>
-    img.scheda?.classList.toggle("selezionata", img.selezionata)
-  );
+  immaginiCorrenti.forEach((img) => img.scheda?.classList.toggle("selezionata", img.selezionata));
 
   document.querySelector("#social-seleziona span").textContent = tutte
     ? "Deseleziona tutte"

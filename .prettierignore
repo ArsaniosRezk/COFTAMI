@@ -1,0 +1,13 @@
+# Le pagine HTML hanno la cornice generata da scripts/aggiorna-pagine.mjs
+*.html
+# Generati da scripts/genera-icone.mjs
+css/icone.css
+css/icone-gestionale.css
+# Regole di Firebase: JSON con commenti
+database.rules.json
+storage.rules
+sitemap.xml
+package-lock.json
+node_modules
+assets
+.vscode

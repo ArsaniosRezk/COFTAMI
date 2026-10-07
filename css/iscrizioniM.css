@@ -33,7 +33,7 @@
 }
 
 .iscrizioni-riepilogo b {
-  color: var(--mainText);
+  color: var(--accento);
   font-size: 1.15rem;
 }
 
@@ -46,7 +46,6 @@
 
 .iscrizioni-controlli .iscrizioni-select {
   margin: 0;
-  border-bottom: 3px solid var(--mainText);
 }
 
 .iscrizioni-ricerca {
@@ -76,7 +75,7 @@
   font-family: "Bebas Neue", sans-serif;
   font-size: 1.6rem;
   letter-spacing: 1.5px;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .iscrizioni-vuoto {
@@ -94,7 +93,7 @@
 }
 
 .iscrizione-card.aperta {
-  border-color: var(--mainText);
+  border-color: var(--accento);
 }
 
 .iscrizione-header {
@@ -121,7 +120,7 @@
 }
 
 .iscrizione-titolo .freccia {
-  color: var(--mainText);
+  color: var(--accento);
   transition: transform 0.2s ease;
 }
 
@@ -147,7 +146,7 @@
 .badge-divisione {
   background-color: var(--tertiary);
   border: 1px solid var(--white-20);
-  color: var(--text);
+  color: var(--testo);
 }
 
 .badge-nuova {
@@ -156,8 +155,8 @@
 }
 
 .badge-convertita {
-  background-color: var(--mainText);
-  color: var(--darkText);
+  background-color: var(--accento);
+  color: var(--inchiostro);
 }
 
 .iscrizione-meta {
@@ -171,7 +170,7 @@
 
 .iscrizione-meta i {
   margin-right: 4px;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .iscrizione-meta .modulo-mancante {
@@ -187,9 +186,14 @@
   align-items: center;
   gap: 8px;
   padding: 7px 0;
-  color: var(--mainText);
+  border: none;
+  background: none;
+  color: var(--accento);
+  font-family: inherit;
   font-size: 0.9rem;
+  text-align: left;
   overflow-wrap: anywhere;
+  cursor: pointer;
 }
 
 .modulo-link:hover {
@@ -219,7 +223,7 @@
   margin-bottom: 8px;
   padding-bottom: 5px;
   border-bottom: 1px solid var(--white-20);
-  color: var(--mainText);
+  color: var(--accento);
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -258,7 +262,7 @@
 }
 
 .persona-tel {
-  color: var(--mainText);
+  color: var(--accento);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -326,7 +330,7 @@
 
 .modifica-campi-squadra .iscrizioni-select {
   margin: 0;
-  border-bottom: 3px solid var(--mainText);
+  border-bottom: 3px solid var(--accento);
 }
 
 .modifica-input {
@@ -334,7 +338,7 @@
   border: 1px solid var(--input-border);
   border-radius: 8px;
   background-color: var(--input-bg);
-  color: var(--text);
+  color: var(--testo);
   font-family: "montserrat", sans-serif;
   font-size: 0.9rem;
 }
@@ -345,7 +349,7 @@
 
 .modifica-input:focus {
   outline: none;
-  border-color: var(--mainText);
+  border-color: var(--accento);
   background-color: var(--input-focus-bg);
 }
 
@@ -376,10 +380,10 @@
 .modifica-aggiungi {
   margin-top: 8px;
   padding: 7px 12px;
-  border: 1px dashed var(--mainText);
+  border: 1px dashed var(--accento);
   border-radius: 8px;
   background-color: transparent;
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;

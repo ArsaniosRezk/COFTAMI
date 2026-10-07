@@ -1,0 +1,258 @@
+/*
+===================================
+ STATISTICHE (pagina Campionato)
+===================================
+*/
+
+.statistiche {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+  max-width: 1000px;
+  text-align: left;
+}
+
+.statistiche .link-squadra {
+  color: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--white-50);
+  text-underline-offset: 3px;
+}
+
+/* Numeri principali */
+.stat-tessere {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.stat-tessera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  background-color: var(--secondary);
+  text-align: center;
+}
+
+.stat-valore {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--accento);
+}
+
+.stat-etichetta {
+  font-size: 0.8rem;
+  color: var(--testo-secondario);
+}
+
+/* Record */
+.stat-griglia-record {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.stat-record {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--accento);
+  border-radius: 10px;
+  background-color: var(--secondary);
+}
+
+.stat-record-titolo {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--testo-secondario);
+}
+
+.stat-record-valore {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.stat-record-dettaglio {
+  font-size: 0.95rem;
+}
+
+/* Blocchi: forma, bomber, confronto */
+.stat-colonne {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+
+.stat-blocco {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.stat-sottotitolo {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: var(--accento);
+}
+
+.stat-legenda {
+  font-size: 0.8rem;
+  color: var(--testo-tenue);
+}
+
+.stat-forma,
+.stat-bomber,
+.stat-confronto-partite {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: var(--secondary);
+}
+
+.stat-forma li,
+.stat-bomber li,
+.stat-confronto-partite li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--white-20);
+  font-size: 0.9rem;
+}
+
+.stat-forma li:last-child,
+.stat-bomber li:last-child,
+.stat-confronto-partite li:last-child {
+  border-bottom: none;
+}
+
+.stat-esiti {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+/* La lettera dice l'esito: il colore è solo un aiuto in più */
+.stat-esito {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.esito-V {
+  background-color: var(--accento);
+  color: var(--inchiostro);
+}
+
+.esito-N {
+  background-color: var(--white-50);
+  color: var(--inchiostro);
+}
+
+.esito-P {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 2px var(--white-50);
+  color: var(--testo);
+}
+
+.stat-bomber-nome {
+  min-width: 0;
+}
+
+.stat-bomber-gol {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--accento);
+}
+
+/* Confronto diretto */
+.stat-confronto-scelte {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-confronto-campo select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--white);
+  color: var(--inchiostro);
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.stat-confronto-vs {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.3rem;
+  color: var(--accento);
+}
+
+.stat-confronto-risultato {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat-confronto-bilancio {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stat-confronto-partite li {
+  flex-wrap: wrap;
+}
+
+@media (min-width: 576px) {
+  .stat-tessere {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .stat-griglia-record {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 992px) {
+  .statistiche {
+    gap: 30px;
+  }
+
+  .stat-valore {
+    font-size: 2.8rem;
+  }
+
+  .stat-griglia-record {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .stat-colonne {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px;
+  }
+}

@@ -1,0 +1,14 @@
+# GitHub Pages: file del repository che non vanno pubblicati sul sito
+exclude:
+  - package.json
+  - package-lock.json
+  - node_modules
+  - scripts
+  - test
+  - test-regole
+  - eslint.config.js
+  - firebase.json
+  - database.rules.json
+  - storage.rules
+  - README.md
+  - serve.json

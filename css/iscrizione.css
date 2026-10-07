@@ -50,7 +50,7 @@ fieldset.form-group legend {
   font-family: "Bebas Neue", sans-serif;
   font-size: 1.6rem;
   letter-spacing: 1.5px;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .req-mark {
@@ -65,7 +65,7 @@ fieldset.form-group legend {
 }
 
 .field label {
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: 700;
   font-size: 1rem;
 }
@@ -106,7 +106,7 @@ fieldset.form-group legend {
 #iscrizione-form input:focus,
 #iscrizione-form select:focus {
   outline: none;
-  border-color: var(--mainText);
+  border-color: var(--accento);
   box-shadow: 0 0 0 3px rgba(252, 235, 0, 0.25);
 }
 
@@ -139,11 +139,11 @@ fieldset.form-group legend {
   max-width: 100%;
 
   padding: 14px 20px;
-  border: 2px dashed var(--mainText);
+  border: 2px dashed var(--accento);
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.06);
 
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: 700;
   font-size: 0.95rem;
   text-align: left;
@@ -158,7 +158,7 @@ fieldset.form-group legend {
 /* File scelto: il tratteggio diventa pieno, cosi' si vede a colpo d'occhio */
 .file-picker.pieno {
   border-style: solid;
-  border-color: var(--mainText);
+  border-color: var(--accento);
   background-color: rgba(255, 255, 255, 0.16);
   color: var(--white);
 }
@@ -175,7 +175,7 @@ fieldset.form-group legend {
 }
 
 .hint a {
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: 700;
 }
 
@@ -183,7 +183,7 @@ fieldset.form-group legend {
 .persone-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
 }
 
 .persona-row {
@@ -232,10 +232,10 @@ fieldset.form-group legend {
   align-self: flex-start;
 
   padding: 9px 18px;
-  border: 1px solid var(--mainText);
+  border: 1px solid var(--accento);
   border-radius: 8px;
   background-color: transparent;
-  color: var(--mainText);
+  color: var(--accento);
 
   font-family: "montserrat", sans-serif;
   font-weight: 700;
@@ -253,8 +253,8 @@ fieldset.form-group legend {
   width: 100%;
   padding: 15px 30px;
 
-  background-color: var(--mainText);
-  color: var(--darkText);
+  background-color: var(--accento);
+  color: var(--inchiostro);
   border: none;
   border-radius: 8px;
 
@@ -290,7 +290,7 @@ fieldset.form-group legend {
 /* Avviso generale: riquadro evidenziato, non testo sbiadito */
 .hint-global {
   padding: 13px 16px;
-  border-left: 4px solid var(--mainText);
+  border-left: 4px solid var(--accento);
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.08);
   font-size: 0.92rem;
@@ -303,7 +303,7 @@ fieldset.form-group legend {
 
 .hint-global i {
   margin-right: 6px;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .field-error,
@@ -351,7 +351,7 @@ fieldset.form-group legend {
 #iscrizione-inviata i,
 #iscrizioni-chiuse i {
   font-size: 3rem;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 #iscrizione-inviata h3,
@@ -359,7 +359,7 @@ fieldset.form-group legend {
   font-family: "Bebas Neue", sans-serif;
   font-size: 2rem;
   letter-spacing: 1.5px;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 #iscrizione-inviata p,
@@ -418,4 +418,42 @@ fieldset.form-group legend {
   fieldset.form-group legend {
     font-size: 1.4rem;
   }
+}
+
+/* --------- CONSENSO PRIVACY --------- */
+.consenso {
+  display: flex;
+  max-width: 760px;
+  text-align: left;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--isc-text);
+  cursor: pointer;
+}
+
+/* #iscrizione-form input darebbe al quadratino la larghezza di tutta la riga */
+#iscrizione-form .consenso input {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  min-height: 0;
+  margin-top: 1px;
+  padding: 0;
+  accent-color: var(--accento);
+  cursor: pointer;
+}
+
+.consenso a {
+  color: var(--accento);
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+.consenso.invalid {
+  border-color: var(--isc-alert);
 }

@@ -1,89 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
+<div id="dashboard-content" class="dashboard">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-</head>
+  <section class="pannello da-fare" aria-labelledby="titolo-da-fare">
+    <h2 class="pannello-titolo" id="titolo-da-fare"><i class="icona icona-list-check" aria-hidden="true"></i> Da fare</h2>
+    <ul id="da-fare" class="da-fare-elenco"></ul>
+  </section>
 
-<body>
-  <div id="dashboard-content">
-    <div id="match-to-show-div" class="dashboard-controls-wrapper">
-      <div class="dashboard-controls-card">
-        <!-- Sezione Giornata da Mostrare (Popolata via JS) -->
-        <div id="matchday-selection" class="control-group matchday-group"></div>
+  <div class="dashboard-griglia">
+    <section class="pannello" aria-labelledby="titolo-sito">
+      <div>
+        <h2 class="pannello-titolo" id="titolo-sito"><i class="icona icona-globe" aria-hidden="true"></i> Sito pubblico</h2>
+        <p class="pannello-descrizione">Cosa vedono i visitatori. Le modifiche sono immediate.</p>
+      </div>
 
-        <div class="vertical-divider"></div>
+      <div class="impostazione impostazione-giornata">
+        <div class="impostazione-testo">
+          <label for="matchday-to-show-input" class="etichetta">Giornata in evidenza <span id="divisione-giornata"></span></label>
+          <p class="suggerimento">La giornata mostrata in home. "Automatica" sceglie la prima con partite ancora da giocare.</p>
+        </div>
+        <div class="impostazione-controllo" id="matchday-selection"></div>
+      </div>
 
-        <!-- Sezione Toggle -->
-        <div class="control-group settings-group">
-
-          <div class="setting-item">
-            <span class="setting-label">Edizione</span>
-            <select id="edition-select" class="dashboard-select">
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-              <option value="2027">2027</option>
-              <option value="2028">2028</option>
-              <option value="2029">2029</option>
-              <option value="2030">2030</option>
-            </select>
-          </div>
-
-          <div class="setting-item">
-            <span class="setting-label">Fase Finale</span>
-            <label class="modern-switch">
-              <input type="checkbox" id="toggle-fase-finale">
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <div class="setting-item">
-            <span class="setting-label">Iscrizioni</span>
-            <label class="modern-switch">
-              <input type="checkbox" id="toggle-iscrizioni">
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <div class="setting-item">
-            <span class="setting-label">Manutenzione</span>
-            <label class="modern-switch">
-              <input type="checkbox" id="toggle-manutenzione">
-              <span class="slider"></span>
-            </label>
-          </div>
-
+      <div class="impostazione">
+        <div class="impostazione-testo">
+          <label for="edition-select" class="etichetta">Edizione</label>
+          <p class="suggerimento">L'anno del torneo mostrato sul sito e modificato dal gestionale.</p>
+        </div>
+        <div class="impostazione-controllo">
+          <select id="edition-select" class="input"></select>
         </div>
       </div>
-    </div>
 
+      <div class="impostazione">
+        <div class="impostazione-testo">
+          <span class="etichetta" id="etichetta-iscrizioni">Iscrizioni aperte</span>
+          <p class="suggerimento">Mostra il modulo di iscrizione e il link "Iscrizioni" nel menu.</p>
+        </div>
+        <label class="modern-switch">
+          <input type="checkbox" id="toggle-iscrizioni" aria-labelledby="etichetta-iscrizioni" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="impostazione">
+        <div class="impostazione-testo">
+          <span class="etichetta" id="etichetta-fase-finale">Fase finale</span>
+          <p class="suggerimento">Mostra il tabellone della fase finale in home e nella pagina Campionato.</p>
+        </div>
+        <label class="modern-switch">
+          <input type="checkbox" id="toggle-fase-finale" aria-labelledby="etichetta-fase-finale" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="impostazione impostazione-pericolosa">
+        <div class="impostazione-testo">
+          <span class="etichetta" id="etichetta-manutenzione">Manutenzione</span>
+          <p class="suggerimento">Copre tutto il sito con un avviso "torniamo presto". Solo per lavori importanti.</p>
+        </div>
+        <label class="modern-switch">
+          <input type="checkbox" id="toggle-manutenzione" aria-labelledby="etichetta-manutenzione" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="pannello" aria-labelledby="titolo-pagine">
+      <div>
+        <h2 class="pannello-titolo" id="titolo-pagine"><i class="icona icona-eye" aria-hidden="true"></i> Pagine visibili</h2>
+        <p class="pannello-descrizione">Una pagina spenta mostra un avviso al posto dei contenuti e sparisce dal menu.</p>
+      </div>
+      <div id="pagine-attive" class="elenco-impostazioni"></div>
+    </section>
+
+    <section class="pannello" aria-labelledby="titolo-arbitri">
+      <div>
+        <h2 class="pannello-titolo" id="titolo-arbitri"><i class="icona icona-flag" aria-hidden="true"></i> Arbitri</h2>
+        <p class="pannello-descrizione">
+          Gli arbitri inviano il referto dal modulo pubblico, senza bisogno di accedere. Ogni partita
+          accetta un solo referto: per farne reinviare uno, eliminalo dalla sezione Referti.
+        </p>
+      </div>
+      <div class="riga-campo">
+        <button type="button" class="btn" id="copia-link-referto"><i class="icona icona-paperclip" aria-hidden="true"></i> Copia il link del modulo</button>
+        <a class="btn btn-testo" href="/invia-report.html" target="_blank" rel="noopener">Apri il modulo</a>
+      </div>
+    </section>
+
+    <section class="pannello" aria-labelledby="titolo-accesso">
+      <div>
+        <h2 class="pannello-titolo" id="titolo-accesso"><i class="icona icona-user-shield" aria-hidden="true"></i> Chi può accedere</h2>
+        <p class="pannello-descrizione">Account Google che possono entrare nel gestionale.</p>
+      </div>
+      <div id="elenco-accessi" class="elenco-accessi"></div>
+      <form id="aggiungi-accesso" class="aggiungi-accesso">
+        <div class="campo">
+          <label for="nuovo-accesso-email">Aggiungi un account Google</label>
+          <input type="email" id="nuovo-accesso-email" class="input" placeholder="nome@gmail.com" autocomplete="off" required />
+        </div>
+        <button type="submit" class="btn btn-principale">Aggiungi</button>
+      </form>
+      <p class="suggerimento">
+        Per caricare loghi e aprire i moduli firmati, un nuovo amministratore va aggiunto anche al file
+        storage.rules del sito.
+      </p>
+      <button type="button" class="btn btn-testo esci-dashboard" id="esci-dashboard">
+        <i class="icona icona-right-from-bracket" aria-hidden="true"></i> Esci da <span id="email-dashboard"></span>
+      </button>
+    </section>
+  </div>
+
+  <section class="pannello registro" aria-labelledby="titolo-registro">
+    <div class="pannello-testa">
+      <div>
+        <h2 class="pannello-titolo" id="titolo-registro"><i class="icona icona-clock-rotate-left" aria-hidden="true"></i> Ultime modifiche</h2>
+        <p class="pannello-descrizione">Chi ha cambiato cosa. Un errore si può annullare da qui.</p>
+      </div>
+      <button type="button" class="btn" id="aggiorna-registro"><i class="icona icona-rotate" aria-hidden="true"></i> Aggiorna</button>
+    </div>
+    <ol id="registro" class="registro-elenco"></ol>
+    <button type="button" class="btn btn-testo" id="altre-modifiche" hidden>Mostra modifiche più vecchie</button>
+  </section>
+
+  <section class="pannello" aria-labelledby="titolo-classifiche">
+    <h2 class="pannello-titolo" id="titolo-classifiche"><i class="icona icona-trophy" aria-hidden="true"></i> Classifiche <span id="divisione-classifiche"></span></h2>
     <div id="rankings">
       <div id="classifica-squadre"></div>
-
       <div class="girone-section">
-        <h3>Classifica Marcatori</h3>
+        <h3>Marcatori</h3>
         <div id="classifica-gol"></div>
       </div>
-
-      <!-- <div><button id="get-mvps-button">MVP</button></div> -->
     </div>
-
-    <!-- Pagine pubbliche: una pagina spenta mostra un avviso e sparisce dal menu.
-         Gli interruttori vengono creati da dashboard.js -->
-    <div class="dashboard-controls-wrapper pagine-wrapper">
-      <div class="dashboard-controls-card pagine-group">
-        <div class="pagine-intestazione">
-          <span class="pagine-titolo">Pagine visibili sul sito</span>
-          <span class="pagine-nota">Spenta: mostra un avviso al posto dei contenuti e sparisce dal menu</span>
-        </div>
-        <div id="pagine-attive" class="control-group settings-group"></div>
-      </div>
-    </div>
-  </div>
-  </div>
-</body>
-
-</html>
+  </section>
+</div>

@@ -19,7 +19,7 @@
   border-radius: 10px;
   box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  color: var(--text);
+  color: var(--testo);
   transition: transform 0.2s;
 }
 
@@ -32,7 +32,7 @@
   position: absolute;
   top: 6px;
   right: 9px;
-  color: var(--mainText);
+  color: var(--accento);
   font-size: 1.1rem;
 }
 
@@ -46,7 +46,7 @@
   height: 100%;
 
   background-color: var(--secondary);
-  color: var(--text);
+  color: var(--testo);
 }
 
 .squadra:hover .logo-e-nome {
@@ -69,7 +69,7 @@
   font-weight: 700;
   text-align: center;
   padding: 5px;
-  color: var(--text);
+  color: var(--testo);
 }
 
 /*
@@ -130,11 +130,11 @@ break points
     font-weight: bold;
     padding-top: 15px;
     padding-bottom: 5px;
-    color: var(--mainText);
+    color: var(--accento);
   }
 
   .membro {
     font-weight: 500;
-    color: var(--text);
+    color: var(--testo);
   }
 }

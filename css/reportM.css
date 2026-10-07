@@ -1,261 +1,219 @@
-#report-content {
+/*
+===================================
+ REFERTI (gestionale e pagine dei referti)
+===================================
+*/
+
+.referti {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: start;
-  width: 100%;
-  padding: 50px;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px 32px 40px;
 }
 
-#scroll-container {
-  height: 500px;
-  overflow-y: auto;
+/* Filtri: stato e divisione */
+.referti-filtri {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
 }
 
-table {
-  border-collapse: collapse;
-  font-size: 0.8rem;
-  vertical-align: top;
+.filtro-gruppo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 3px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.18);
 }
 
-table tr:nth-child(even) {
-  background: var(--tertiary);
-}
-
-thead {
-  position: sticky;
-  top: 0;
-  text-align: left;
-  font-weight: bold;
-  background-color: var(--tertiary);
-  color: var(--mainText);
-}
-
-tbody {
-  background-color: var(--table);
-}
-
-th,
-td {
-  padding: 10px;
-  vertical-align: top;
-}
-
-table th:nth-child(1),
-table td:nth-child(1) {
-  width: 125px;
-}
-
-table th:nth-child(2),
-table td:nth-child(2) {
-  width: 120px;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-table th:nth-child(3),
-table td:nth-child(3) {
-  width: 250px;
-  max-width: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-table th:nth-child(4),
-table td:nth-child(4) {
-  width: 2000px;
-  max-width: 200px;
-}
-
-table th:nth-child(5),
-table td:nth-child(5) {
-}
-
-table th:nth-child(6),
-table td:nth-child(6) {
-  text-align: justify;
-  text-justify: inter-word;
-}
-
-table th:nth-child(7),
-table td:nth-child(7) {
-  text-align: center;
-  vertical-align: middle;
-}
-
-/* Stile di base per il bottone di conferma */
-.confirm-button {
+.filtro {
+  min-height: 36px;
+  padding: 6px 14px;
   border: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--testo-secondario);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-/* Bottone non confermato (giallo) */
-.confirm-button.not-confirmed {
-  background-color: var(--text);
+.filtro[aria-pressed="true"] {
+  background-color: var(--accento);
+  color: var(--inchiostro);
 }
 
-/* Bottone confermato (verde) */
-.confirm-button.confirmed {
-  background-color: var(--mainText);
+/* Schede */
+.referti-griglia {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  align-items: start;
+  gap: 16px;
 }
 
-.confirm-button:hover {
-  background-color: var(--mainText);
-  width: 25px;
-  height: 25px;
+.referto {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background-color: var(--superficie);
 }
 
+.referto-testa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
 
-/* =========================================
-   SMARTPHONE: ogni referto diventa una scheda
-   ========================================= */
+.referto-dove {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--testo-secondario);
+}
+
+.referto-punteggio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.referto-squadra {
+  font-family: "nomeSquadra", "Bebas Neue", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.referto-squadra.ospite {
+  text-align: right;
+}
+
+.referto-gol {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--accento);
+  white-space: nowrap;
+}
+
+.referto-differenza {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 180, 168, 0.12);
+  color: var(--errore-chiaro);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.referto-colonne {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.referto-etichetta {
+  margin-bottom: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--testo-tenue);
+}
+
+.referto-marcatori {
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.referto-marcatori li + li {
+  margin-top: 2px;
+}
+
+.referto-marcatori .autogol,
+.referto-marcatori .nessuno {
+  color: var(--testo-tenue);
+  font-style: italic;
+}
+
+.referto-dettagli {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider-color);
+  font-size: 0.88rem;
+}
+
+.referto-dettagli dt {
+  color: var(--testo-tenue);
+}
+
+.referto-dettagli dd {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Segnalazioni: le cose da leggere con attenzione */
+.referto-note {
+  padding: 12px 14px;
+  border-left: 4px solid var(--orange);
+  border-radius: 8px;
+  background-color: rgba(242, 106, 27, 0.12);
+}
+
+.referto-note .referto-etichetta {
+  color: #ffc9a8;
+}
+
+.referto-note p {
+  font-size: 0.92rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.referto-azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.btn-elimina {
+  color: var(--errore-chiaro);
+}
+
+/* Pagine dei referti (fuori dal gestionale) */
+.pagina-referti {
+  height: auto;
+  min-height: 100vh;
+}
+
+.pagina-referti-testa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 24px 32px 0;
+}
+
+.pagina-referti-testa h1 {
+  font-size: 1.8rem;
+  color: var(--accento);
+}
 
 @media (max-width: 1024px) {
-  #report-content {
-    display: block;
-    padding: 16px;
+  .referti {
+    padding: 16px 16px 32px;
   }
 
-  #scroll-container {
-    height: auto;
-    overflow: visible;
-  }
-
-  #scroll-container table,
-  #scroll-container tbody,
-  #scroll-container tr,
-  #scroll-container td {
-    display: block;
-    width: 100%;
-    max-width: none;
-  }
-
-  #scroll-container table {
-    font-size: 0.9rem;
-    background: transparent;
-  }
-
-  #scroll-container thead {
-    display: none;
-  }
-
-  #scroll-container tbody {
-    background: transparent;
-  }
-
-  #scroll-container tr {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 12px;
-    padding: 12px 14px 4px;
-    border: 1px solid var(--glass-border);
-    border-left: 4px solid var(--mainText);
-    border-radius: 12px;
-    background-color: var(--secondary);
-  }
-
-  /* Referti ancora da confermare: bordo arancione per trovarli a colpo d'occhio */
-  #scroll-container tr:has(.not-confirmed) {
-    border-left-color: var(--orange);
-  }
-
-  #scroll-container td {
-    order: 3;
-    padding: 8px 0;
-    overflow: visible;
-    border-top: 1px solid var(--white-20);
-    text-align: left;
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-
-  #scroll-container td::before {
-    content: attr(data-label);
-    display: block;
-    margin-bottom: 3px;
-    color: var(--mainText);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  #scroll-container td:empty {
-    display: none;
-  }
-
-  /* Data in alto, poi la partita, poi l'arbitro */
-  #scroll-container td:nth-child(1) {
-    order: 0;
-    padding: 0 56px 6px 0;
-    border-top: none;
-    color: var(--white-50);
-    font-size: 0.78rem;
-  }
-
-  #scroll-container td:nth-child(3) {
-    order: 1;
-    padding-right: 56px;
-    border-top: none;
-    font-size: 1rem;
-    font-weight: 700;
-  }
-
-  #scroll-container td:nth-child(2) {
-    order: 2;
-  }
-
-  #scroll-container td:nth-child(1)::before,
-  #scroll-container td:nth-child(3)::before,
-  #scroll-container td:nth-child(7)::before {
-    display: none;
-  }
-
-  #scroll-container td:nth-child(3) div:last-child {
-    color: var(--white-50);
-    font-size: 0.78rem;
-    font-weight: 500;
-  }
-
-  #scroll-container td:nth-child(6) {
-    text-align: left;
-  }
-
-  /* Pulsante di conferma in alto a destra, grande quanto un dito */
-  #scroll-container td:nth-child(7) {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: auto;
-    padding: 0;
-    border: none;
-  }
-
-  .confirm-button,
-  .confirm-button:hover {
-    width: 44px;
-    height: 44px;
-    border: 2px solid transparent;
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
-
-  .confirm-button.not-confirmed,
-  .confirm-button.not-confirmed:hover {
-    border-color: var(--orange);
-    background-color: var(--white);
-    color: var(--orange);
-  }
-
-  .confirm-button.confirmed,
-  .confirm-button.confirmed:hover {
-    background-color: var(--mainText);
-    color: var(--darkText);
+  .pagina-referti-testa {
+    padding: 16px 16px 0;
   }
 }

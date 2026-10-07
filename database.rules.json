@@ -1,0 +1,76 @@
+/*
+  REGOLE DEL REALTIME DATABASE
+  Si pubblicano con:  npm run regole
+  (oppure incollandole in Firebase console > Realtime Database > Regole)
+
+  PRIMA DI PUBBLICARLE: in Amministratori deve esserci almeno un indirizzo,
+  altrimenti nessuno può più entrare nel gestionale (vedi js/accesso.js).
+
+  Amministratore = account Google con email verificata presente in
+    Amministratori/<email con le virgole al posto dei punti> = true
+
+  - Pubblico in lettura: classifiche, calendario, squadre, impostazioni,
+    albo d'oro e referti (pagine referti.html dei padri, senza accesso).
+  - Pubblico in scrittura, solo per creare voci nuove: iscrizioni (se aperte)
+    e referti degli arbitri.
+  - Tutto il resto (iscrizioni con i telefoni, bozze, registro) solo amministratori.
+*/
+{
+  "rules": {
+    ".read": "auth != null && auth.token.email_verified == true && root.child('Amministratori').child(auth.token.email.toLowerCase().replace('.', ',')).val() == true",
+    ".write": "auth != null && auth.token.email_verified == true && root.child('Amministratori').child(auth.token.email.toLowerCase().replace('.', ',')).val() == true",
+
+    "Amministratori": {
+      "$email": {
+        /* Ognuno può controllare solo se stesso: serve alla schermata di accesso */
+        ".read": "auth != null && auth.token.email_verified == true && auth.token.email.toLowerCase().replace('.', ',') == $email",
+        ".validate": "newData.isBoolean()"
+      }
+    },
+
+    "Impostazioni": { ".read": true },
+    "ImpostazioniTest": { ".read": true },
+
+    "Calcio": {
+      "AlboOro": { ".read": true },
+
+      "$edizione": {
+        "GiornataDaMostrare": { ".read": true },
+
+        "Iscrizioni": {
+          "$chiave": {
+            /* Dal modulo pubblico: solo iscrizioni nuove, solo se le iscrizioni sono aperte e solo
+               con i campi giusti. I controlli sono qui e non in ".validate" perché
+               ".validate" varrebbe anche per gli amministratori, che devono poter
+               correggere anche le iscrizioni vecchie */
+            ".write": "!data.exists() && newData.exists() && (($edizione == 'Test' && root.child('ImpostazioniTest/iscrizioniAperte').val() != false) || ($edizione != 'Test' && root.child('Impostazioni/iscrizioniAperte').val() != false)) && newData.hasChildren(['Divisione', 'NomeSquadra', 'Responsabili', 'Allenatori', 'Giocatori', 'ModuloFirmato', 'OraInvio', 'Stato']) && (newData.child('Divisione').val() == 'Superiori' || newData.child('Divisione').val() == 'Giovani') && newData.child('NomeSquadra').isString() && newData.child('NomeSquadra').val().length > 0 && newData.child('NomeSquadra').val().length <= 60 && newData.child('ModuloFirmato/Percorso').isString() && newData.child('ModuloFirmato/Percorso').val().beginsWith('Moduli/') && newData.child('Stato').val() == 'Nuova' && newData.child('OraInvio').isString() && newData.child('OraInvio').val().length <= 40",
+            "Responsabili": { "$i": { "$campo": { ".validate": "newData.isString() && newData.val().length <= 120" } } },
+            "Allenatori": { "$i": { "$campo": { ".validate": "newData.isString() && newData.val().length <= 120" } } },
+            "Giocatori": { "$i": { "$campo": { ".validate": "newData.isString() && newData.val().length <= 120" } } },
+            "Arbitri": { "$i": { "$campo": { ".validate": "newData.isString() && newData.val().length <= 120" } } }
+          }
+        },
+
+        "$divisione": {
+          "Squadre": { ".read": true },
+          "Partite": { ".read": true },
+          "Calendario": { ".read": true },
+          "GiornataDaMostrare": { ".read": true },
+
+          "Referti": {
+            /* Leggibili da tutti: le pagine dei referti per i padri non chiedono l'accesso */
+            ".read": true,
+            "$giornata": {
+              "$partita": {
+                /* Dal modulo dell'arbitro: un solo referto per partita, solo per partite in
+                   calendario e con i campi giusti. Gli amministratori possono correggerli
+                   o cancellarli liberamente */
+                ".write": "!data.exists() && newData.exists() && root.child('Calcio').child($edizione).child($divisione).child('Calendario').child($giornata).child($partita).exists() && newData.hasChildren(['NomeArbitro', 'SquadraCasa', 'SquadraOspite', 'GolSquadraCasa', 'GolSquadraOspite', 'OraInvio']) && newData.child('NomeArbitro').isString() && newData.child('NomeArbitro').val().length > 0 && newData.child('NomeArbitro').val().length <= 80 && newData.child('GolSquadraCasa').isNumber() && newData.child('GolSquadraCasa').val() >= 0 && newData.child('GolSquadraCasa').val() <= 99 && newData.child('GolSquadraOspite').isNumber() && newData.child('GolSquadraOspite').val() >= 0 && newData.child('GolSquadraOspite').val() <= 99 && newData.child('Divisione').val() == $divisione && (!newData.child('Commenti').exists() || (newData.child('Commenti').isString() && newData.child('Commenti').val().length <= 3000)) && (!newData.child('MVP').exists() || (newData.child('MVP').isString() && newData.child('MVP').val().length <= 80))"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

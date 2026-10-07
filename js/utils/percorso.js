@@ -18,24 +18,24 @@ funzionano con entrambe le forme:
 */
 
 export function nomePagina(percorso) {
-    // L'apostrofo di albo-d'oro può arrivare codificato come %27
-    try {
-        percorso = decodeURIComponent(percorso);
-    } catch (errore) {
-        // Percorso malformato: si prosegue con la versione grezza
-    }
+  // L'apostrofo di albo-d'oro può arrivare codificato come %27
+  try {
+    percorso = decodeURIComponent(percorso);
+  } catch (errore) {
+    // Percorso malformato: si prosegue con la versione grezza
+  }
 
-    const nome = percorso
-        .toLowerCase()
-        .replace(/\.html$/, "")
-        .replace(/\/+$/, "")
-        .split("/")
-        .pop();
+  const nome = percorso
+    .toLowerCase()
+    .replace(/\.html$/, "")
+    .replace(/\/+$/, "")
+    .split("/")
+    .pop();
 
-    return nome === "index" ? "" : nome;
+  return nome === "index" ? "" : nome;
 }
 
 // Nome della pagina attualmente aperta
 export function paginaCorrente() {
-    return nomePagina(window.location.pathname);
+  return nomePagina(window.location.pathname);
 }

@@ -4,85 +4,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#377d5d" />
+  <meta name="theme-color" content="#24543f" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="COFTA Gestionale" />
-  <title>Gestionale</title>
-  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.svg" />
-  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
   <meta name="robots" content="noindex, nofollow" />
+  <title>Gestionale - Cofta</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300..900&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400..800&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
   <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" />
   <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js" />
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js" />
 
   <link rel="stylesheet" href="/css/gestionale.css" />
-  <link rel="stylesheet" href="/css/auth.css" />
-  <link rel="stylesheet" href="/css/colors.css" />
   <link rel="stylesheet" href="/css/icone.css" />
+  <link rel="stylesheet" href="/css/icone-gestionale.css" />
   <!-- Lo stile della sezione aperta viene aggiunto da gestionale.js -->
 </head>
 
 <body>
-  <div class="grid">
-    <nav>
-      <div class="box-logo">
-        <img class="logo" src="assets/images/LOGO_COFTA_SITO_2.svg" alt="" />
+  <div class="app">
+    <nav class="app-nav" aria-label="Sezioni del gestionale">
+      <div class="app-marchio">
+        <img class="logo" src="/assets/images/LOGO_COFTA_SITO_2.svg" alt="Cofta Milano" width="100" height="46" />
+        <span class="app-marchio-sotto">Gestionale<br /><b id="edizione-attiva"></b></span>
       </div>
-      <select id="division">
+
+      <!-- Fonte del valore per gli script: lo comandano i pulsanti "division-switch" -->
+      <select id="division" hidden tabindex="-1" aria-hidden="true">
         <option value="Superiori">Superiori</option>
         <option value="Giovani">Giovani</option>
       </select>
+      <div class="division-switch app-nav-divisione" role="group" aria-label="Divisione">
+        <button type="button" data-division="Superiori">Superiori</button>
+        <button type="button" data-division="Giovani">Giovani</button>
+      </div>
+
       <!-- Su smartphone questa lista diventa la barra di navigazione in basso -->
       <ul class="nav-links">
-        <li><a href="#dashboard" id="nav-dashboard"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a></li>
-        <li><a href="#iscrizioni" id="nav-iscrizioni"><i class="fa-solid fa-clipboard-list"></i><span>Iscrizioni</span></a></li>
-        <li><a href="#squadre" id="nav-squadre"><i class="fa-solid fa-users"></i><span>Squadre</span></a></li>
-        <li><a href="#calendario" id="nav-calendario"><i class="fa-solid fa-calendar-days"></i><span>Calendario</span></a></li>
-        <li><a href="#report" id="nav-report"><i class="fa-solid fa-file-lines"></i><span>Report</span></a></li>
-        <li><a href="#partite" id="nav-partite"><i class="fa-solid fa-futbol"></i><span>Partite</span></a></li>
-        <li><a href="#social" id="nav-social"><i class="fa-solid fa-images"></i><span>Social</span></a></li>
+        <li class="nav-gruppo" aria-hidden="true">Torneo</li>
+        <li><a href="#dashboard" id="nav-dashboard"><i class="icona icona-gauge-high" aria-hidden="true"></i><span>Dashboard</span></a></li>
+        <li><a href="#partite" id="nav-partite"><i class="icona icona-futbol" aria-hidden="true"></i><span>Risultati</span></a></li>
+        <li><a href="#report" id="nav-report"><i class="icona icona-file-lines" aria-hidden="true"></i><span>Referti</span><b class="nav-conteggio" id="conteggio-report" hidden></b></a></li>
+        <li class="nav-gruppo" aria-hidden="true">Preparazione</li>
+        <li><a href="#iscrizioni" id="nav-iscrizioni"><i class="icona icona-clipboard-list" aria-hidden="true"></i><span>Iscrizioni</span><b class="nav-conteggio" id="conteggio-iscrizioni" hidden></b></a></li>
+        <li><a href="#squadre" id="nav-squadre"><i class="icona icona-users" aria-hidden="true"></i><span>Squadre</span></a></li>
+        <li><a href="#calendario" id="nav-calendario"><i class="icona icona-calendar-days" aria-hidden="true"></i><span>Calendario</span></a></li>
+        <li class="nav-gruppo" aria-hidden="true">Comunicazione</li>
+        <li><a href="#social" id="nav-social"><i class="icona icona-images" aria-hidden="true"></i><span>Social</span></a></li>
       </ul>
+
+      <div class="app-account">
+        <span class="app-account-email" id="account-email"></span>
+        <div class="app-account-azioni">
+          <a href="/" target="_blank" rel="noopener"><i class="icona icona-globe" aria-hidden="true"></i> Apri il sito</a>
+          <button type="button" id="esci"><i class="icona icona-right-from-bracket" aria-hidden="true"></i> Esci</button>
+        </div>
+      </div>
     </nav>
-    <header>
-      <h1 id="current-section">Dashboard</h1>
-      <!-- Solo smartphone: comanda il select #division, che resta l'unica fonte del valore -->
-      <div class="division-switch" id="division-switch" role="group" aria-label="Divisione">
+
+    <header class="app-header">
+      <div class="app-titolo">
+        <h1 id="current-section">Dashboard</h1>
+        <p id="descrizione-sezione" class="app-descrizione"></p>
+      </div>
+      <!-- Solo smartphone: lo stesso selettore della barra laterale -->
+      <div class="division-switch app-header-divisione" role="group" aria-label="Divisione">
         <button type="button" data-division="Superiori">Superiori</button>
         <button type="button" data-division="Giovani">Giovani</button>
       </div>
     </header>
+
     <main>
       <div id="content"></div>
     </main>
   </div>
 
-  <script type="module">
-    import { initAuthGuard } from "./js/components/auth-guard.js";
-    import { edizioneForzata, edizioneTest } from "./js/divisionAndVariables.js";
-
-    initAuthGuard();
-
-    // Con ?edizione=Test (o un anno) si lavora su un'altra edizione: deve essere evidente
-    if (edizioneForzata) {
-      const badge = document.createElement("span");
-      badge.className = "badge-test";
-      badge.textContent = edizioneForzata;
-      badge.title = edizioneTest
-        ? "Stai modificando Calcio/Test, non i dati del torneo"
-        : `Stai modificando l'edizione ${edizioneForzata}, non quella corrente`;
-      document.getElementById("current-section").after(badge);
-    }
-  </script>
-  <script type="module" src="js/gestionale.js"></script>
-  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="/js/gestionale.js"></script>
 </body>
 
 </html>

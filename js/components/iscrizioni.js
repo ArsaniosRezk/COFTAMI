@@ -1,14 +1,7 @@
-import {
-  db,
-  ref,
-  remove,
-  update,
-  getData,
-  setData,
-  updateData,
-} from "../firebase.js";
-import { edition } from "../divisionAndVariables.js";
-import { capitalize, formatDateTime } from "../utils/formatters.js";
+import { db, ref, remove, update, getData, setData, updateData, urlFile } from "../firebase.js";
+import { TELEFONO_REGEX, pulisciTelefono } from "../utils/contatti.js";
+import { edition } from "../divisione.js";
+import { capitalize, formatDateTime } from "../utils/formattazione.js";
 import { conferma as chiediConferma, avviso as finestraAvviso, mostraToast } from "../utils/interfaccia.js";
 
 // Messaggi al posto di alert(): brevi in basso, quelli lunghi in una finestra
@@ -37,12 +30,9 @@ const RUOLI = [
   ["Arbitro", "Arbitri"],
 ];
 
-// Stesse regole del modulo pubblico (iscrizione.js)
-const TELEFONO_REGEX = /^\+?\d{8,15}$/;
-
 // Caratteri che Firebase non accetta nelle chiavi delle squadre, più ":"
-// che separa le due squadre nelle chiavi delle partite (vedi teams.js)
-const CARATTERI_VIETATI = /[\/#$\[\]:]/;
+// che separa le due squadre nelle chiavi delle partite (vedi components/squadre.js)
+const CARATTERI_VIETATI = /[/#$[\]:]/;
 
 // Stato della vista (filtri)
 let filtroDivisione = "Tutte";
@@ -67,10 +57,6 @@ function normalizzaSpazi(valore) {
   return valore.replace(/\s+/g, " ").trim();
 }
 
-function pulisciTelefono(telefono) {
-  return telefono.replace(/[\s.\-/()]/g, "");
-}
-
 // Stessa chiave generata dal modulo pubblico: {Divisione}-{NomeSquadra}
 function chiaveIscrizione(divisione, nomeSquadra) {
   const nome = normalizzaSpazi(nomeSquadra)
@@ -79,7 +65,7 @@ function chiaveIscrizione(divisione, nomeSquadra) {
   return `${divisione}-${nome}`;
 }
 
-// Le squadre usano "_" al posto dei punti (vedi teams.js)
+// Le squadre usano "_" al posto dei punti (vedi components/squadre.js)
 function chiaveSquadra(nomeSquadra) {
   return nomeSquadra.trim().replace(/\./g, "_");
 }
@@ -92,13 +78,16 @@ function mappaNomi(persone) {
 }
 
 // L'URL arriva da un modulo pubblico: accettiamo solo veri link http(s)
+// Il modulo firmato è privato: dalle iscrizioni nuove arriva solo il percorso su Storage
+function haModulo(modulo) {
+  return Boolean(linkSicuro(modulo?.Url) || String(modulo?.Percorso || "").startsWith("Moduli/"));
+}
+
 function linkSicuro(url) {
   if (typeof url !== "string") return null;
   try {
     const analizzato = new URL(url);
-    return analizzato.protocol === "https:" || analizzato.protocol === "http:"
-      ? url
-      : null;
+    return analizzato.protocol === "https:" || analizzato.protocol === "http:" ? url : null;
   } catch {
     return null;
   }
@@ -127,8 +116,7 @@ async function caricaIscrizioni() {
     .map(([chiave, dati]) => ({ chiave, ...dati }))
     .sort((a, b) => {
       // Prima per divisione (Superiori, Giovani), poi per nome squadra
-      const ordineDivisione =
-        DIVISIONI.indexOf(a.Divisione) - DIVISIONI.indexOf(b.Divisione);
+      const ordineDivisione = DIVISIONI.indexOf(a.Divisione) - DIVISIONI.indexOf(b.Divisione);
       if (ordineDivisione !== 0) return ordineDivisione;
       return (a.NomeSquadra || "").localeCompare(b.NomeSquadra || "", "it");
     });
@@ -152,9 +140,7 @@ function iscrizioniFiltrate() {
       .map((persona) => persona.Nome)
       .join(" ");
 
-    return `${iscrizione.NomeSquadra} ${nomiPersone}`
-      .toLowerCase()
-      .includes(testo);
+    return `${iscrizione.NomeSquadra} ${nomiPersone}`.toLowerCase().includes(testo);
   });
 }
 
@@ -172,8 +158,7 @@ export async function showIscrizioni() {
     iscrizioniCache = await caricaIscrizioni();
   } catch (error) {
     console.error("Errore nel caricamento delle iscrizioni:", error);
-    contenitore.innerHTML =
-      '<p class="iscrizioni-vuoto">Errore nel caricamento delle iscrizioni.</p>';
+    contenitore.innerHTML = '<p class="iscrizioni-vuoto">Errore nel caricamento delle iscrizioni.</p>';
     return;
   }
 
@@ -202,8 +187,7 @@ function disegnaElenco() {
   const visibili = iscrizioniFiltrate();
 
   if (visibili.length === 0) {
-    elenco.innerHTML =
-      '<p class="iscrizioni-vuoto">Nessuna iscrizione da mostrare.</p>';
+    elenco.innerHTML = '<p class="iscrizioni-vuoto">Nessuna iscrizione da mostrare.</p>';
     return;
   }
 
@@ -235,9 +219,7 @@ function creaBarraStrumenti() {
   barra.id = "iscrizioni-toolbar";
 
   const totali = iscrizioniCache.length;
-  const daConvertire = iscrizioniCache.filter(
-    (i) => i.Stato !== "Convertita"
-  ).length;
+  const daConvertire = iscrizioniCache.filter((i) => i.Stato !== "Convertita").length;
 
   const riepilogo = document.createElement("div");
   riepilogo.className = "iscrizioni-riepilogo";
@@ -278,21 +260,21 @@ function creaBarraStrumenti() {
 
   const esporta = document.createElement("button");
   esporta.className = "custom-button iscrizioni-azione";
-  esporta.innerHTML = '<i class="fa-solid fa-file-csv"></i> Esporta CSV';
+  esporta.innerHTML = '<i class="icona icona-file-csv" aria-hidden="true"></i> Esporta CSV';
   esporta.addEventListener("click", esportaCsv);
   controlli.appendChild(esporta);
 
   const convertiTutte = document.createElement("button");
   convertiTutte.className = "custom-button iscrizioni-azione";
-  convertiTutte.innerHTML =
-    '<i class="fa-solid fa-people-group"></i> Converti tutte';
+  convertiTutte.innerHTML = '<i class="icona icona-people-group" aria-hidden="true"></i> Converti tutte';
   convertiTutte.addEventListener("click", convertiTutteLeIscrizioni);
   controlli.appendChild(convertiTutte);
 
   const aggiorna = document.createElement("button");
   aggiorna.className = "custom-button iscrizioni-azione";
-  aggiorna.innerHTML = '<i class="fa-solid fa-rotate"></i>';
+  aggiorna.innerHTML = '<i class="icona icona-rotate" aria-hidden="true"></i>';
   aggiorna.title = "Ricarica";
+  aggiorna.setAttribute("aria-label", "Ricarica le iscrizioni");
   aggiorna.addEventListener("click", showIscrizioni);
   controlli.appendChild(aggiorna);
 
@@ -316,7 +298,7 @@ function creaCard(iscrizione) {
   const titolo = document.createElement("div");
   titolo.className = "iscrizione-titolo";
   // I nomi arrivano da un modulo pubblico: sempre via textContent, mai innerHTML
-  titolo.innerHTML = '<i class="fa-solid fa-chevron-right freccia"></i>';
+  titolo.innerHTML = '<i class="icona icona-chevron-right freccia" aria-hidden="true"></i>';
 
   const nomeSquadraEl = document.createElement("span");
   nomeSquadraEl.className = "nome-squadra";
@@ -329,22 +311,20 @@ function creaCard(iscrizione) {
   titolo.appendChild(badgeDivisione);
 
   const badgeStato = document.createElement("span");
-  badgeStato.className = convertita
-    ? "badge badge-convertita"
-    : "badge badge-nuova";
+  badgeStato.className = convertita ? "badge badge-convertita" : "badge badge-nuova";
   badgeStato.textContent = convertita ? "Convertita" : "Da convertire";
   titolo.appendChild(badgeStato);
 
   const meta = document.createElement("div");
   meta.className = "iscrizione-meta";
   meta.innerHTML =
-    `<span title="Responsabili"><i class="fa-solid fa-user-tie"></i> ${conteggi.responsabili} resp.</span>` +
-    `<span title="Allenatori"><i class="fa-solid fa-clipboard-user"></i> ${conteggi.allenatori} all.</span>` +
-    `<span title="Giocatori"><i class="fa-solid fa-futbol"></i> ${conteggi.giocatori} giocatori</span>` +
-    `<span title="Arbitri"><i class="fa-solid fa-flag"></i> ${conteggi.arbitri} arbitri</span>` +
-    (linkSicuro(iscrizione.ModuloFirmato?.Url)
-      ? '<span title="MODULO DI PARTECIPAZIONE allegato"><i class="fa-solid fa-paperclip"></i> modulo</span>'
-      : '<span class="modulo-mancante" title="MODULO DI PARTECIPAZIONE mancante"><i class="fa-solid fa-triangle-exclamation"></i> modulo mancante</span>') +
+    `<span title="Responsabili"><i class="icona icona-user-tie" aria-hidden="true"></i> ${conteggi.responsabili} resp.</span>` +
+    `<span title="Allenatori"><i class="icona icona-clipboard-user" aria-hidden="true"></i> ${conteggi.allenatori} all.</span>` +
+    `<span title="Giocatori"><i class="icona icona-futbol" aria-hidden="true"></i> ${conteggi.giocatori} giocatori</span>` +
+    `<span title="Arbitri"><i class="icona icona-flag" aria-hidden="true"></i> ${conteggi.arbitri} arbitri</span>` +
+    (haModulo(iscrizione.ModuloFirmato)
+      ? '<span title="MODULO DI PARTECIPAZIONE allegato"><i class="icona icona-paperclip" aria-hidden="true"></i> modulo</span>'
+      : '<span class="modulo-mancante" title="MODULO DI PARTECIPAZIONE mancante"><i class="icona icona-triangle-exclamation" aria-hidden="true"></i> modulo mancante</span>') +
     `<span class="data-invio">${iscrizione.OraInvio ? formatDateTime(iscrizione.OraInvio) : ""}</span>`;
 
   intestazione.appendChild(titolo);
@@ -375,9 +355,7 @@ function mostraDettaglio(dettaglio, iscrizione) {
   dettaglio.classList.remove("in-modifica");
 
   RUOLI.forEach(([, campo]) => {
-    dettaglio.appendChild(
-      creaTabellaPersone(campo, comeLista(iscrizione[campo]))
-    );
+    dettaglio.appendChild(creaTabellaPersone(campo, comeLista(iscrizione[campo])));
   });
   dettaglio.appendChild(creaSezioneModulo(iscrizione.ModuloFirmato));
 
@@ -386,17 +364,15 @@ function mostraDettaglio(dettaglio, iscrizione) {
 
   const modifica = document.createElement("button");
   modifica.className = "custom-button";
-  modifica.innerHTML = '<i class="fa-solid fa-pen"></i> Modifica';
-  modifica.addEventListener("click", () =>
-    mostraModifica(dettaglio, iscrizione)
-  );
+  modifica.innerHTML = '<i class="icona icona-pen" aria-hidden="true"></i> Modifica';
+  modifica.addEventListener("click", () => mostraModifica(dettaglio, iscrizione));
   azioni.appendChild(modifica);
 
   const converti = document.createElement("button");
   converti.className = "custom-button";
   converti.innerHTML = convertita
-    ? '<i class="fa-solid fa-rotate"></i> Riconverti in squadra'
-    : '<i class="fa-solid fa-shield-halved"></i> Converti in squadra';
+    ? '<i class="icona icona-rotate" aria-hidden="true"></i> Riconverti in squadra'
+    : '<i class="icona icona-shield-halved" aria-hidden="true"></i> Converti in squadra';
   converti.addEventListener("click", () => convertiSingola(iscrizione));
   azioni.appendChild(converti);
 
@@ -409,7 +385,7 @@ function mostraDettaglio(dettaglio, iscrizione) {
 
   const elimina = document.createElement("button");
   elimina.className = "custom-button button-elimina";
-  elimina.innerHTML = '<i class="fa-solid fa-trash"></i> Elimina';
+  elimina.innerHTML = '<i class="icona icona-trash" aria-hidden="true"></i> Elimina';
   elimina.addEventListener("click", () => eliminaIscrizione(iscrizione));
   azioni.appendChild(elimina);
 
@@ -426,7 +402,7 @@ function creaSezioneModulo(modulo) {
 
   const url = linkSicuro(modulo?.Url);
 
-  if (!url) {
+  if (!haModulo(modulo)) {
     const vuoto = document.createElement("p");
     vuoto.className = "dettaglio-vuoto";
     vuoto.textContent = "Nessun modulo firmato allegato.";
@@ -434,12 +410,30 @@ function creaSezioneModulo(modulo) {
     return sezione;
   }
 
-  const link = document.createElement("a");
+  const link = document.createElement(url ? "a" : "button");
   link.className = "modulo-link";
-  link.href = url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.innerHTML = '<i class="fa-solid fa-file-arrow-down"></i>';
+  if (url) {
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+  } else {
+    // L'indirizzo si chiede solo quando serve (accesso da amministratore).
+    // La finestra si apre subito, altrimenti il browser la bloccherebbe
+    link.type = "button";
+    link.addEventListener("click", async () => {
+      const finestra = window.open("", "_blank");
+      try {
+        const indirizzo = await urlFile(modulo.Percorso);
+        if (finestra) finestra.location = indirizzo;
+        else location.href = indirizzo;
+      } catch (errore) {
+        finestra?.close();
+        console.error("Modulo non disponibile:", errore);
+        segnalaErrore("Impossibile aprire il modulo: serve un account abilitato in storage.rules.");
+      }
+    });
+  }
+  link.innerHTML = '<i class="icona icona-file-arrow-down" aria-hidden="true"></i>';
 
   const nome = document.createElement("span");
   nome.textContent = modulo.NomeFile || "Scarica il modulo firmato";
@@ -460,8 +454,7 @@ function creaTabellaPersone(titolo, persone) {
   if (persone.length === 0) {
     const vuoto = document.createElement("p");
     vuoto.className = "dettaglio-vuoto";
-    vuoto.textContent =
-      titolo === "Arbitri" ? "Nessun arbitro indicato." : "Nessuno indicato.";
+    vuoto.textContent = titolo === "Arbitri" ? "Nessun arbitro indicato." : "Nessuno indicato.";
     sezione.appendChild(vuoto);
     return sezione;
   }
@@ -522,11 +515,7 @@ function mostraModifica(dettaglio, iscrizione) {
   const campiSquadra = document.createElement("div");
   campiSquadra.className = "modifica-campi-squadra";
 
-  const nomeInput = creaInput(
-    "modifica-nome-squadra",
-    iscrizione.NomeSquadra,
-    "Nome squadra"
-  );
+  const nomeInput = creaInput("modifica-nome-squadra", iscrizione.NomeSquadra, "Nome squadra");
   campiSquadra.appendChild(nomeInput);
 
   const divisioneSelect = document.createElement("select");
@@ -537,9 +526,7 @@ function mostraModifica(dettaglio, iscrizione) {
     opzione.textContent = divisione;
     divisioneSelect.appendChild(opzione);
   });
-  divisioneSelect.value = DIVISIONI.includes(iscrizione.Divisione)
-    ? iscrizione.Divisione
-    : DIVISIONI[0];
+  divisioneSelect.value = DIVISIONI.includes(iscrizione.Divisione) ? iscrizione.Divisione : DIVISIONI[0];
   campiSquadra.appendChild(divisioneSelect);
 
   sezioneSquadra.appendChild(campiSquadra);
@@ -547,11 +534,7 @@ function mostraModifica(dettaglio, iscrizione) {
 
   // ---- PERSONE ----
   const editor = RUOLI.map(([singolare, campo]) => {
-    const sezione = creaEditorPersone(
-      campo,
-      singolare,
-      comeLista(iscrizione[campo])
-    );
+    const sezione = creaEditorPersone(campo, singolare, comeLista(iscrizione[campo]));
     dettaglio.appendChild(sezione.elemento);
     return { campo, leggi: sezione.leggi };
   });
@@ -563,7 +546,7 @@ function mostraModifica(dettaglio, iscrizione) {
   const azioni = document.createElement("div");
   azioni.className = "iscrizione-azioni";
 
-  const testoSalva = '<i class="fa-solid fa-floppy-disk"></i> Salva modifiche';
+  const testoSalva = '<i class="icona icona-floppy-disk" aria-hidden="true"></i> Salva modifiche';
   const salva = document.createElement("button");
   salva.className = "custom-button";
   salva.innerHTML = testoSalva;
@@ -571,9 +554,7 @@ function mostraModifica(dettaglio, iscrizione) {
   const annulla = document.createElement("button");
   annulla.className = "custom-button button-elimina";
   annulla.textContent = "Annulla";
-  annulla.addEventListener("click", () =>
-    mostraDettaglio(dettaglio, iscrizione)
-  );
+  annulla.addEventListener("click", () => mostraDettaglio(dettaglio, iscrizione));
 
   salva.addEventListener("click", async () => {
     errore.textContent = "";
@@ -649,7 +630,8 @@ function creaEditorPersone(campo, singolare, persone) {
     rimuovi.type = "button";
     rimuovi.className = "modifica-rimuovi";
     rimuovi.title = `Rimuovi ${singolare.toLowerCase()}`;
-    rimuovi.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    rimuovi.setAttribute("aria-label", rimuovi.title);
+    rimuovi.innerHTML = '<i class="icona icona-xmark" aria-hidden="true"></i>';
     rimuovi.addEventListener("click", () => {
       riga.remove();
       aggiornaTitolo();
@@ -667,7 +649,7 @@ function creaEditorPersone(campo, singolare, persone) {
   const aggiungi = document.createElement("button");
   aggiungi.type = "button";
   aggiungi.className = "modifica-aggiungi";
-  aggiungi.innerHTML = `<i class="fa-solid fa-plus"></i> Aggiungi ${singolare.toLowerCase()}`;
+  aggiungi.innerHTML = `<i class="icona icona-plus" aria-hidden="true"></i> Aggiungi ${singolare.toLowerCase()}`;
   aggiungi.addEventListener("click", () => aggiungiRiga().focus());
   sezione.appendChild(aggiungi);
 
@@ -692,16 +674,12 @@ function creaEditorPersone(campo, singolare, persone) {
       // Il nome diventa una chiave della squadra su Firebase
       if (CARATTERI_VIETATI.test(nome) || nome.includes(".")) {
         nomeInput.classList.add("invalid");
-        risultato.problemi.push(
-          `${campo}: "${nome}" contiene caratteri non ammessi (. / # $ [ ] :).`
-        );
+        risultato.problemi.push(`${campo}: "${nome}" contiene caratteri non ammessi (. / # $ [ ] :).`);
         return;
       }
       if (telefono && !TELEFONO_REGEX.test(telefono)) {
         telInput.classList.add("invalid");
-        risultato.problemi.push(
-          `${campo}: telefono di ${nome} non valido (8-15 cifre).`
-        );
+        risultato.problemi.push(`${campo}: telefono di ${nome} non valido (8-15 cifre).`);
         return;
       }
       if (nomiVisti.has(nome.toLowerCase())) {
@@ -727,8 +705,7 @@ async function salvaModifiche(iscrizione, dati) {
   const nuovaChiave = chiaveIscrizione(dati.Divisione, dati.NomeSquadra);
   const convertita = iscrizione.Stato === "Convertita";
   const squadraCambiata =
-    chiaveSquadra(dati.NomeSquadra) !==
-      chiaveSquadra(iscrizione.NomeSquadra || "") ||
+    chiaveSquadra(dati.NomeSquadra) !== chiaveSquadra(iscrizione.NomeSquadra || "") ||
     dati.Divisione !== iscrizione.Divisione;
 
   if (convertita && squadraCambiata) {
@@ -752,9 +729,7 @@ async function salvaModifiche(iscrizione, dati) {
       await setData(`${iscrizioniPath()}/${vecchiaChiave}`, aggiornata);
     } else {
       if (await getData(`${iscrizioniPath()}/${nuovaChiave}`)) {
-        segnalaErrore(
-          `Esiste già un'iscrizione per "${dati.NomeSquadra}" (${dati.Divisione}).`
-        );
+        segnalaErrore(`Esiste già un'iscrizione per "${dati.NomeSquadra}" (${dati.Divisione}).`);
         return false;
       }
       // Spostamento atomico: la nuova chiave viene scritta e la vecchia rimossa insieme
@@ -872,8 +847,7 @@ async function convertiSingola(iscrizione) {
 
 async function convertiTutteLeIscrizioni() {
   const daConvertire = iscrizioniFiltrate().filter(
-    (iscrizione) =>
-      iscrizione.Stato !== "Convertita" && DIVISIONI.includes(iscrizione.Divisione)
+    (iscrizione) => iscrizione.Stato !== "Convertita" && DIVISIONI.includes(iscrizione.Divisione)
   );
 
   if (daConvertire.length === 0) {
@@ -953,22 +927,10 @@ function esportaCsv() {
     return;
   }
 
-  const righe = [
-    [
-      "Divisione",
-      "Squadra",
-      "Ruolo",
-      "Nome",
-      "Telefono",
-      "Data iscrizione",
-      "Stato",
-    ],
-  ];
+  const righe = [["Divisione", "Squadra", "Ruolo", "Nome", "Telefono", "Data iscrizione", "Stato"]];
 
   visibili.forEach((iscrizione) => {
-    const dataInvio = iscrizione.OraInvio
-      ? formatDateTime(iscrizione.OraInvio)
-      : "";
+    const dataInvio = iscrizione.OraInvio ? formatDateTime(iscrizione.OraInvio) : "";
 
     RUOLI.forEach(([etichetta, campo]) => {
       comeLista(iscrizione[campo]).forEach((persona) => {
@@ -987,12 +949,10 @@ function esportaCsv() {
 
   // ";" come separatore e BOM per l'apertura diretta in Excel italiano
   const csv = righe
-    .map((riga) =>
-      riga.map((cella) => `"${String(cella).replace(/"/g, '""')}"`).join(";")
-    )
+    .map((riga) => riga.map((cella) => `"${String(cella).replace(/"/g, '""')}"`).join(";"))
     .join("\r\n");
 
-  const blob = new Blob([`﻿${csv}`], {
+  const blob = new Blob([`\uFEFF${csv}`], {
     type: "text/csv;charset=utf-8;",
   });
   const url = URL.createObjectURL(blob);

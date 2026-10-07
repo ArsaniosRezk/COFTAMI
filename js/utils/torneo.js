@@ -1,4 +1,5 @@
-import { edition } from "../divisionAndVariables.js";
+import { edition } from "../divisione.js";
+import { giornateNumerate } from "./classifica.js";
 
 /*
 ===================================
@@ -11,27 +12,22 @@ pagina squadra, gestionale).
 
 // Le chiavi su Firebase non ammettono il punto: "S_ Giorgio" -> "S. Giorgio"
 export function nomeSquadra(chiave) {
-    return String(chiave || "").replace(/_/g, ".");
+  return String(chiave || "").replace(/_/g, ".");
 }
 
 // Indirizzo della pagina di una squadra
 export function linkSquadra(chiave, divisione) {
-    const parametri = new URLSearchParams({ divisione, nome: chiave });
-    return `/squadra.html?${parametri}`;
+  const parametri = new URLSearchParams({ divisione, nome: chiave });
+  return `/squadra.html?${parametri}`;
 }
 
-// Giornate di campionato (1, 2, 3...) in ordine numerico.
-// Senza il confronto numerico "10" finirebbe tra "1" e "2".
-export function giornateNumerate(oggetto) {
-    return Object.keys(oggetto || {})
-        .filter((chiave) => chiave.trim() !== "" && !isNaN(chiave))
-        .sort((a, b) => a - b);
-}
+// Giornate di campionato in ordine numerico (vedi utils/classifica.js)
+export { giornateNumerate };
 
 // Una partita del calendario è giocata quando ha un risultato
 export function haRisultato(partita) {
-    const risultato = String(partita?.Risultato ?? "").trim();
-    return risultato !== "" && risultato !== "VS";
+  const risultato = String(partita?.Risultato ?? "").trim();
+  return risultato !== "" && risultato !== "VS";
 }
 
 /*
@@ -46,147 +42,80 @@ export function haRisultato(partita) {
 export const GIORNATA_AUTOMATICA = "auto";
 
 export function giornataCorrente(calendario, impostata = null, adesso = new Date()) {
-    const valore = impostata === null || impostata === undefined ? "" : String(impostata).trim();
-    if (valore !== "" && valore !== GIORNATA_AUTOMATICA) return valore;
+  const valore = impostata === null || impostata === undefined ? "" : String(impostata).trim();
+  if (valore !== "" && valore !== GIORNATA_AUTOMATICA) return valore;
 
-    const giornate = giornateNumerate(calendario);
-    if (giornate.length === 0) return null;
+  const giornate = giornateNumerate(calendario);
+  if (giornate.length === 0) return null;
 
-    const partiteDi = (giornata) => Object.values(calendario[giornata] || {});
+  const partiteDi = (giornata) => Object.values(calendario[giornata] || {});
 
-    let indice = giornate.length - 1;
-    while (indice >= 0 && !partiteDi(giornate[indice]).some(haRisultato)) indice--;
-    if (indice < 0) return giornate[0];
+  let indice = giornate.length - 1;
+  while (indice >= 0 && !partiteDi(giornate[indice]).some(haRisultato)) indice--;
+  if (indice < 0) return giornate[0];
 
-    const ultima = giornate[indice];
-    const partite = partiteDi(ultima);
-    const oggi = new Date(adesso.getFullYear(), adesso.getMonth(), adesso.getDate());
-    // Se la giornata non ha date non si distingue un recupero da una partita in programma
-    const conDate = partite.some((partita) => dataPartita(partita));
-    const inProgramma = partite.some((partita) => {
-        if (haRisultato(partita)) return false;
-        const data = dataPartita(partita);
-        return data ? data >= oggi : !conDate;
-    });
-    if (inProgramma) return ultima;
-    return giornate[indice + 1] ?? ultima;
+  const ultima = giornate[indice];
+  const partite = partiteDi(ultima);
+  const oggi = new Date(adesso.getFullYear(), adesso.getMonth(), adesso.getDate());
+  // Se la giornata non ha date non si distingue un recupero da una partita in programma
+  const conDate = partite.some((partita) => dataPartita(partita));
+  const inProgramma = partite.some((partita) => {
+    if (haRisultato(partita)) return false;
+    const data = dataPartita(partita);
+    return data ? data >= oggi : !conDate;
+  });
+  if (inProgramma) return ultima;
+  return giornate[indice + 1] ?? ultima;
 }
 
 // Anno delle partite: le date sul calendario sono "gg/mm" senza anno
 function annoEdizione() {
-    const anno = parseInt(edition, 10);
-    return Number.isNaN(anno) ? new Date().getFullYear() : anno;
+  const anno = parseInt(edition, 10);
+  return Number.isNaN(anno) ? new Date().getFullYear() : anno;
 }
 
 // Data e ora di una partita, oppure null se mancano
 export function dataPartita(partita) {
-    const [giorno, mese] = String(partita?.Data || "").split("/").map(Number);
-    if (!giorno || !mese) return null;
+  const [giorno, mese] = String(partita?.Data || "")
+    .split("/")
+    .map(Number);
+  if (!giorno || !mese) return null;
 
-    const [ore, minuti] = String(partita?.Orario || "").split(":").map(Number);
-    return new Date(annoEdizione(), mese - 1, giorno, ore || 0, minuti || 0);
+  const [ore, minuti] = String(partita?.Orario || "")
+    .split(":")
+    .map(Number);
+  return new Date(annoEdizione(), mese - 1, giorno, ore || 0, minuti || 0);
 }
 
 export function stessoGiorno(a, b) {
-    return (
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate()
-    );
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
 // "giocata", "oggi" o "da giocare"
 export function statoPartita(partita, adesso = new Date()) {
-    if (haRisultato(partita)) return "giocata";
-    const data = dataPartita(partita);
-    if (data && stessoGiorno(data, adesso)) return "oggi";
-    return "da giocare";
+  if (haRisultato(partita)) return "giocata";
+  const data = dataPartita(partita);
+  if (data && stessoGiorno(data, adesso)) return "oggi";
+  return "da giocare";
 }
 
 // Tutte le partite del calendario in cui gioca una squadra, in ordine di giornata
 export function partiteDellaSquadra(calendario, squadra) {
-    const elenco = [];
-    for (const giornata of giornateNumerate(calendario)) {
-        for (const [chiave, dati] of Object.entries(calendario[giornata] || {})) {
-            const [casa, ospite] = chiave.split(":");
-            if (casa === squadra || ospite === squadra) {
-                elenco.push({ giornata, chiave, casa, ospite, dati });
-            }
-        }
+  const elenco = [];
+  for (const giornata of giornateNumerate(calendario)) {
+    for (const [chiave, dati] of Object.entries(calendario[giornata] || {})) {
+      const [casa, ospite] = chiave.split(":");
+      if (casa === squadra || ospite === squadra) {
+        elenco.push({ giornata, chiave, casa, ospite, dati });
+      }
     }
-    return elenco;
+  }
+  return elenco;
 }
 
 // Link a Google Maps per il campo di gioco
 export function linkMappa(luogo) {
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(luogo)}`;
-}
-
-/*
------------------------------------
-FILE CALENDARIO (.ics)
------------------------------------
-Le partite con data e orario diventano eventi da aggiungere al calendario del
-telefono (Google Calendar, Apple Calendario, Outlook).
-*/
-
-const DURATA_PARTITA_MINUTI = 90;
-
-function dataIcs(data) {
-    const due = (numero) => String(numero).padStart(2, "0");
-    return (
-        `${data.getFullYear()}${due(data.getMonth() + 1)}${due(data.getDate())}` +
-        `T${due(data.getHours())}${due(data.getMinutes())}00`
-    );
-}
-
-function testoIcs(testo) {
-    return String(testo).replace(/\\/g, "\\\\").replace(/([,;])/g, "\\$1").replace(/\n/g, "\\n");
-}
-
-// partite: [{ giornata, chiave, casa, ospite, dati }]
-export function creaIcs(partite, divisione) {
-    const righe = [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        "PRODID:-//Cofta Milano//Calendario//IT",
-        "CALSCALE:GREGORIAN",
-    ];
-    const adesso = dataIcs(new Date());
-
-    for (const partita of partite) {
-        const inizio = dataPartita(partita.dati);
-        if (!inizio) continue;
-        const fine = new Date(inizio.getTime() + DURATA_PARTITA_MINUTI * 60000);
-        const uid = `${edition}-${divisione}-${partita.giornata}-${partita.chiave}`
-            .replace(/[^A-Za-z0-9-]/g, "");
-
-        righe.push(
-            "BEGIN:VEVENT",
-            `UID:${uid}@coftamilano.com`,
-            `DTSTAMP:${adesso}`,
-            `DTSTART:${dataIcs(inizio)}`,
-            `DTEND:${dataIcs(fine)}`,
-            `SUMMARY:${testoIcs(`COFTA: ${nomeSquadra(partita.casa)} - ${nomeSquadra(partita.ospite)}`)}`,
-            `DESCRIPTION:${testoIcs(`${divisione} · Giornata ${partita.giornata}`)}`
-        );
-        if (partita.dati?.Luogo) righe.push(`LOCATION:${testoIcs(partita.dati.Luogo)}`);
-        righe.push("END:VEVENT");
-    }
-
-    righe.push("END:VCALENDAR");
-    return righe.join("\r\n");
-}
-
-export function scaricaFile(nomeFile, contenuto, tipo) {
-    const url = URL.createObjectURL(new Blob([contenuto], { type: tipo }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = nomeFile;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(luogo)}`;
 }
 
 /*
@@ -199,27 +128,27 @@ Salvata solo su questo dispositivo: { divisione, nome }
 const CHIAVE_PREFERITA = "cofta_squadra_preferita";
 
 export function squadraPreferita() {
-    try {
-        const salvata = JSON.parse(localStorage.getItem(CHIAVE_PREFERITA));
-        return salvata && salvata.nome && salvata.divisione ? salvata : null;
-    } catch (errore) {
-        return null;
-    }
+  try {
+    const salvata = JSON.parse(localStorage.getItem(CHIAVE_PREFERITA));
+    return salvata && salvata.nome && salvata.divisione ? salvata : null;
+  } catch (errore) {
+    return null;
+  }
 }
 
 export function impostaSquadraPreferita(divisione, nome) {
-    try {
-        if (nome) {
-            localStorage.setItem(CHIAVE_PREFERITA, JSON.stringify({ divisione, nome }));
-        } else {
-            localStorage.removeItem(CHIAVE_PREFERITA);
-        }
-    } catch (errore) {
-        console.warn("Impossibile salvare la squadra preferita", errore);
+  try {
+    if (nome) {
+      localStorage.setItem(CHIAVE_PREFERITA, JSON.stringify({ divisione, nome }));
+    } else {
+      localStorage.removeItem(CHIAVE_PREFERITA);
     }
+  } catch (errore) {
+    console.warn("Impossibile salvare la squadra preferita", errore);
+  }
 }
 
 export function eSquadraPreferita(divisione, nome) {
-    const preferita = squadraPreferita();
-    return Boolean(preferita && preferita.divisione === divisione && preferita.nome === nome);
+  const preferita = squadraPreferita();
+  return Boolean(preferita && preferita.divisione === divisione && preferita.nome === nome);
 }

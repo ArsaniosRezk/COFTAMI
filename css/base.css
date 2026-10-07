@@ -1,0 +1,1034 @@
+/*
+===================================
+ BASE DEL SITO PUBBLICO
+===================================
+Un solo foglio per quello che serve su ogni pagina: colori, tipografia,
+struttura, header, footer, scheletri di caricamento, avvisi e banner dei
+cookie. Ogni pagina aggiunge solo icone.css e il proprio foglio.
+
+Sezioni:
+  1. Colori (chiaro e scuro)
+  2. Base e tipografia
+  3. Struttura della pagina e sezioni
+  4. Elementi condivisi (pulsanti, avvisi, accessibilità)
+  5. Header e menu
+  6. Footer
+  7. Scheletri di caricamento
+  8. Avviso pre-torneo
+  9. Banner dei cookie
+*/
+
+/* ===================================
+   1. COLORI
+   =================================== */
+
+/*
+ Nomi per ruolo:
+ - pagina / testo-pagina: lo sfondo della pagina e il testo che ci sta sopra
+   (header, footer, titoli fuori dai riquadri). Cambiano col tema scuro.
+ - primary / secondary / tertiary: i verdi dei riquadri. Il testo sopra è
+   --testo (bianco) o --accento (giallo), uguale nei due temi.
+ - inchiostro: testo scuro sopra il giallo e sopra il bianco dei campi.
+*/
+:root {
+  color-scheme: light;
+
+  /* Pagina */
+  --pagina: #ffffff;
+  --testo-pagina: #262f3e;
+  --testo-pagina-tenue: #5b6573;
+  --bordo-pagina: rgba(38, 47, 62, 0.12);
+
+  /* Riquadri verdi */
+  --primary: #2e684e;
+  --secondary: #377d5d;
+  --tertiary: #295a44;
+  --table: var(--secondary);
+  --superficie: #24543f;
+  --superficie-forte: #1f4a37;
+
+  /* Testo sui riquadri */
+  --testo: #ffffff;
+  --testo-secondario: rgba(255, 255, 255, 0.82);
+  --testo-tenue: rgba(255, 255, 255, 0.75);
+  --accento: #fceb00;
+  --accento-hover: #ffe600;
+  --inchiostro: #262f3e;
+
+  /* Altri colori */
+  --orange: #f26a1b;
+  --errore: #b3261e;
+  --errore-chiaro: #ffb4a8;
+  --white: #ffffff;
+  --black: #000000;
+  --white-20: rgba(255, 255, 255, 0.2);
+  --white-50: rgba(255, 255, 255, 0.5);
+  --black-50: rgba(0, 0, 0, 0.5);
+  --grey-row: rgba(128, 128, 128, 0.2);
+  --grey-row-hover: rgba(128, 128, 128, 0.3);
+  --grey-border: rgb(165, 154, 154);
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+  --interaction: 1px solid var(--accento);
+  --finalsTeams: rgba(13, 3, 78, 0.1);
+  --venue-red: rgba(255, 0, 0, 0.3);
+  --matchesGradient: linear-gradient(90deg, #366f56 0%, var(--secondary) 50%, #366f56 100%);
+
+  /* Ombre */
+  --ombra1: 0 0 6px rgba(0, 0, 0, 0.25);
+  --ombra2: 0 0 6px rgba(0, 0, 0, 0.12);
+
+  /* Spaziatura verticale tra gli elementi di una sezione */
+  --spazio-sezione: 14px;
+}
+
+/* Tema scuro: segue l'impostazione del telefono o del computer */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --pagina: #0f1a15;
+    --testo-pagina: #e6eee9;
+    --testo-pagina-tenue: #a7b5ad;
+    --bordo-pagina: rgba(230, 238, 233, 0.14);
+    --primary: #24533e;
+    --secondary: #2c6449;
+    --tertiary: #1f4634;
+    --superficie: #1c4232;
+    --superficie-forte: #183a2b;
+    --matchesGradient: linear-gradient(90deg, #295c45 0%, var(--secondary) 50%, #295c45 100%);
+  }
+}
+
+/* Loghi con le scritte nere: nel tema scuro diventano chiari (l'arancione resta arancione) */
+@media (prefers-color-scheme: dark) {
+  .sito-header .logo,
+  #overlay-menu .logo,
+  .footer-logo .logo {
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+/* ===================================
+   2. BASE E TIPOGRAFIA
+   =================================== */
+
+@font-face {
+  font-family: "nomeSquadra";
+  src: url("/assets/fonts/UaCadet-2068.woff2") format("woff2");
+  font-display: swap;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  color: var(--testo-pagina);
+  background-color: var(--pagina);
+}
+
+a {
+  text-decoration: none;
+  font-size: clamp(0.875rem, 1vw + 0.5rem, 1rem);
+  color: var(--testo-pagina);
+  cursor: pointer;
+}
+
+p {
+  font-size: clamp(1rem, 1.2vw + 0.8rem, 1.125rem);
+}
+
+img {
+  max-width: 100%;
+}
+
+.logo {
+  max-width: 150px;
+  width: 100%;
+}
+
+/* ===================================
+   3. STRUTTURA DELLA PAGINA E SEZIONI
+   =================================== */
+
+.grid {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+  padding: 12px 0 40px;
+}
+
+main section {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: var(--spazio-sezione);
+
+  width: 90%;
+  padding: 28px 16px;
+  border-radius: 20px;
+
+  background-color: var(--primary);
+  color: var(--testo);
+  text-align: center;
+}
+
+section .section-title {
+  font-size: 1.9rem;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  font-family: "Bebas Neue", sans-serif;
+  line-height: 1.05;
+  text-align: center;
+  color: var(--accento);
+}
+
+/* Istruzioni sotto i titoli di sezione (es. "Tocca una partita...") */
+.instruction {
+  width: 100%;
+  margin-top: -4px;
+  color: var(--testo-tenue);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Riga di filtri o comandi in cima a una sezione (es. scelta della squadra) */
+.barra-sezione {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 14px;
+  width: 100%;
+}
+
+/* Etichetta "Aggiornato alle 21:42": i risultati arrivano in tempo reale */
+.stato-aggiornamento {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--testo-tenue);
+  font-size: 0.75rem;
+}
+
+.stato-aggiornamento:empty {
+  display: none;
+}
+
+.stato-aggiornamento::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+}
+
+.stato-aggiornamento.offline::before {
+  background-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(242, 106, 27, 0.25);
+}
+
+@media (min-width: 576px) {
+  :root {
+    --spazio-sezione: 18px;
+  }
+
+  main section {
+    padding: 32px 30px;
+  }
+
+  section .section-title {
+    font-size: 2.4rem;
+    letter-spacing: 2px;
+  }
+
+  a {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 992px) {
+  :root {
+    --spazio-sezione: 22px;
+  }
+
+  main {
+    gap: 24px;
+  }
+
+  main section {
+    padding: 44px 40px;
+  }
+
+  section .section-title {
+    font-size: 4rem;
+  }
+
+  .instruction {
+    font-size: 1rem;
+  }
+}
+
+/* ===================================
+   4. ELEMENTI CONDIVISI
+   =================================== */
+
+/* Testo letto dagli screen reader ma non mostrato */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Collegamento per saltare al contenuto con la tastiera */
+.salta-al-contenuto {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 2000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: var(--accento);
+  color: var(--inchiostro);
+  font-weight: 700;
+}
+
+/* Ciò a cui si scorre (es. la giornata in corso) non deve finire sotto l'header fisso */
+main [id] {
+  scroll-margin-top: 110px;
+}
+
+.salta-al-contenuto:focus {
+  top: 12px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* L'attributo hidden deve vincere anche su regole come "main section { display: flex }" */
+[hidden] {
+  display: none !important;
+}
+
+/* Errore di caricamento con pulsante per riprovare */
+.avviso-errore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-riprova,
+.btn-chiaro {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  background-color: var(--accento);
+  color: var(--inchiostro);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.btn-riprova:hover,
+.btn-chiaro:hover {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+/* Pulsante secondario su sfondo verde */
+.btn-contorno {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--white-50);
+  border-radius: 8px;
+  padding: 9px 16px;
+  background-color: transparent;
+  color: var(--testo);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.btn-contorno:hover {
+  background-color: var(--white-20);
+  border-color: var(--testo);
+}
+
+/* Messaggio al posto di un contenuto vuoto o non caricato */
+.avviso-vuoto {
+  width: 100%;
+  padding: 25px 15px;
+  color: var(--testo-tenue);
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* Avviso in cima alla pagina: edizione passata, staging */
+.avviso-archivio {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 15px;
+  width: 90%;
+  padding: 12px 15px;
+  border-radius: 12px;
+  background-color: var(--accento);
+  color: var(--inchiostro);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.avviso-archivio button {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  background-color: var(--inchiostro);
+  color: var(--white);
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===================================
+   5. HEADER E MENU
+   =================================== */
+
+/* Resta in alto mentre si scorre: niente spazio riservato a mano sotto */
+.sito-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding-top: env(safe-area-inset-top);
+  background-color: var(--pagina);
+  transition: box-shadow 0.2s;
+}
+
+.sito-header.staccato {
+  box-shadow:
+    0 1px 0 var(--bordo-pagina),
+    0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.sito-header-interno {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 90%;
+  padding: 14px 0;
+}
+
+.left-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.left-header .logo {
+  width: 100px;
+  height: auto;
+}
+
+.right-header {
+  display: flex;
+  align-items: center;
+}
+
+/* Selettore della divisione */
+.division-switch {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background-color: var(--grey-row);
+}
+
+.division-switch[hidden] {
+  display: none;
+}
+
+.division-switch button {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: transparent;
+  color: var(--testo-pagina);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.division-switch button.selected {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+/* Menu */
+.menu-icon,
+.close-menu-icon {
+  border: none;
+  background: transparent;
+  color: var(--testo-pagina);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.menu-icon {
+  font-size: 25px;
+  padding: 8px;
+  margin-right: -8px;
+}
+
+.nav-link.active {
+  color: var(--testo-pagina);
+  text-decoration: underline var(--secondary);
+  text-decoration-thickness: 4px;
+  text-underline-offset: 8px;
+  opacity: 1;
+  font-weight: 700;
+}
+
+.close-menu-icon {
+  float: right;
+  margin: 30px;
+  padding: 10px;
+  font-size: 1.5rem;
+}
+
+#overlay-menu-container {
+  position: fixed;
+  inset: 0;
+  left: auto;
+  right: -100%;
+  width: 100%;
+  overflow-y: auto;
+  background-color: var(--pagina);
+  text-align: center;
+  visibility: hidden;
+  transition:
+    right 0.5s ease,
+    visibility 0s linear 0.5s;
+}
+
+#overlay-menu-container.aperto {
+  right: 0;
+  visibility: visible;
+  transition:
+    right 0.5s ease,
+    visibility 0s;
+}
+
+#overlay-menu {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  list-style: none;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#overlay-menu-container.aperto #overlay-menu {
+  opacity: 1;
+}
+
+#overlay-menu li a {
+  display: inline-block;
+  margin: 6px 0;
+  padding: 8px 20px;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 600;
+}
+
+#overlay-menu li a[aria-current="page"] {
+  color: var(--secondary);
+}
+
+#overlay-menu .logo {
+  width: 150px;
+  margin-bottom: 20px;
+}
+
+#overlay-menu li a:hover {
+  background-color: var(--tertiary);
+  color: var(--testo);
+  border-radius: 7px;
+}
+
+.nav {
+  display: none;
+}
+
+@media (min-width: 400px) {
+  .left-header .logo {
+    width: 115px;
+  }
+
+  .division-switch button {
+    padding: 6px 12px;
+  }
+}
+
+@media (min-width: 576px) {
+  .left-header {
+    gap: 30px;
+  }
+
+  .left-header .logo {
+    width: 130px;
+  }
+
+  .division-switch button {
+    font-size: 0.9rem;
+    padding: 7px 16px;
+  }
+}
+
+@media (min-width: 992px) {
+  .sito-header-interno {
+    gap: 20px;
+    padding: 18px 0;
+  }
+
+  .left-header {
+    gap: 18px;
+    flex-shrink: 0;
+  }
+
+  .left-header .logo {
+    width: 110px;
+  }
+
+  .division-switch button {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .nav {
+    display: flex;
+  }
+
+  .nav ul {
+    list-style-type: none;
+    display: flex;
+  }
+
+  .nav-link {
+    font-size: 0.9rem;
+    padding-left: 12px;
+    white-space: nowrap;
+    color: var(--testo-pagina);
+    opacity: 0.8;
+    font-weight: 500;
+  }
+
+  .nav-link:hover {
+    opacity: 1;
+  }
+
+  .hide-hamb {
+    display: none;
+  }
+}
+
+/* Tra 992 e 1100 px le 8 voci del menu non ci stanno: resta il menu a tendina */
+@media (min-width: 992px) and (max-width: 1099px) {
+  .nav {
+    display: none;
+  }
+
+  .hide-hamb {
+    display: inline-block;
+  }
+}
+
+@media (min-width: 1200px) {
+  .left-header .logo {
+    width: 130px;
+  }
+
+  .nav-link {
+    font-size: 0.95rem;
+    padding-left: 16px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .left-header {
+    gap: 30px;
+  }
+
+  .division-switch button {
+    font-size: 0.9rem;
+    padding: 7px 16px;
+  }
+
+  .nav-link {
+    font-size: 1.05rem;
+    padding-left: 22px;
+  }
+}
+
+/* ===================================
+   6. FOOTER
+   =================================== */
+
+.sito-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0 calc(24px + env(safe-area-inset-bottom));
+  color: var(--testo-pagina);
+}
+
+.footer-grid {
+  display: grid;
+  gap: 32px;
+  width: 90%;
+  padding: 30px 0;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "alias-footer-logo"
+    "alias-footer-menu"
+    "alias-footer-contacts";
+}
+
+.footer-menu {
+  grid-area: alias-footer-menu;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.3rem;
+}
+
+.footer-logo {
+  grid-area: alias-footer-logo;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-contacts {
+  grid-area: alias-footer-contacts;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.footer-menu a,
+.footer-contacts a {
+  color: var(--testo-pagina);
+}
+
+.footer-titolo {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.footer-menu ul {
+  list-style-type: none;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.footer-menu li {
+  margin-bottom: 6px;
+}
+
+.contacts-icon {
+  margin-top: 20px;
+}
+
+.contact-icon {
+  margin: 0 6px;
+  font-size: 1.6rem;
+}
+
+.footer-contacts p {
+  margin-top: 16px;
+}
+
+.footer-contacts p a {
+  font-size: inherit;
+}
+
+/* Riga finale: privacy e preferenze cookie */
+.footer-legale {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px 18px;
+  width: 90%;
+  padding-top: 18px;
+  border-top: 1px solid var(--bordo-pagina);
+  color: var(--testo-pagina-tenue);
+  font-size: 0.85rem;
+}
+
+.footer-legale a,
+.footer-legale button {
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (min-width: 576px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: "alias-footer-menu alias-footer-logo alias-footer-contacts";
+  }
+}
+
+@media (min-width: 1440px) {
+  .footer-grid {
+    max-width: 1100px;
+  }
+}
+
+/* ===================================
+   7. SCHELETRI DI CARICAMENTO
+   =================================== */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--secondary) 25%, #42926d 50%, var(--secondary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-text {
+  height: 1rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.skeleton-title {
+  height: 2rem;
+  margin-bottom: 1rem;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.skeleton-rect {
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+}
+
+.skeleton-card {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--secondary);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.skeleton-row {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 5px;
+}
+
+.skeleton-albo-table {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+/* ===================================
+   8. AVVISO PRE-TORNEO
+   Mostrato su home, campionato, squadre e calendario finché
+   l'edizione corrente non ha ancora squadre caricate.
+   =================================== */
+
+#avviso-pre-torneo {
+  gap: 18px;
+}
+
+#avviso-pre-torneo .icona-pre-torneo {
+  font-size: 3rem;
+  color: var(--accento);
+}
+
+#avviso-pre-torneo .testo-pre-torneo {
+  max-width: 520px;
+  color: var(--testo);
+  line-height: 1.6;
+}
+
+#avviso-pre-torneo .btn-pre-torneo {
+  display: inline-block;
+  padding: 15px 30px;
+  background-color: var(--accento);
+  color: var(--inchiostro);
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+#avviso-pre-torneo .btn-pre-torneo:hover {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+@media (min-width: 992px) {
+  /* Il titolo è una frase, non un'etichetta di sezione: va contenuto */
+  #avviso-pre-torneo .section-title {
+    font-size: 2.8rem;
+    max-width: 700px;
+  }
+}
+
+/* ===================================
+   9. BANNER DEI COOKIE (js/consenso.js)
+   =================================== */
+
+.banner-cookie {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(560px, calc(100% - 32px));
+  padding: 20px;
+  border: 1px solid var(--bordo-pagina);
+  border-radius: 16px;
+  background-color: var(--pagina);
+  color: var(--testo-pagina);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  transform: translateX(-50%);
+}
+
+.banner-cookie h2 {
+  font-size: 1.05rem;
+}
+
+.banner-cookie p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.banner-cookie a {
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+.banner-cookie-azioni {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.banner-cookie-azioni button {
+  flex: 1 1 140px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.banner-cookie-rifiuta {
+  background-color: transparent;
+  color: var(--testo-pagina);
+}
+
+.banner-cookie-accetta {
+  background-color: var(--primary);
+  color: var(--white);
+}

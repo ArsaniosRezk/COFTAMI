@@ -1,9 +1,9 @@
 import { PERCORSO_IMPOSTAZIONI } from "./ambiente.js";
-import { getData, setData, uploadFile } from "./firebase.js";
-import { edition } from "./divisionAndVariables.js";
+import { getData, setData, uploadFile, attivaAppCheck } from "./firebase.js";
+import { edition } from "./divisione.js";
 import { impostazioniPronte, osservaImpostazioni } from "./impostazioni.js";
-import { capitalize } from "./utils/formatters.js";
-import { conferma } from "./utils/interfaccia.js";
+import { capitalize } from "./utils/formattazione.js";
+import { pulisciTelefono, telefonoValido } from "./utils/contatti.js";
 
 /*
 ===================================
@@ -29,11 +29,7 @@ const MINIMI = {
 };
 
 // Nome e cognome: almeno due parole di 2+ lettere, niente numeri
-const NOME_REGEX =
-  /^[A-Za-zÀ-ÖØ-öø-ÿ'’\-]{2,}(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ'’\-]{2,})+$/;
-
-// Telefono: 8-15 cifre, prefisso internazionale opzionale
-const TELEFONO_REGEX = /^\+?\d{8,15}$/;
+const NOME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ'’-]{2,}(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ'’-]{2,})+$/;
 
 // MODULO DI PARTECIPAZIONE firmato: è obbligatorio per poter inviare l'iscrizione
 const MODULO_MAX_BYTE = 10 * 1024 * 1024;
@@ -85,14 +81,6 @@ function normalizzaSpazi(valore) {
 
 function nomeValido(nome) {
   return NOME_REGEX.test(normalizzaSpazi(nome));
-}
-
-function pulisciTelefono(telefono) {
-  return telefono.replace(/[\s.\-/()]/g, "");
-}
-
-function telefonoValido(telefono) {
-  return TELEFONO_REGEX.test(pulisciTelefono(telefono));
 }
 
 // Firebase non accetta . # $ / [ ] nelle chiavi
@@ -175,9 +163,7 @@ async function preparaModulo(file) {
     contesto.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
 
-    const blob = await new Promise((resolve) =>
-      canvas.toBlob(resolve, "image/jpeg", FOTO_QUALITA)
-    );
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", FOTO_QUALITA));
     if (!blob || blob.size >= file.size) return file;
 
     const nome = file.name.replace(/\.[^.]+$/, "") + ".jpg";
@@ -262,12 +248,8 @@ function segnalaErroreRiga(riga, messaggio) {
 }
 
 function pulisciErrori() {
-  document
-    .querySelectorAll(".row-error, .group-error, .field-error")
-    .forEach((el) => (el.textContent = ""));
-  document
-    .querySelectorAll(".invalid")
-    .forEach((el) => el.classList.remove("invalid"));
+  document.querySelectorAll(".row-error, .group-error, .field-error").forEach((el) => (el.textContent = ""));
+  document.querySelectorAll(".invalid").forEach((el) => el.classList.remove("invalid"));
   document.getElementById("form-error").textContent = "";
 }
 
@@ -289,28 +271,19 @@ function raccogliSezione(sezione) {
     if (!nome && !telefono) return;
 
     if (!nome) {
-      segnalaErroreRiga(
-        riga,
-        "Inserisci il nome: è obbligatorio se indichi un numero."
-      );
+      segnalaErroreRiga(riga, "Inserisci il nome: è obbligatorio se indichi un numero.");
       errori++;
       return;
     }
 
     if (!nomeValido(nome)) {
-      segnalaErroreRiga(
-        riga,
-        "Scrivi nome e cognome per esteso (niente soprannomi)."
-      );
+      segnalaErroreRiga(riga, "Scrivi nome e cognome per esteso (niente soprannomi).");
       errori++;
       return;
     }
 
     if (!telefono) {
-      segnalaErroreRiga(
-        riga,
-        "Il numero di telefono è obbligatorio quando inserisci un nome."
-      );
+      segnalaErroreRiga(riga, "Il numero di telefono è obbligatorio quando inserisci un nome.");
       telInput.classList.add("invalid");
       errori++;
       return;
@@ -325,10 +298,7 @@ function raccogliSezione(sezione) {
 
     const nomeNormalizzato = capitalize(nome);
     if (nomiVisti.has(nomeNormalizzato.toLowerCase())) {
-      segnalaErroreRiga(
-        riga,
-        `${nomeNormalizzato} è già stato inserito in questa sezione.`
-      );
+      segnalaErroreRiga(riga, `${nomeNormalizzato} è già stato inserito in questa sezione.`);
       errori++;
       return;
     }
@@ -342,10 +312,7 @@ function raccogliSezione(sezione) {
 
   const minimo = MINIMI[sezione];
   if (errori === 0 && persone.length < minimo) {
-    const etichetta =
-      minimo === 1
-        ? ETICHETTA[sezione].singolare
-        : ETICHETTA[sezione].plurale;
+    const etichetta = minimo === 1 ? ETICHETTA[sezione].singolare : ETICHETTA[sezione].plurale;
     document.getElementById(`err-${sezione}`).textContent =
       `Inserisci almeno ${minimo} ${etichetta} con il relativo numero di telefono.`;
     errori++;
@@ -415,9 +382,7 @@ function costruisciModulo(bozza) {
     document.getElementById(`lista-${sezione}`).innerHTML = "";
 
     const salvate = bozza?.[sezione]?.length ? bozza[sezione] : null;
-    const totale = salvate
-      ? Math.max(salvate.length, RIGHE_INIZIALI[sezione])
-      : RIGHE_INIZIALI[sezione];
+    const totale = salvate ? Math.max(salvate.length, RIGHE_INIZIALI[sezione]) : RIGHE_INIZIALI[sezione];
 
     // Le righe di responsabili e allenatori sono fisse: non si possono rimuovere
     const fissa = sezione === "responsabili" || sezione === "allenatori";
@@ -458,8 +423,7 @@ async function inviaIscrizione(event) {
 
   const divisione = divisioneEl.value;
   if (!divisione) {
-    document.getElementById("err-divisione").textContent =
-      "Seleziona la divisione.";
+    document.getElementById("err-divisione").textContent = "Seleziona la divisione.";
     divisioneEl.classList.add("invalid");
     errori++;
   }
@@ -480,6 +444,14 @@ async function inviaIscrizione(event) {
     errori++;
   }
 
+  const privacy = document.getElementById("isc-privacy");
+  if (!privacy.checked) {
+    document.getElementById("err-privacy").textContent =
+      "Per inviare l'iscrizione serve la conferma sulla privacy.";
+    privacy.closest(".consenso").classList.add("invalid");
+    errori++;
+  }
+
   const raccolte = {};
   SEZIONI.forEach((sezione) => {
     raccolte[sezione] = raccogliSezione(sezione);
@@ -487,8 +459,7 @@ async function inviaIscrizione(event) {
   });
 
   if (errori > 0) {
-    document.getElementById("form-error").textContent =
-      "Controlla i campi evidenziati e riprova.";
+    document.getElementById("form-error").textContent = "Controlla i campi evidenziati e riprova.";
     document
       .querySelector(".invalid, .group-error:not(:empty)")
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -510,20 +481,6 @@ async function inviaIscrizione(event) {
       return;
     }
 
-    const esistente = await getData(percorso);
-    if (esistente) {
-      const sostituisci = await conferma(
-        `Risulta già un'iscrizione per "${esistente.NomeSquadra}" (${divisione}).\n` +
-          "Vuoi sostituirla con i dati che hai appena inserito?",
-        { titolo: "Iscrizione già presente", ok: "Sostituisci" }
-      );
-      if (!sostituisci) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Invia iscrizione";
-        return;
-      }
-    }
-
     // Il modulo firmato viene caricato solo ora: se l'iscrizione non parte
     // non lasciamo file orfani su Storage
     submitBtn.textContent = "Preparazione del modulo...";
@@ -540,9 +497,10 @@ async function inviaIscrizione(event) {
     const estensione = MODULO_TIPI[daCaricare.type];
     const percorsoModulo = `Moduli/${edition}/${chiave}-${codiceCasuale()}.${estensione}`;
 
-    let urlModulo;
     try {
-      urlModulo = await uploadFile(percorsoModulo, daCaricare, {
+      // Il modulo è privato: chi lo carica non può rileggerlo, serve solo il percorso
+      await uploadFile(percorsoModulo, daCaricare, {
+        conUrl: false,
         onProgress: (avanzamento) => {
           submitBtn.textContent = `Caricamento del modulo... ${Math.round(avanzamento * 100)}%`;
         },
@@ -554,9 +512,7 @@ async function inviaIscrizione(event) {
       document.querySelector(".file-picker").classList.add("invalid");
       document.getElementById("form-error").textContent =
         "Iscrizione non inviata: il modulo firmato non è stato caricato.";
-      document
-        .querySelector(".file-picker")
-        .scrollIntoView({ behavior: "smooth", block: "center" });
+      document.querySelector(".file-picker").scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -570,15 +526,34 @@ async function inviaIscrizione(event) {
       Giocatori: raccolte.giocatori.persone,
       Arbitri: raccolte.arbitri.persone,
       ModuloFirmato: {
-        Url: urlModulo,
         NomeFile: daCaricare.name,
         Percorso: percorsoModulo,
       },
       OraInvio: new Date().toISOString(),
       Stato: "Nuova",
+      ConsensoPrivacy: new Date().toISOString(),
     };
 
-    await setData(percorso, iscrizione);
+    try {
+      await setData(percorso, iscrizione);
+    } catch (error) {
+      // Le regole accettano solo iscrizioni nuove: un nome già usato viene rifiutato
+      if (
+        String(error?.code || error?.message)
+          .toUpperCase()
+          .includes("PERMISSION")
+      ) {
+        document.getElementById("err-chiesa").textContent =
+          `Risulta già un'iscrizione per "${nomeSquadra}" (${divisione}). ` +
+          "Per modificarla scrivi a info@coftamilano.com; se è un'altra squadra aggiungi una lettera (A, B…) al nome.";
+        chiesaEl.classList.add("invalid");
+        document.getElementById("form-error").textContent =
+          "Iscrizione non inviata: controlla il nome della squadra.";
+        chiesaEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+      throw error;
+    }
 
     cancellaBozza();
 
@@ -609,6 +584,7 @@ AVVIO
 
 document.addEventListener("DOMContentLoaded", async () => {
   const form = document.getElementById("iscrizione-form");
+  attivaAppCheck();
 
   // Il modulo viene costruito subito: se la rete è lenta l'utente vede comunque i campi
   costruisciModulo(caricaBozza());
@@ -630,9 +606,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     mostraFileScelto();
     const problema = fileModulo() ? erroreModulo(fileModulo()) : "";
     document.getElementById("err-modulo").textContent = problema;
-    document
-      .querySelector(".file-picker")
-      .classList.toggle("invalid", Boolean(problema));
+    document.querySelector(".file-picker").classList.toggle("invalid", Boolean(problema));
   });
 
   form.addEventListener("submit", inviaIscrizione);
@@ -644,17 +618,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     timerBozza = setTimeout(salvaBozza, 800);
   });
 
-  document
-    .getElementById("nuova-iscrizione-btn")
-    .addEventListener("click", () => {
-      document.getElementById("iscrizione-inviata").classList.add("hidden");
-      form.classList.remove("hidden");
-      form.reset();
-      pulisciErrori();
-      mostraFileScelto();
-      costruisciModulo(null);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+  document.getElementById("nuova-iscrizione-btn").addEventListener("click", () => {
+    document.getElementById("iscrizione-inviata").classList.add("hidden");
+    form.classList.remove("hidden");
+    form.reset();
+    pulisciErrori();
+    mostraFileScelto();
+    costruisciModulo(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
   // Iscrizioni aperte/chiuse (interruttore nel gestionale), anche a pagina aperta.
   // Chi ha appena inviato continua a vedere la conferma.

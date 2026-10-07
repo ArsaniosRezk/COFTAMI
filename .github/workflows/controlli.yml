@@ -1,0 +1,36 @@
+# Controlli automatici a ogni push e pull request:
+# lint, formattazione, test della classifica, percorsi dei file, pagine generate.
+# Se qualcosa non va, GitHub lo segnala con una X rossa accanto al commit.
+name: Controlli
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  controlli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run controlla
+
+  regole:
+    # Regole del database provate sull'emulatore di Firebase (serve Java)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run test:regole

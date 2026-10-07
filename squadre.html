@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="it">
 
+<!-- Cornice generata da scripts/aggiorna-pagine.mjs: si modifica solo il contenuto -->
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Squadre - Cofta</title>
-  <meta name="description" content="Le squadre partecipanti al campionato Cofta Milano: loghi, allenatori e giocatori." />
+  <meta name="description" content="Tutte le squadre del campionato di calcio diocesano Cofta Milano, con partite, marcatori e rosa." />
   <link rel="canonical" href="https://coftamilano.com/squadre.html" />
-  <meta name="theme-color" content="#2e684e" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0f1a15" media="(prefers-color-scheme: dark)" />
 
   <!-- Anteprima nei link condivisi (WhatsApp, Instagram, Telegram...) -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Cofta Milano" />
   <meta property="og:locale" content="it_IT" />
   <meta property="og:title" content="Le squadre - Cofta Milano" />
-  <meta property="og:description" content="Le squadre partecipanti al campionato Cofta Milano: loghi, allenatori e giocatori." />
+  <meta property="og:description" content="Tutte le squadre del campionato di calcio diocesano Cofta Milano, con partite, marcatori e rosa." />
   <meta property="og:url" content="https://coftamilano.com/squadre.html" />
   <meta property="og:image" content="https://coftamilano.com/assets/images/og-cofta.png" />
   <meta property="og:image:width" content="1200" />
@@ -31,49 +33,126 @@
   <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" />
   <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js" />
   <link rel="preconnect" href="https://cofta-mi-default-rtdb.europe-west1.firebasedatabase.app" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300..800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300..800&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="/style.css" />
-  <link rel="stylesheet" href="/css/colors.css" />
+  <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/icone.css" />
-  <link rel="stylesheet" href="/css/header.css" />
-  <link rel="stylesheet" href="/css/footer.css" />
-  <link rel="stylesheet" href="/css/skeleton.css" />
-  <link rel="stylesheet" href="/css/pre-torneo.css" />
   <link rel="stylesheet" href="/css/squadre.css" />
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHN9QNCZV6"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-
-    gtag("config", "G-LHN9QNCZV6");
-  </script>
 </head>
 
 <body>
+  <a class="salta-al-contenuto" href="#contenuto">Vai al contenuto</a>
   <div class="grid">
-    <my-header></my-header>
+    <header class="sito-header">
+      <div class="sito-header-interno">
+        <div class="left-header">
+          <a href="/" aria-label="Cofta Milano, vai alla home">
+            <img src="/assets/images/LOGO_COFTA_SITO.svg" width="130" height="58" class="logo" alt="Cofta Milano" />
+          </a>
 
-    <main>
+          <!-- Fonte del valore per gli script: lo comandano i pulsanti qui sotto -->
+          <select id="division" hidden tabindex="-1" aria-hidden="true">
+            <option value="Superiori">Superiori</option>
+            <option value="Giovani">Giovani</option>
+          </select>
+          <div class="division-switch" role="group" aria-label="Divisione">
+            <button type="button" data-division="Superiori">Superiori</button>
+            <button type="button" data-division="Giovani">Giovani</button>
+          </div>
+        </div>
+
+        <div class="right-header">
+          <nav class="nav" aria-label="Menu principale">
+            <ul>
+              <li><a class="nav-link" href="/">Home</a></li>
+              <li><a class="nav-link" href="/campionato.html">Campionato</a></li>
+              <li><a class="nav-link active" href="/squadre.html" aria-current="page">Squadre</a></li>
+              <li><a class="nav-link" href="/calendario.html">Calendario</a></li>
+              <li><a class="nav-link" href="/regolamento.html">Regolamento</a></li>
+              <li><a class="nav-link" href="/albo-doro.html">Albo d'Oro</a></li>
+              <li><a class="nav-link" href="/galleria.html">Galleria</a></li>
+              <li><a class="nav-link" href="/iscrizione.html">Iscrizioni</a></li>
+            </ul>
+          </nav>
+          <button type="button" class="menu-icon hide-hamb" aria-label="Apri il menu" aria-expanded="false"
+            aria-controls="overlay-menu-container">
+            <i class="icona icona-bars" aria-hidden="true"></i>
+          </button>
+          <div id="overlay-menu-container" role="dialog" aria-modal="true" aria-label="Menu">
+            <button type="button" class="close-menu-icon" aria-label="Chiudi il menu">
+              <i class="icona icona-xmark" aria-hidden="true"></i>
+            </button>
+            <ul id="overlay-menu">
+              <li class="voce-logo">
+                <a href="/" aria-label="Home" tabindex="-1">
+                  <img src="/assets/images/LOGO_COFTA_SITO.svg" width="150" height="67" class="logo" alt="" />
+                </a>
+              </li>
+              <li><a href="/">Home</a></li>
+              <li><a href="/campionato.html">Campionato</a></li>
+              <li><a href="/squadre.html" aria-current="page">Squadre</a></li>
+              <li><a href="/calendario.html">Calendario</a></li>
+              <li><a href="/regolamento.html">Regolamento</a></li>
+              <li><a href="/albo-doro.html">Albo d'Oro</a></li>
+              <li><a href="/galleria.html">Galleria</a></li>
+              <li><a href="/iscrizione.html">Iscrizioni</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="contenuto">
+      <!-- inizio contenuto -->
       <section>
         <h1 class="section-title">Squadre</h1>
         <p class="instruction instruction-fissa">Tocca una squadra per vedere partite, risultati e marcatori</p>
 
         <div id="teams-container"></div>
       </section>
+      <!-- fine contenuto -->
     </main>
 
-    <my-footer></my-footer>
+    <footer class="sito-footer">
+      <div class="footer-grid">
+        <nav class="footer-menu" aria-label="Menu nel piè di pagina">
+          <h2 class="footer-titolo">Menu</h2>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/campionato.html">Campionato</a></li>
+            <li><a href="/squadre.html" aria-current="page">Squadre</a></li>
+            <li><a href="/calendario.html">Calendario</a></li>
+            <li><a href="/regolamento.html">Regolamento</a></li>
+            <li><a href="/albo-doro.html">Albo d'Oro</a></li>
+            <li><a href="/galleria.html">Galleria</a></li>
+            <li><a href="/iscrizione.html">Iscrizioni</a></li>
+          </ul>
+        </nav>
+        <div class="footer-logo">
+          <a href="/" aria-label="Home"><img src="/assets/images/LOGO_COFTA_SITO_3.svg" width="83" height="90" class="logo"
+              alt="Cofta Milano" loading="lazy" /></a>
+        </div>
+        <div class="footer-contacts">
+          <h2 class="footer-titolo">Contatti</h2>
+          <p>Per maggiori info manda una <br />mail a: <a href="mailto:info@coftamilano.com"><b>info@coftamilano.com</b></a></p>
+          <div class="contacts-icon">
+            <a href="https://www.instagram.com/coftamilano" aria-label="Instagram di Cofta Milano" rel="noopener"
+              target="_blank"><i class="icona icona-instagram contact-icon" aria-hidden="true"></i></a>
+            <a href="mailto:info@coftamilano.com" aria-label="Scrivi una mail a Cofta Milano"><i
+                class="icona icona-envelope contact-icon" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-legale">
+        <span>© Cofta Milano</span>
+        <a href="/privacy.html">Privacy e cookie</a>
+        <button type="button" data-preferenze-cookie>Preferenze cookie</button>
+      </div>
+    </footer>
   </div>
-  <script type="module" src="/js/headerFooterManager.js"></script>
-  <script type="module" src="/js/divisionAndVariables.js"></script>
+
+  <script type="module" src="/js/sito.js"></script>
   <script type="module" src="/js/funzioniSquadre.js"></script>
 </body>
 

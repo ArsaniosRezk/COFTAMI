@@ -18,7 +18,7 @@ CLASSIFICA SQUADRE
   font-size: 0.55rem;
 
   background-color: var(--table);
-  color: var(--text);
+  color: var(--testo);
 
   border-radius: 10px;
 }
@@ -43,7 +43,7 @@ CLASSIFICA SQUADRE
   font-size: 1rem;
   font-weight: 500;
   font-family: "Bebas Neue", sans-serif;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .custom-table thead {
@@ -75,7 +75,7 @@ CLASSIFICA SQUADRE
 .custom-table td:nth-child(7),
 .custom-table td:nth-child(8),
 .custom-table td:nth-child(9) {
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
 }
 
 .custom-table tbody tr:nth-child(1),
@@ -117,7 +117,8 @@ break points
 ===================================
 */
 
-@media (min-width: 576px) {}
+@media (min-width: 576px) {
+}
 
 @media (min-width: 992px) {
   .container-classifica-gironi {
@@ -169,15 +170,14 @@ break points
   }
 }
 
-@media (min-width: 1440px) {}
+@media (min-width: 1440px) {
+}
 
 /*
 ===================================
 PROSSIMA GIORNATA
 ===================================
 */
-
-
 
 #prossima-giornata {
   display: flex;
@@ -294,7 +294,7 @@ PROSSIMA GIORNATA
 }
 
 .partita-venue p {
-  color: var(--text);
+  color: var(--testo);
   font-size: 0.4rem;
   font-weight: 500;
 }
@@ -418,41 +418,7 @@ PROSSIMA GIORNATA
   }
 }
 
-.form {
-  color: var(--darkblue);
-
-  font-weight: bold;
-}
-
-/* Istruzioni */
-.instruction {
-  color: var(--white-50);
-  font-size: 0.6rem;
-  width: 100%;
-  margin: 10px;
-}
-
-section .section-title {
-  margin-bottom: 0;
-}
-
-@media (min-width: 576px) {
-  .instruction {
-    font-size: 0.7rem;
-  }
-}
-
-@media (min-width: 992px) {
-  .instruction {
-    font-size: 1rem;
-  }
-}
-
-@media (min-width: 1440px) {}
-/* Istruzione sempre visibile (non dipende dai risultati) */
-.instruction-fissa {
-  margin-top: 0;
-}
+/* Istruzioni sotto i titoli: stile unico in base.css */
 
 /*
 ===================================
@@ -475,7 +441,7 @@ LA TUA SQUADRA
   padding: 12px 15px;
   border-radius: 10px;
   background-color: var(--secondary);
-  color: var(--text);
+  color: var(--testo);
   text-align: left;
 }
 
@@ -497,13 +463,13 @@ LA TUA SQUADRA
 }
 
 .tua-squadra-intestazione strong {
-  color: var(--mainText);
+  color: var(--accento);
   font-size: 1.1rem;
 }
 
 .tua-squadra-intestazione span {
   font-size: 0.85rem;
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
 }
 
 .tua-squadra-partite {
@@ -517,7 +483,7 @@ LA TUA SQUADRA
   font-size: 0.75rem;
   font-weight: 700;
   text-align: left;
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
 }
 
 @media (min-width: 992px) {

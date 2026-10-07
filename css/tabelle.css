@@ -7,12 +7,12 @@
 table {
   width: auto;
   border-collapse: collapse;
-  font-family: "roboto", sans-serif;
-  font-size: 0.55rem;
+  font-family: inherit;
+  font-size: 0.8rem;
   font-weight: 400;
 
   background-color: var(--table);
-  color: var(--text);
+  color: var(--testo);
 
   border-radius: 10px;
 }
@@ -24,14 +24,14 @@ table tr {
 
 table td,
 table th {
-  padding: 8px 5px;
+  padding: 10px 5px;
   width: 25px;
 }
 
 table th {
   font-size: 1rem;
   font-family: "Bebas Neue", sans-serif;
-  color: var(--mainText);
+  color: var(--accento);
   background-color: var(--tertiary);
   font-weight: 500;
 }
@@ -74,7 +74,7 @@ table tbody tr:last-child {
 .ranking-table td:nth-child(7),
 .ranking-table td:nth-child(8),
 .ranking-table td:nth-child(9) {
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
 }
 
 .ranking-table tbody tr:nth-child(1),
@@ -106,12 +106,16 @@ table tbody tr:last-child {
 }
 
 .girone-section {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.girone-section:last-child {
+  margin-bottom: 0;
 }
 
 .girone-section h3 {
-  margin-bottom: 10px;
-  font-size: 1rem;
+  margin-bottom: 12px;
+  font-size: 1.05rem;
 }
 
 .classifica-avviso {
@@ -147,7 +151,7 @@ table tbody tr:last-child {
 }
 
 .scorers-table td:nth-child(3) {
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
 }
 
 /*
@@ -156,7 +160,8 @@ table tbody tr:last-child {
   ===================================
 */
 
-@media (min-width: 576px) {}
+@media (min-width: 576px) {
+}
 
 @media (min-width: 992px) {
   table {
@@ -222,7 +227,8 @@ table tbody tr:last-child {
   }
 }
 
-@media (min-width: 1440px) {}
+@media (min-width: 1440px) {
+}
 
 /*
 ===================================
@@ -243,14 +249,15 @@ table tbody tr:last-child {
 
 .pagination button {
   display: inline-block;
-  min-width: 28px;
-  padding: 6px 9px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px 10px;
   border: none;
   border-right: 1px solid var(--white-20);
   background: transparent;
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
   font-family: inherit;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
@@ -264,12 +271,13 @@ table tbody tr:last-child {
 }
 
 .pagination button.active {
-  color: var(--text) !important;
+  color: var(--testo) !important;
   background-color: var(--tertiary);
   font-weight: 700;
 }
 
-@media (min-width: 576px) {}
+@media (min-width: 576px) {
+}
 
 @media (min-width: 992px) {
   .pagination {
@@ -282,14 +290,15 @@ table tbody tr:last-child {
   }
 }
 
-@media (min-width: 1440px) {}
+@media (min-width: 1440px) {
+}
 
 /* Penalità */
 
 .penalty-message {
   margin-top: 10px;
   text-align: right;
-  font-size: 0.55rem;
+  font-size: 0.8rem;
 }
 
 @media (min-width: 992px) {
@@ -306,8 +315,8 @@ table tbody tr:last-child {
 */
 
 .albo-table-title {
-  padding-bottom: 10px;
-  font-size: 0.9rem;
+  padding-bottom: 12px;
+  font-size: 1.1rem;
 }
 
 .albo-table-header,
@@ -326,7 +335,7 @@ table tbody tr:last-child {
 }
 
 .albo-table-cell {
-  font-size: 0.55rem;
+  font-size: 0.8rem;
 }
 
 @media (min-width: 576px) {
@@ -373,7 +382,8 @@ table tbody tr:last-child {
   }
 }
 
-@media (min-width: 1440px) {}
+@media (min-width: 1440px) {
+}
 
 .posizione-indicatore {
   position: absolute;
@@ -390,7 +400,7 @@ table tbody tr:last-child {
 .posizione-2,
 .posizione-3,
 .posizione-4 {
-  background-color: var(--mainText);
+  background-color: var(--accento);
 }
 /*
   ===================================
@@ -418,7 +428,7 @@ table tbody tr:last-child {
 
 .riga-preferita td:nth-child(2)::before {
   content: "★ ";
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 /*
@@ -436,7 +446,7 @@ table tbody tr:last-child {
   padding: 8px 12px;
   border-radius: 8px;
   background-color: var(--secondary);
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
 }
 
 .ricerca-marcatori input {
@@ -444,13 +454,13 @@ table tbody tr:last-child {
   min-width: 0;
   border: none;
   background: transparent;
-  color: var(--text);
+  color: var(--testo);
   font-family: inherit;
   font-size: 0.9rem;
 }
 
 .ricerca-marcatori input::placeholder {
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
 }
 
 .ricerca-marcatori input:focus {
@@ -458,7 +468,7 @@ table tbody tr:last-child {
 }
 
 .ricerca-marcatori:focus-within {
-  outline: 2px solid var(--mainText);
+  outline: 2px solid var(--accento);
 }
 
 .contenuto-marcatori {
@@ -472,16 +482,20 @@ table tbody tr:last-child {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 36px;
+}
+
+.albo-table-container:last-child {
+  margin-bottom: 0;
 }
 
 .link-edizione {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 10px;
-  color: var(--mainText);
-  font-size: 0.85rem;
+  margin-top: 14px;
+  color: var(--accento);
+  font-size: 0.9rem;
   font-weight: 600;
 }
 

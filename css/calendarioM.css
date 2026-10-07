@@ -41,7 +41,7 @@
   border: 1px solid var(--white-20);
   border-radius: 8px;
   background-color: var(--tertiary);
-  color: var(--text);
+  color: var(--testo);
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -50,9 +50,9 @@
 }
 
 .cal-pulsante:hover:not(:disabled) {
-  border-color: var(--mainText);
+  border-color: var(--accento);
   background-color: var(--tertiary);
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .cal-pulsante.pericoloso:hover:not(:disabled) {
@@ -70,18 +70,18 @@
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: var(--text);
+  color: var(--testo);
   cursor: pointer;
 }
 
 .cal-icona:hover:not(:disabled) {
   border: none;
   background-color: var(--white-20);
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .cal-icona.attivo {
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 #calendar-content button:disabled {
@@ -92,19 +92,19 @@
 /* Lo stile globale (gestionale.css) colora di arancione ogni pulsante al passaggio */
 .cal-icona:disabled:hover {
   background: transparent;
-  color: var(--text);
+  color: var(--testo);
 }
 
 .cal-pulsante:disabled:hover {
   border: 1px solid var(--white-20);
   background-color: var(--tertiary);
-  color: var(--text);
+  color: var(--testo);
 }
 
 #calendar-content .custom-button:disabled:hover {
   border: var(--interaction);
   background-color: var(--secondary);
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 /* Barra di stato, sempre in vista */
@@ -133,7 +133,7 @@
 }
 
 #cal-stato.bozza strong {
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .cal-barra-azioni {
@@ -171,14 +171,14 @@
   margin: 0;
   padding: 10px 14px;
   list-style: none;
-  border-left: 4px solid var(--mainText);
+  border-left: 4px solid var(--accento);
   border-radius: 8px;
   background-color: var(--tertiary);
   font-size: 0.9rem;
 }
 
 #cal-avvisi li i {
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 #cal-avvisi li.grave i {
@@ -186,7 +186,7 @@
 }
 
 .cal-attenzione {
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: 600;
 }
 
@@ -210,7 +210,7 @@
 .cal-titolo-sezione {
   margin-top: 16px;
   font-size: 1.3rem;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 #cal-giornate,
@@ -239,16 +239,16 @@
   border: 2px dashed var(--white-50);
   border-radius: 10px;
   background: transparent;
-  color: var(--text);
+  color: var(--testo);
   font-family: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
 .cal-nuova-giornata:hover {
-  border: 2px dashed var(--mainText);
+  border: 2px dashed var(--accento);
   background: transparent;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 /* Giornata */
@@ -271,7 +271,7 @@
 }
 
 .cal-giornata.senza-evidenziata {
-  box-shadow: 0 0 0 2px var(--mainText);
+  box-shadow: 0 0 0 2px var(--accento);
 }
 
 .cal-giornata > header,
@@ -328,13 +328,13 @@
 }
 
 .cal-evidenziata-testo {
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: 800;
 }
 
 /* Da collocare */
 #cal-parcheggio {
-  border: 2px dashed var(--mainText);
+  border: 2px dashed var(--accento);
   background-color: var(--tertiary);
 }
 
@@ -400,11 +400,11 @@
 }
 
 .cal-partita.giocata {
-  border-left-color: var(--mainText);
+  border-left-color: var(--accento);
 }
 
 .cal-partita.evidenziata {
-  box-shadow: 0 0 0 2px var(--mainText);
+  box-shadow: 0 0 0 2px var(--accento);
 }
 
 .cal-partita.attenuata {
@@ -452,8 +452,8 @@
 }
 
 .cal-partita.giocata .cal-vs {
-  background-color: var(--mainText);
-  color: var(--darkText);
+  background-color: var(--accento);
+  color: var(--inchiostro);
 }
 
 .cal-girone {
@@ -473,7 +473,7 @@
 
 .cal-giocata-badge {
   flex-shrink: 0;
-  color: var(--mainText);
+  color: var(--accento);
   font-size: 0.8rem;
 }
 
@@ -500,20 +500,20 @@
   border: 1px solid transparent;
   border-radius: 6px;
   background-color: var(--input-bg);
-  color: var(--text);
+  color: var(--testo);
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .cal-campo::placeholder {
-  color: var(--testoTrasparente);
+  color: var(--testo-tenue);
   opacity: 0.6;
 }
 
 .cal-campo:focus {
   outline: none;
-  border-color: var(--mainText);
+  border-color: var(--accento);
   background-color: var(--input-focus-bg);
 }
 
@@ -543,13 +543,15 @@
   max-width: calc(100vw - 32px);
   padding: 10px 16px;
   border-radius: 10px;
-  background-color: var(--darkText);
+  background-color: var(--inchiostro);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   font-size: 0.9rem;
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, 20px);
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 #cal-toast.visibile {
@@ -563,7 +565,7 @@
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: var(--mainText);
+  color: var(--accento);
   font-family: inherit;
   font-weight: 800;
   cursor: pointer;
@@ -578,7 +580,7 @@
   border: none;
   border-radius: 14px;
   background-color: var(--primary);
-  color: var(--text);
+  color: var(--testo);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
@@ -602,7 +604,7 @@
 
 #cal-dialogo > header h3 {
   margin: 0;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .cal-dialogo-corpo {
@@ -612,7 +614,7 @@
 
 .cal-dialogo-corpo h4 {
   margin: 14px 0 6px;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 #cal-dialogo > footer {
@@ -678,7 +680,7 @@
   border: 1px solid var(--white-20);
   border-radius: 6px;
   background-color: var(--tertiary);
-  color: var(--text);
+  color: var(--testo);
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 600;
@@ -689,7 +691,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--text);
+  color: var(--testo);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -733,7 +735,7 @@
 
 .cal-gruppo legend {
   padding: 0 6px;
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: 700;
 }
 

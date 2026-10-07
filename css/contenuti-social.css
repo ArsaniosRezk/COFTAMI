@@ -9,11 +9,12 @@
 }
 
 body {
+  height: auto;
   min-height: 100vh;
   font-family: "Montserrat", sans-serif;
   font-size: 1rem;
   background-color: var(--primary);
-  color: var(--text);
+  color: var(--testo);
 }
 
 /* INTESTAZIONE */
@@ -42,7 +43,7 @@ body {
 }
 
 .cs-titolo h1 {
-  color: var(--mainText);
+  color: var(--accento);
   font-size: 2rem;
 }
 
@@ -74,12 +75,12 @@ body {
 }
 
 .cs-divisione button:hover {
-  color: var(--text);
+  color: var(--testo);
 }
 
 .cs-divisione button.selected {
-  background-color: var(--mainText);
-  color: var(--darkText);
+  background-color: var(--accento);
+  color: var(--inchiostro);
 }
 
 .cs-errore {
@@ -90,23 +91,24 @@ body {
 /* STILI COMUNI (come in gestionale.css) */
 
 label {
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: bold;
 }
 
 select {
   padding: 10px 5px 4px 5px;
   border: none;
-  border-bottom: 5px solid var(--mainText);
+  border-bottom: 5px solid var(--accento);
   background-color: transparent;
-  color: var(--mainText);
+  color: var(--accento);
   font-family: inherit;
   font-size: 1rem;
   font-weight: 700;
 }
 
-select:focus {
-  outline: none;
+select:focus-visible {
+  outline: 2px solid var(--accento);
+  outline-offset: 2px;
 }
 
 option {
@@ -118,7 +120,7 @@ option {
   border: var(--interaction);
   border-radius: 10px;
   background-color: var(--secondary);
-  color: var(--mainText);
+  color: var(--accento);
   font-family: inherit;
   font-size: 1rem;
   font-weight: bold;
@@ -128,7 +130,7 @@ option {
 .custom-button:hover {
   border: 1px solid transparent;
   background-color: var(--orange);
-  color: var(--text);
+  color: var(--testo);
 }
 
 /* SMARTPHONE */
@@ -171,7 +173,7 @@ option {
   .custom-button:hover {
     border: var(--interaction);
     background-color: var(--secondary);
-    color: var(--mainText);
+    color: var(--accento);
   }
 }
 

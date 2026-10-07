@@ -28,178 +28,173 @@ const CACHE_VERSIONE_VECCHIA = /^v\d+$/;
 
 // Copie per l'uso offline (Core)
 const ASSETS_TO_CACHE = [
-    "/",
-    "/index.html",
-    "/campionato.html",
-    "/squadre.html",
-    "/squadra.html",
-    "/calendario.html",
-    "/regolamento.html",
-    "/iscrizione.html",
-    "/style.css",
-    "/css/colors.css",
-    "/css/icone.css",
-    "/css/header.css",
-    "/css/footer.css",
-    "/css/skeleton.css",
-    "/css/pre-torneo.css",
-    "/css/home.css",
-    "/css/partite.css",
-    "/css/tabelle.css",
-    "/css/overlay-partite.css",
-    "/css/calendario.css",
-    "/css/squadre.css",
-    "/css/squadra.css",
-    "/js/firebase.js",
-    "/js/impostazioni.js",
-    "/js/dati-torneo.js",
-    "/js/divisionAndVariables.js",
-    "/js/headerFooterManager.js",
-    "/js/maintenance-guard.js",
-    "/js/pagine-attive.js",
-    "/js/funzioniHome.js",
-    "/js/utils/percorso.js",
-    "/js/utils/torneo.js",
-    "/js/utils/interfaccia.js",
-    "/js/components/standings.js",
-    "/js/components/calendar.js",
-    "/js/components/pre-torneo.js",
-    "/js/components/manutenzione.js",
-    "/manifest.webmanifest",
-    "/assets/images/favicon.svg",
-    "/assets/images/LOGO_COFTA_SITO.svg",
-    "/assets/images/LOGO_COFTA_SITO_3.svg",
-    "/assets/fonts/UaCadet-2068.woff2"
+  "/",
+  "/index.html",
+  "/campionato.html",
+  "/squadre.html",
+  "/squadra.html",
+  "/calendario.html",
+  "/regolamento.html",
+  "/iscrizione.html",
+  "/css/base.css",
+  "/css/icone.css",
+  "/css/home.css",
+  "/css/partite.css",
+  "/css/tabelle.css",
+  "/css/overlay-partite.css",
+  "/css/calendario.css",
+  "/css/squadre.css",
+  "/css/squadra.css",
+  "/css/campionato.css",
+  "/css/statistiche.css",
+  "/js/firebase.js",
+  "/js/ambiente.js",
+  "/js/impostazioni.js",
+  "/js/dati-torneo.js",
+  "/js/divisione.js",
+  "/js/sito.js",
+  "/js/consenso.js",
+  "/js/controllo-manutenzione.js",
+  "/js/pagine-attive.js",
+  "/js/funzioniHome.js",
+  "/js/utils/percorso.js",
+  "/js/utils/torneo.js",
+  "/js/utils/interfaccia.js",
+  "/js/components/classifiche.js",
+  "/js/components/calendario.js",
+  "/js/components/pre-torneo.js",
+  "/js/components/manutenzione.js",
+  "/manifest.webmanifest",
+  "/assets/images/favicon.svg",
+  "/assets/images/LOGO_COFTA_SITO.svg",
+  "/assets/images/LOGO_COFTA_SITO_3.svg",
+  "/assets/fonts/UaCadet-2068.woff2",
 ];
 
 const FILE_STATICI = /\.(png|jpe?g|gif|svg|webp|avif|ico|ttf|otf|woff2?)$/i;
 
 // INSTALLAZIONE
 self.addEventListener("install", (event) => {
-    console.log("[Service Worker] Installazione nuova versione:", CACHE_NAME);
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) =>
-            // Un file mancante non deve bloccare l'installazione: con addAll
-            // basterebbe un 404 per lasciare tutti sulla versione vecchia
-            Promise.allSettled(
-                ASSETS_TO_CACHE.map((url) =>
-                    fetch(url, { cache: "no-cache" }).then((risposta) => {
-                        if (risposta.ok) return cache.put(url, risposta);
-                    })
-                )
-            )
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) =>
+      // Un file mancante non deve bloccare l'installazione: con addAll
+      // basterebbe un 404 per lasciare tutti sulla versione vecchia
+      Promise.allSettled(
+        ASSETS_TO_CACHE.map((url) =>
+          fetch(url, { cache: "no-cache" }).then((risposta) => {
+            if (risposta.ok) return cache.put(url, risposta);
+          })
         )
-    );
-    // Forza l'attivazione immediata del nuovo SW
-    self.skipWaiting();
+      )
+    )
+  );
+  // Forza l'attivazione immediata del nuovo SW
+  self.skipWaiting();
 });
 
 // ATTIVAZIONE
 self.addEventListener("activate", (event) => {
-    const attivazione = (async () => {
-        const chiavi = await caches.keys();
-        const daVersioneVecchia = chiavi.some((chiave) =>
-            CACHE_VERSIONE_VECCHIA.test(chiave)
-        );
+  const attivazione = (async () => {
+    const chiavi = await caches.keys();
+    const daVersioneVecchia = chiavi.some((chiave) => CACHE_VERSIONE_VECCHIA.test(chiave));
 
-        await Promise.all(
-            chiavi
-                .filter((chiave) => chiave !== CACHE_NAME)
-                .map((chiave) => {
-                    console.log("[Service Worker] Rimozione vecchia cache:", chiave);
-                    return caches.delete(chiave);
-                })
-        );
+    await Promise.all(
+      chiavi
+        .filter((chiave) => chiave !== CACHE_NAME)
+        .map((chiave) => {
+          return caches.delete(chiave);
+        })
+    );
 
-        // Prende il controllo delle pagine già aperte
-        await self.clients.claim();
-        return daVersioneVecchia;
-    })();
+    // Prende il controllo delle pagine già aperte
+    await self.clients.claim();
+    return daVersioneVecchia;
+  })();
 
-    event.waitUntil(attivazione);
+  event.waitUntil(attivazione);
 
-    // Le pagine aperte sono state servite dalla cache vecchia: ricaricandole il
-    // visitatore vede subito la versione nuova. Succede una sola volta, al
-    // passaggio da una versione "prima la cache".
-    // Fuori da waitUntil: la ricarica passa da questo service worker, che non
-    // risponde finché l'attivazione non è conclusa (si bloccherebbero a vicenda)
-    attivazione.then(async (daVersioneVecchia) => {
-        if (!daVersioneVecchia) return;
+  // Le pagine aperte sono state servite dalla cache vecchia: ricaricandole il
+  // visitatore vede subito la versione nuova. Succede una sola volta, al
+  // passaggio da una versione "prima la cache".
+  // Fuori da waitUntil: la ricarica passa da questo service worker, che non
+  // risponde finché l'attivazione non è conclusa (si bloccherebbero a vicenda)
+  attivazione.then(async (daVersioneVecchia) => {
+    if (!daVersioneVecchia) return;
 
-        const finestre = await self.clients.matchAll({ type: "window" });
-        finestre
-            .filter((finestra) => "navigate" in finestra)
-            .forEach((finestra) => finestra.navigate(finestra.url).catch(() => {}));
-    });
+    const finestre = await self.clients.matchAll({ type: "window" });
+    finestre
+      .filter((finestra) => "navigate" in finestra)
+      .forEach((finestra) => finestra.navigate(finestra.url).catch(() => {}));
+  });
 });
 
 // GESTIONE RICHIESTE (FETCH)
 self.addEventListener("fetch", (event) => {
-    const richiesta = event.request;
+  const richiesta = event.request;
 
-    // Escludi richieste non GET e le richieste parziali (es. video, PDF)
-    if (richiesta.method !== "GET" || richiesta.headers.has("range")) return;
+  // Escludi richieste non GET e le richieste parziali (es. video, PDF)
+  if (richiesta.method !== "GET" || richiesta.headers.has("range")) return;
 
-    // Firebase, font e CDN: il service worker non interviene
-    const url = new URL(richiesta.url);
-    if (url.origin !== self.location.origin) return;
+  // Firebase, font e CDN: il service worker non interviene
+  const url = new URL(richiesta.url);
+  if (url.origin !== self.location.origin) return;
 
-    if (richiesta.mode !== "navigate" && FILE_STATICI.test(url.pathname)) {
-        event.respondWith(primaLaCache(event));
-    } else {
-        event.respondWith(primaLaRete(richiesta));
-    }
+  if (richiesta.mode !== "navigate" && FILE_STATICI.test(url.pathname)) {
+    event.respondWith(primaLaCache(event));
+  } else {
+    event.respondWith(primaLaRete(richiesta));
+  }
 });
 
 async function primaLaRete(richiesta) {
-    try {
-        const risposta =
-            richiesta.mode === "navigate"
-                ? // Con redirect "manual" un eventuale redirect viene seguito dal
-                  // browser: una risposta già rediretta non si può dare a una navigazione
-                  await fetch(richiesta.url, {
-                      cache: "no-cache",
-                      credentials: "same-origin",
-                      redirect: "manual",
-                  })
-                : // "no-cache": il browser ricontrolla col server invece di usare la
-                  // sua copia, che GitHub Pages lascia valida per 10 minuti
-                  await fetch(richiesta, { cache: "no-cache" });
+  try {
+    const risposta =
+      richiesta.mode === "navigate"
+        ? // Con redirect "manual" un eventuale redirect viene seguito dal
+          // browser: una risposta già rediretta non si può dare a una navigazione
+          await fetch(richiesta.url, {
+            cache: "no-cache",
+            credentials: "same-origin",
+            redirect: "manual",
+          })
+        : // "no-cache": il browser ricontrolla col server invece di usare la
+          // sua copia, che GitHub Pages lascia valida per 10 minuti
+          await fetch(richiesta, { cache: "no-cache" });
 
-        salvaInCache(richiesta, risposta);
-        return risposta;
-    } catch (errore) {
-        // Offline: si usa l'ultima copia salvata. Le pagine si cercano senza
-        // parametri: squadra.html?nome=... usa la copia di squadra.html
-        const inCache = await caches.match(richiesta, {
-            ignoreSearch: richiesta.mode === "navigate",
-        });
-        if (inCache) return inCache;
-        throw errore;
-    }
+    salvaInCache(richiesta, risposta);
+    return risposta;
+  } catch (errore) {
+    // Offline: si usa l'ultima copia salvata. Le pagine si cercano senza
+    // parametri: squadra.html?nome=... usa la copia di squadra.html
+    const inCache = await caches.match(richiesta, {
+      ignoreSearch: richiesta.mode === "navigate",
+    });
+    if (inCache) return inCache;
+    throw errore;
+  }
 }
 
 async function primaLaCache(event) {
-    const richiesta = event.request;
-    const inCache = await caches.match(richiesta);
+  const richiesta = event.request;
+  const inCache = await caches.match(richiesta);
 
-    const dallaRete = fetch(richiesta).then((risposta) => {
-        salvaInCache(richiesta, risposta);
-        return risposta;
-    });
+  const dallaRete = fetch(richiesta).then((risposta) => {
+    salvaInCache(richiesta, risposta);
+    return risposta;
+  });
 
-    if (inCache) {
-        // Aggiorna la copia in background per la prossima volta
-        event.waitUntil(dallaRete.catch(() => {}));
-        return inCache;
-    }
+  if (inCache) {
+    // Aggiorna la copia in background per la prossima volta
+    event.waitUntil(dallaRete.catch(() => {}));
+    return inCache;
+  }
 
-    return dallaRete;
+  return dallaRete;
 }
 
 function salvaInCache(richiesta, risposta) {
-    if (!risposta.ok || risposta.type !== "basic") return;
+  if (!risposta.ok || risposta.type !== "basic") return;
 
-    const copia = risposta.clone();
-    caches.open(CACHE_NAME).then((cache) => cache.put(richiesta, copia));
+  const copia = risposta.clone();
+  caches.open(CACHE_NAME).then((cache) => cache.put(richiesta, copia));
 }

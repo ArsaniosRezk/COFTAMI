@@ -11,7 +11,7 @@
   text-align: center;
   transition: all 0.5s ease;
 
-  color: var(--text);
+  color: var(--testo);
   z-index: 2000;
 }
 
@@ -31,7 +31,7 @@
   border: none;
   border-radius: 50%;
   background-color: var(--white-20);
-  color: var(--text);
+  color: var(--testo);
   font-size: 1.3rem;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -88,7 +88,7 @@
   font-size: 1rem;
   text-align: center;
   font-weight: bold;
-  color: var(--mainText);
+  color: var(--accento);
 }
 
 .gols-div {
@@ -104,7 +104,7 @@
 
 .gol-number {
   font-size: 5rem;
-  color: var(--mainText);
+  color: var(--accento);
   font-weight: bold;
 }
 
