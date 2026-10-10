@@ -35,6 +35,12 @@ service firebase.storage {
     match /Moduli/{edizione}/{file} {
       allow create: if request.resource.size < 10 * 1024 * 1024
         && request.resource.contentType.matches('application/pdf|image/jpeg|image/png');
+
+      // Beach volley (Moduli/BV-{anno}/...): il modulo pubblico chiede subito il link
+      // del file appena caricato, perché il suo gestionale non ha l'accesso Google per
+      // farlo dopo. Solo "get", niente elenco della cartella: il nome del file contiene
+      // un codice casuale di 16 caratteri, quindi si apre solo conoscendolo esattamente
+      allow get: if edizione.matches('BV-.*');
     }
 
     // Loghi delle squadre: li vede chiunque (sito pubblico), li carica solo il gestionale.
