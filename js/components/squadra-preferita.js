@@ -14,10 +14,11 @@ LA TUA SQUADRA (home)
 ===================================
 Chi ha scelto una squadra preferita (stella nella pagina della squadra) trova
 in cima alla home la sua prossima partita, l'ultimo risultato e la posizione
-in classifica.
+in classifica. Con conPartite = false (pagina Calendario spenta dalla
+dashboard) resta solo la posizione.
 */
 
-export function laTuaSquadra(dati) {
+export function laTuaSquadra(dati, { conPartite = true } = {}) {
   const sezione = document.getElementById("sezione-tua-squadra");
   const contenuto = document.getElementById("tua-squadra");
   if (!sezione || !contenuto) return;
@@ -75,6 +76,8 @@ export function laTuaSquadra(dati) {
   freccia.setAttribute("aria-hidden", "true");
   intestazione.appendChild(freccia);
   contenuto.appendChild(intestazione);
+  sezione.hidden = false;
+  if (!conPartite) return;
 
   // Prossima partita e ultimo risultato
   const partite = partiteDellaSquadra(dati.calendario, chiave);
@@ -98,5 +101,4 @@ export function laTuaSquadra(dati) {
   blocco("Ultimo risultato", ultima);
 
   if (blocchi.children.length > 0) contenuto.appendChild(blocchi);
-  sezione.hidden = false;
 }

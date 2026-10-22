@@ -13,6 +13,8 @@ valore sta in Impostazioni/pagineAttive:
 - Pagina spenta: al posto dei contenuti compare un avviso e il link sparisce
   dai menu. Le pagine con i dati del torneo mostrano l'avviso da
   pre-torneo.js, le altre (regolamento, albo d'oro, galleria) da qui.
+- Calendario spento: spariscono anche le partite in home (Prossima giornata,
+  La tua squadra) e nelle pagine delle squadre.
 - La Home è sempre accesa: è l'ingresso del sito.
 - Valore assente: la pagina è accesa. Senza squadre caricate resta comunque
   l'avviso automatico "il torneo non è ancora iniziato".

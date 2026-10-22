@@ -171,6 +171,21 @@ function disegnaPartite(dati) {
   elenco("risultati-squadra", giocate, "Nessuna partita giocata finora.");
 }
 
+// Con la pagina Calendario spenta dalla dashboard le partite non si vedono
+let calendarioSpento = false;
+
+function mostraPartite(dati) {
+  document
+    .querySelectorAll(".sezione-partite-squadra")
+    .forEach((sezione) => (sezione.hidden = calendarioSpento));
+  if (!calendarioSpento) {
+    disegnaPartite(dati);
+    return;
+  }
+  $("prossime-partite").replaceChildren();
+  $("risultati-squadra").replaceChildren();
+}
+
 function disegnaMarcatori(dati) {
   const contenitore = $("marcatori-squadra");
   contenitore.replaceChildren();
@@ -255,6 +270,12 @@ async function avvia() {
     if (spenta) {
       squadraNonTrovata("Disponibile a breve", "Le squadre del torneo saranno pubblicate qui a breve.");
     }
+
+    const calendario = !paginaAttiva(impostazioni, "calendario");
+    if (calendario === calendarioSpento) return;
+    calendarioSpento = calendario;
+    // Nascondere va sempre bene; rimostrare solo se la squadra è già disegnata
+    if (calendarioSpento || (!paginaSpenta && ultimi.squadre?.[chiave])) mostraPartite(ultimi);
   });
 
   osservaDivisione(
@@ -271,7 +292,7 @@ async function avvia() {
       const posizione = posizioneSquadra(dati.squadre, dati.partite, chiave);
       disegnaIntestazione(squadra, posizione);
       disegnaStatistiche(posizione);
-      disegnaPartite(dati);
+      mostraPartite(dati);
       disegnaMarcatori(dati);
       disegnaRosa(squadra);
     },

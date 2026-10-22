@@ -4,15 +4,20 @@ import { prossimaGiornata, scheletroProssimaGiornata } from "./components/calend
 import { gestisciAttesaTorneo } from "./components/pre-torneo.js";
 import { laTuaSquadra } from "./components/squadra-preferita.js";
 import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
-import { osservaImpostazioni } from "./impostazioni.js";
+import { osservaImpostazioni, leggiImpostazioni } from "./impostazioni.js";
+import { paginaAttiva } from "./pagine-attive.js";
 
 // Ascolto dei dati della divisione mostrata: va fermato quando si cambia divisione
 let fermaAscolto = null;
 
-// La scheda resta visibile finché non viene spenta dalla dashboard
+// La scheda resta visibile finché non viene spenta dalla dashboard, con il suo
+// interruttore o con quello della pagina Calendario
 osservaImpostazioni((impostazioni) => {
   const sezione = document.getElementById("sezione-prossima-giornata");
-  if (sezione) sezione.hidden = impostazioni?.prossimaGiornataHome === false;
+  if (sezione) {
+    sezione.hidden =
+      impostazioni?.prossimaGiornataHome === false || !paginaAttiva(impostazioni, "calendario");
+  }
 });
 
 // Sequenza esecuzione dei contenuti della pagina
@@ -28,10 +33,14 @@ export async function sequenzaEsecuzione() {
       // l'avviso d'attesa al posto di classifica e prossima giornata
       if (await gestisciAttesaTorneo(dati.squadre)) return;
 
+      // Con la pagina Calendario spenta le partite non si vedono nemmeno qui
+      // (divisione.js riesegue la sequenza quando viene riaccesa)
+      const calendarioVisibile = paginaAttiva(await leggiImpostazioni(), "calendario");
+
       faseFinale(dati);
-      laTuaSquadra(dati);
+      laTuaSquadra(dati, { conPartite: calendarioVisibile });
       classificaGirone("classifica-squadre", false, dati);
-      prossimaGiornata(dati);
+      if (calendarioVisibile) prossimaGiornata(dati);
     },
     {
       onLento: () => mostraErroreCaricamento(["classifica-squadre", "prossima-giornata"]),
