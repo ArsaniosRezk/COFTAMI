@@ -207,6 +207,13 @@ function preparaImpostazioni(impostazioni) {
 
   const interruttori = [
     [
+      "toggle-prossima-giornata",
+      "prossimaGiornataHome",
+      impostazioni.prossimaGiornataHome !== false,
+      "Prossima giornata visibile in home",
+      "Prossima giornata nascosta dalla home",
+    ],
+    [
       "toggle-iscrizioni",
       "iscrizioniAperte",
       impostazioni.iscrizioniAperte !== false,

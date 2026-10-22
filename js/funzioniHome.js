@@ -4,9 +4,16 @@ import { prossimaGiornata, scheletroProssimaGiornata } from "./components/calend
 import { gestisciAttesaTorneo } from "./components/pre-torneo.js";
 import { laTuaSquadra } from "./components/squadra-preferita.js";
 import { osservaDivisione, mostraErroreCaricamento } from "./dati-torneo.js";
+import { osservaImpostazioni } from "./impostazioni.js";
 
 // Ascolto dei dati della divisione mostrata: va fermato quando si cambia divisione
 let fermaAscolto = null;
+
+// La scheda resta visibile finché non viene spenta dalla dashboard
+osservaImpostazioni((impostazioni) => {
+  const sezione = document.getElementById("sezione-prossima-giornata");
+  if (sezione) sezione.hidden = impostazioni?.prossimaGiornataHome === false;
+});
 
 // Sequenza esecuzione dei contenuti della pagina
 // Chiamata da divisione.js all'avvio e a ogni cambio di divisione
