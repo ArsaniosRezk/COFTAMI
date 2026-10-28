@@ -61,6 +61,10 @@ function nuovaTela(altezza = H) {
 function esporta(canvas, nome) {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
+      // Su iPhone Safari ha un tetto alla memoria dei canvas: oltre quello
+      // getContext() restituisce null e la generazione si ferma a metà.
+      // Il PNG è già nel blob, la tela si può svuotare subito
+      canvas.width = canvas.height = 0;
       if (blob) resolve({ nome, blob });
       else reject(new Error(`Impossibile esportare ${nome}`));
     }, "image/png");

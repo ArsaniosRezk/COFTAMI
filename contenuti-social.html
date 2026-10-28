@@ -42,13 +42,8 @@
 
   <main id="cs-contenuto"></main>
 
-  <script type="module">
-    import { accessoAmministratore } from "/js/accesso.js";
-
-    // Stesso accesso del gestionale: account Google abilitato
-    await accessoAmministratore();
-    await import("/js/contenuti-social.js");
-  </script>
+  <!-- Pagina pubblica, senza accesso: legge solo dati già pubblici (calendario, squadre, partite) -->
+  <script type="module" src="/js/contenuti-social.js"></script>
 </body>
 
 </html>

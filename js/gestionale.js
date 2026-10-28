@@ -105,6 +105,8 @@ function mostraContenuto() {
   clearTimeout(timerSpinner);
   main.classList.remove("in-attesa");
   contentDiv.classList.remove("in-caricamento");
+  // Il campo che aveva il focus può essere sparito con la sezione vecchia
+  aggiornaTastiera();
 }
 
 async function caricaSezione(sezione) {
@@ -264,19 +266,31 @@ matchMedia("(min-width: 1025px)").addEventListener("change", (evento) => {
 });
 
 // --- TASTIERA SU SMARTPHONE ---
-// Con la tastiera aperta la barra in basso ruberebbe spazio ai campi
-const campoDiTesto = (el) =>
-  el instanceof HTMLElement && el.matches("textarea, input:not([type=checkbox]):not([type=radio])");
+// Con la tastiera aperta la barra in basso ruberebbe spazio ai campi.
+// Il focus da solo non basta per dire che la tastiera è aperta, e la barra
+// restava nascosta: su Android la tastiera si chiude con "indietro" lasciando
+// il focus nel campo, un campo tolto dalla pagina (sezione ridisegnata dopo un
+// salvataggio) non manda focusout, e data e ora aprono un selettore, non la
+// tastiera. Dove si può si misura lo spazio che la tastiera occupa davvero.
+const TIPI_CON_TASTIERA = ["text", "search", "email", "tel", "url", "number", "password"];
+const ALTEZZA_MINIMA_TASTIERA = 150;
 
-document.addEventListener("focusin", (evento) => {
-  if (campoDiTesto(evento.target)) document.body.classList.add("keyboard-open");
-});
-document.addEventListener("focusout", () => {
-  // Passando da un campo all'altro il focus resta su un campo: niente sfarfallio
-  setTimeout(() => {
-    if (!campoDiTesto(document.activeElement)) document.body.classList.remove("keyboard-open");
-  }, 100);
-});
+const campoDiTesto = (el) =>
+  el instanceof HTMLElement &&
+  (el.matches("textarea") || (el.matches("input") && TIPI_CON_TASTIERA.includes(el.type)));
+
+function aggiornaTastiera() {
+  const vista = window.visualViewport;
+  const aperta =
+    campoDiTesto(document.activeElement) &&
+    (!vista || document.documentElement.clientHeight - vista.height * vista.scale > ALTEZZA_MINIMA_TASTIERA);
+  document.body.classList.toggle("keyboard-open", aperta);
+}
+
+document.addEventListener("focusin", aggiornaTastiera);
+// Passando da un campo all'altro il focus resta su un campo: niente sfarfallio
+document.addEventListener("focusout", () => setTimeout(aggiornaTastiera, 100));
+window.visualViewport?.addEventListener("resize", aggiornaTastiera);
 
 // --- AVVIO ---
 const utente = await accessoAmministratore();

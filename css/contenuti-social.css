@@ -17,6 +17,14 @@ body {
   color: var(--testo);
 }
 
+/* In gestionale.css main è un riquadro che scorre da solo e non passa lo
+   scorrimento alla pagina (overscroll-behavior): qui scorre la pagina intera,
+   altrimenti su smartphone il dito sopra il contenuto non la muove */
+main {
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
 /* INTESTAZIONE */
 
 .cs-header {
