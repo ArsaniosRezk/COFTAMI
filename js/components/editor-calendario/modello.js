@@ -8,6 +8,8 @@ impronta per capire se ci sono modifiche, forma in cui verrà pubblicato.
 Lo stato della bozza è descritto in editor-calendario.js.
 */
 
+import { dataPartita } from "../../utils/torneo.js";
+
 export const ID_PARCHEGGIO = "parcheggio";
 // Caratteri che Firebase non accetta nelle chiavi (vedi components/squadre.js)
 export const CARATTERI_VIETATI = /[./#$[\]:]/;
@@ -47,14 +49,22 @@ export function statoDaCalendario(calendario, bloccate) {
   });
 
   const chiavi = voci(calendario).map(([chiave]) => chiave);
-  return {
+  return ordinaPerOrario({
     giornate: chiavi
       .filter(eNumerica)
       .sort((a, b) => a - b)
       .map((chiave) => giornata(chiave, null)),
     speciali: chiavi.filter((chiave) => !eNumerica(chiave)).map((chiave) => giornata(chiave, chiave)),
     parcheggio: [],
-  };
+  });
+}
+
+// Le partite di ogni giornata in ordine di data e ora, come sul sito pubblico;
+// quelle senza data restano in fondo nell'ordine in cui sono
+export function ordinaPerOrario(s) {
+  const momento = (p) => dataPartita(p) || Infinity;
+  for (const lista of tutteLeListe(s)) lista.partite.sort((a, b) => momento(a) - momento(b));
+  return s;
 }
 
 // Una partita è "giocata" se ha un risultato, un risultato confermato o un

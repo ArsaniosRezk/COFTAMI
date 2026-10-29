@@ -18,6 +18,7 @@ const {
   nuovaGiornata,
   impronta,
   perPubblicazione,
+  ordinaPerOrario,
 } = M;
 
 // Messaggio di errore breve, al posto di alert()
@@ -132,6 +133,7 @@ async function carica() {
     }
   }
   if (!stato) stato = clona(pubblicato);
+  ordinaPerOrario(stato);
 }
 
 /*
@@ -189,10 +191,12 @@ MODIFICHE, ANNULLA, BOZZA
 */
 
 // Ogni modifica passa da qui: salva lo stato per "Annulla", applica la
-// funzione e ridisegna. Se la funzione restituisce false non cambia nulla.
+// funzione, rimette in ordine di orario e ridisegna. Se la funzione
+// restituisce false non cambia nulla.
 function modifica(descrizione, funzione, { ridisegna = true } = {}) {
   const prima = JSON.stringify(stato);
   const esito = funzione(stato);
+  ordinaPerOrario(stato);
   if (esito === false || JSON.stringify(stato) === prima) {
     stato = JSON.parse(prima);
     return false;
@@ -730,6 +734,12 @@ function disegnaPartita(partita, lista, doppie) {
         },
         { ridisegna: false }
       );
+      // Con il nuovo orario la partita può cambiare posto nella giornata.
+      // Si ridisegna dopo che il cursore è passato al campo successivo (Tab)
+      const riga = input.closest(".cal-partita");
+      if (riga && [...riga.parentElement.children].indexOf(riga) !== trovaPartita(partita.id)?.indice) {
+        setTimeout(ridisegnaMantenendoCursore, 0);
+      }
     });
     return input;
   };
@@ -792,6 +802,21 @@ function disegnaPartita(partita, lista, doppie) {
       campo("Luogo", "Luogo", "text", () => true)
     )
   );
+}
+
+// Il ridisegno sostituisce i campi: il cursore torna nello stesso campo
+// della stessa partita, ovunque sia finita
+function ridisegnaMantenendoCursore() {
+  const attivo = document.activeElement;
+  const id = attivo?.closest?.(".cal-partita")?.dataset.id;
+  const classe = [...(attivo?.classList || [])].find((c) => c.startsWith("cal-campo-"));
+  const { selectionStart, selectionEnd } = attivo || {};
+  render();
+  if (!id || !classe) return;
+  const campo = document.querySelector(`#calendar-content .cal-partita[data-id="${CSS.escape(id)}"] .${classe}`);
+  if (!campo) return;
+  campo.focus();
+  if (selectionStart != null) campo.setSelectionRange(selectionStart, selectionEnd);
 }
 
 // "6/4" -> "06/04", "16.00" -> "16:00": il sito ordina le partite leggendo
@@ -896,7 +921,9 @@ function spostaPartita(id, idDestinazione, posizione = Infinity) {
   }
 
   const destinazione = trovaLista(idDestinazione);
-  modifica(
+  // Dentro la stessa giornata l'orario decide l'ordine: se il trascinamento
+  // non cambia nulla, la partita torna al suo posto
+  const spostata = modifica(
     `Partita spostata in ${destinazione ? etichettaLista(destinazione) : "una nuova giornata"}`,
     (s) => {
       const { lista, indice } = trovaPartita(id, s);
@@ -909,6 +936,7 @@ function spostaPartita(id, idDestinazione, posizione = Infinity) {
       arrivo.partite.splice(Math.min(posizione, arrivo.partite.length), 0, partita);
     }
   );
+  if (!spostata) render();
 }
 
 function invertiPartita(id) {
