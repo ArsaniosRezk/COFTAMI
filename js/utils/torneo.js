@@ -113,11 +113,6 @@ export function partiteDellaSquadra(calendario, squadra) {
   return elenco;
 }
 
-// Link a Google Maps per il campo di gioco
-export function linkMappa(luogo) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(luogo)}`;
-}
-
 /*
 -----------------------------------
 SQUADRA PREFERITA

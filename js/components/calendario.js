@@ -7,7 +7,6 @@ import {
   statoPartita,
   dataPartita,
   nomeSquadra,
-  linkMappa,
   squadraPreferita,
 } from "../utils/torneo.js";
 import { rendiCliccabile } from "../utils/interfaccia.js";
@@ -352,25 +351,9 @@ export function rappresentaPartita(matchString, matchData, contesto, matchday) {
 
   const venueDiv = document.createElement("div");
   venueDiv.classList.add("luogo");
-  const luogo = matchData?.Luogo;
-  if (luogo) {
-    const link = document.createElement("a");
-    link.href = linkMappa(luogo);
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.className = "link-mappa";
-    link.title = `Apri ${luogo} su Google Maps`;
-    link.innerHTML = `<i class="icona icona-location" aria-hidden="true"></i>`;
-    link.append(` ${luogo}`);
-    // Il clic sul luogo apre la mappa, non il dettaglio della partita
-    link.addEventListener("click", (evento) => evento.stopPropagation());
-    link.addEventListener("keydown", (evento) => evento.stopPropagation());
-    venueDiv.appendChild(link);
-  } else {
-    const venueElement = document.createElement("p");
-    venueElement.textContent = "Luogo da definire";
-    venueDiv.appendChild(venueElement);
-  }
+  const venueElement = document.createElement("p");
+  venueElement.textContent = matchData?.Luogo || "Luogo da definire";
+  venueDiv.appendChild(venueElement);
 
   const dateDiv = document.createElement("div");
   dateDiv.classList.add("data");

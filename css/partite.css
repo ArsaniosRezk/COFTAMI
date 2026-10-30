@@ -32,24 +32,8 @@ schede partita (home.css / calendario.css).
   gap: 10px;
 }
 
-.partita-venue p,
-.partita-venue a {
+.partita-venue p {
   font-size: 0.65rem;
-}
-
-.link-mappa {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--testo);
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: var(--white-50);
-  text-underline-offset: 2px;
-}
-
-.link-mappa:hover {
-  text-decoration-color: var(--testo);
 }
 
 .badge-oggi,
