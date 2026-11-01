@@ -26,21 +26,7 @@ export const LOGO_COFTA = "/assets/images/LOGO_COFTA_SITO_2.svg";
 export const PARTITE_PER_PAGINA = 5;
 
 export const GIORNI = ["DOM", "LUN", "MAR", "MER", "GIO", "VEN", "SAB"];
-export const GIORNI_ESTESI = ["DOMENICA", "LUNEDÌ", "MARTEDÌ", "MERCOLEDÌ", "GIOVEDÌ", "VENERDÌ", "SABATO"];
-export const MESI = [
-  "GENNAIO",
-  "FEBBRAIO",
-  "MARZO",
-  "APRILE",
-  "MAGGIO",
-  "GIUGNO",
-  "LUGLIO",
-  "AGOSTO",
-  "SETTEMBRE",
-  "OTTOBRE",
-  "NOVEMBRE",
-  "DICEMBRE",
-];
+export const MESI = ["GEN", "FEB", "MAR", "APR", "MAG", "GIU", "LUG", "AGO", "SET", "OTT", "NOV", "DIC"];
 
 /*
 -----------------------------------

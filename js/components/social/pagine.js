@@ -6,7 +6,6 @@ import {
   FONT_TITOLI,
   FONT_TESTO,
   GIORNI,
-  GIORNI_ESTESI,
   MESI,
   hsl,
   squadraDi,
@@ -42,11 +41,11 @@ export function formattaData(data) {
   return `${giornoSettimana} ${String(giorno).padStart(2, "0")}/${String(mese).padStart(2, "0")}`;
 }
 
-// "SABATO 8 NOVEMBRE". L'edizione Test non è un anno: resta senza giorno della settimana
-export function formattaDataEstesa(data) {
+// "DOM 1 NOV". L'edizione Test non è un anno: resta senza giorno della settimana
+export function formattaDataMese(data) {
   const [giorno, mese] = (data || "").split("/").map(Number);
   if (!giorno || !mese) return "";
-  const giornoSettimana = GIORNI_ESTESI[new Date(Number(edition), mese - 1, giorno).getDay()];
+  const giornoSettimana = GIORNI[new Date(Number(edition), mese - 1, giorno).getDay()];
   return [giornoSettimana, giorno, MESI[mese - 1]].filter(Boolean).join(" ");
 }
 
@@ -698,7 +697,7 @@ export function disegnaMatchday(ctx, risorse, opzioni) {
   ctx.fillText("VS", W / 2, SFIDA_Y + 6);
 
   // Orario su un'etichetta gialla: è l'informazione più importante
-  const orario = partita.orario ? `ORE ${partita.orario}` : "ORARIO DA DEFINIRE";
+  const orario = partita.orario || "ORARIO DA DEFINIRE";
   let dimOrario = 170;
   ctx.font = font(400, dimOrario, FONT_TITOLI);
   while (ctx.measureText(orario).width > W - 260 && dimOrario > 60) {
@@ -720,7 +719,7 @@ export function disegnaMatchday(ctx, risorse, opzioni) {
   // Data
   ctx.fillStyle = "#ffffff";
   ctx.font = font(400, 84, FONT_TITOLI);
-  ctx.fillText(formattaDataEstesa(partita.data) || "DATA DA DEFINIRE", W / 2, 1396);
+  ctx.fillText(formattaDataMese(partita.data) || "DATA DA DEFINIRE", W / 2, 1396);
 
   // Luogo, con il segnaposto a sinistra del testo
   const yLuogo = 1505;
