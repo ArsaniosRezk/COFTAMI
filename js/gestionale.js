@@ -148,7 +148,7 @@ function sezioneDaHash() {
   return SEZIONI[sezione] ? sezione : "dashboard";
 }
 
-function mostraSezione(sezione) {
+function evidenziaSezione(sezione) {
   sezioneCorrente = sezione;
   const { titolo, descrizione } = SEZIONI[sezione];
 
@@ -165,7 +165,10 @@ function mostraSezione(sezione) {
   document.getElementById("descrizione-sezione").textContent = descrizione;
   document.title = `${titolo} - Gestionale Cofta`;
   main.scrollTop = 0;
+}
 
+function mostraSezione(sezione) {
+  evidenziaSezione(sezione);
   caricaSezione(sezione);
 }
 
@@ -293,6 +296,10 @@ document.addEventListener("focusout", () => setTimeout(aggiornaTastiera, 100));
 window.visualViewport?.addEventListener("resize", aggiornaTastiera);
 
 // --- AVVIO ---
+// Menu e titolo sono già giusti mentre si controlla la sessione
+evidenziaSezione(sezioneDaHash());
+nascondiContenuto();
+
 const utente = await accessoAmministratore();
 document.getElementById("account-email").textContent = utente.email;
 document.getElementById("menu-mobile-email").textContent = utente.email;

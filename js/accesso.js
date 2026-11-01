@@ -21,6 +21,7 @@ il gestionale lo aspetta prima di caricare le sezioni.
 */
 
 const AUTH_SDK = "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const ATTESA_MASSIMA_VERIFICA = 8000;
 
 export function chiaveEmail(email) {
   return String(email || "")
@@ -67,6 +68,7 @@ function creaSchermata() {
 
   const schermata = document.createElement("div");
   schermata.id = "auth-overlay";
+  schermata.className = "in-verifica";
   schermata.innerHTML = `
     <div class="auth-card" role="dialog" aria-labelledby="auth-titolo" aria-describedby="auth-testo">
       <img src="/assets/images/LOGO_COFTA_SITO_2.svg" alt="" width="90" height="90" />
@@ -93,6 +95,10 @@ function sblocca(schermata) {
 /*
  Mostra la schermata di accesso finché non entra un amministratore.
  Restituisce l'utente Google che ha fatto l'accesso.
+
+ La scheda compare solo quando serve davvero: chi ha già una sessione aperta
+ entra senza vederla. Se la verifica si blocca (per esempio senza rete) dopo
+ ATTESA_MASSIMA_VERIFICA compare comunque, così non si resta davanti al nulla.
 */
 export function accessoAmministratore() {
   return new Promise((resolve) => {
@@ -100,6 +106,12 @@ export function accessoAmministratore() {
     const pulsante = schermata.querySelector("#auth-btn");
     const errore = schermata.querySelector("#auth-error");
     const altroAccount = schermata.querySelector("#auth-esci");
+
+    const mostraScheda = () => {
+      clearTimeout(timerVerifica);
+      schermata.classList.remove("in-verifica");
+    };
+    const timerVerifica = setTimeout(mostraScheda, ATTESA_MASSIMA_VERIFICA);
 
     const mostraErrore = (testo) => {
       errore.textContent = testo;
@@ -149,6 +161,7 @@ export function accessoAmministratore() {
         if (!user) {
           utenteCorrente = null;
           altroAccount.hidden = true;
+          mostraScheda();
           return;
         }
 
@@ -158,10 +171,12 @@ export function accessoAmministratore() {
             `L'account ${user.email} non è abilitato al gestionale. ` +
               "Chiedi a un amministratore di aggiungerlo."
           );
+          mostraScheda();
           return;
         }
 
         if (utenteCorrente) return;
+        clearTimeout(timerVerifica);
         utenteCorrente = user;
         collegaRegistro(creaRegistro(user));
         attivaAppCheck();

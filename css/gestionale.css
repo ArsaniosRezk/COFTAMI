@@ -437,6 +437,16 @@ main.in-attesa::after {
   opacity: 0;
 }
 
+/* Mentre si controlla la sessione si vede già il gestionale: la schermata
+   trasparente serve solo a fermare i clic */
+#auth-overlay.in-verifica {
+  background-color: transparent;
+}
+
+#auth-overlay.in-verifica .auth-card {
+  visibility: hidden;
+}
+
 .auth-card {
   display: flex;
   flex-direction: column;
