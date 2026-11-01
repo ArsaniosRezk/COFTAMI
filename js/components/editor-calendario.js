@@ -813,7 +813,9 @@ function ridisegnaMantenendoCursore() {
   const { selectionStart, selectionEnd } = attivo || {};
   render();
   if (!id || !classe) return;
-  const campo = document.querySelector(`#calendar-content .cal-partita[data-id="${CSS.escape(id)}"] .${classe}`);
+  const campo = document.querySelector(
+    `#calendar-content .cal-partita[data-id="${CSS.escape(id)}"] .${classe}`
+  );
   if (!campo) return;
   campo.focus();
   if (selectionStart != null) campo.setSelectionRange(selectionStart, selectionEnd);
