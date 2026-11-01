@@ -6,6 +6,8 @@ import {
   FONT_TITOLI,
   FONT_TESTO,
   GIORNI,
+  GIORNI_ESTESI,
+  MESI,
   hsl,
   squadraDi,
   parallelogramma,
@@ -23,7 +25,8 @@ import {
 ===================================
 GRAFICHE SOCIAL: PAGINE
 ===================================
-Le singole grafiche: partite (calendario e risultati), classifica e storie.
+Le singole grafiche: partite (calendario e risultati), classifica e storie
+(risultato con i marcatori e matchday).
 */
 
 /*
@@ -37,6 +40,14 @@ export function formattaData(data) {
   if (!giorno || !mese) return "";
   const giornoSettimana = GIORNI[new Date(Number(edition), mese - 1, giorno).getDay()];
   return `${giornoSettimana} ${String(giorno).padStart(2, "0")}/${String(mese).padStart(2, "0")}`;
+}
+
+// "SABATO 8 NOVEMBRE". L'edizione Test non è un anno: resta senza giorno della settimana
+export function formattaDataEstesa(data) {
+  const [giorno, mese] = (data || "").split("/").map(Number);
+  if (!giorno || !mese) return "";
+  const giornoSettimana = GIORNI_ESTESI[new Date(Number(edition), mese - 1, giorno).getDay()];
+  return [giornoSettimana, giorno, MESI[mese - 1]].filter(Boolean).join(" ");
 }
 
 export function disegnaPartita(ctx, partita, squadre, yCentro, altezza, modalita) {
@@ -352,6 +363,102 @@ export function disegnaPaginaClassifica(ctx, risorse, opzioni) {
 
 /*
 -----------------------------------
+STORIE: PARTI COMUNI
+-----------------------------------
+*/
+
+// Fascia della sfida: orizzontalmente al centro della storia
+const SFIDA_Y = 850;
+const SFIDA_ALTEZZA = 210;
+const SFIDA_CENTRO_L = 330;
+
+// Logo COFTA, titolo e giornata
+function disegnaTestataStoria(ctx, risorse, titolo, dimensione, giornata) {
+  // Logo COFTA centrato, sotto la zona coperta dall'interfaccia di Instagram
+  if (risorse.logoCofta) {
+    const altezza = 118;
+    const larghezza =
+      (risorse.logoCofta.naturalWidth / risorse.logoCofta.naturalHeight) * altezza || altezza * 2.575;
+    ctx.drawImage(risorse.logoCofta, W / 2 - larghezza / 2, 250, larghezza, altezza);
+  }
+
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = "#ffffff";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+  ctx.shadowBlur = 30;
+  ctx.font = font(400, dimensione, FONT_TITOLI);
+  ctx.fillText(titolo, W / 2, 560);
+  ctx.restore();
+  disegnaGiornata(ctx, giornata, "", W / 2, 640, 80, GIALLO);
+}
+
+// Fascia con i colori delle squadre e riquadro centrale vuoto, loghi e nomi
+function disegnaSfidaStoria(ctx, casa, ospite) {
+  const yCentro = SFIDA_Y;
+  const altezza = SFIDA_ALTEZZA;
+  const x0 = 36;
+  const x1 = W - 36;
+  const inclinazione = 46;
+  const centroL = SFIDA_CENTRO_L;
+  const cx0 = W / 2 - centroL / 2;
+  const cx1 = W / 2 + centroL / 2;
+  const y = yCentro - altezza / 2;
+
+  ctx.save();
+  ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+  ctx.shadowBlur = 40;
+  ctx.shadowOffsetY = 14;
+  parallelogramma(ctx, x0, y, x1 - x0, altezza, inclinazione);
+  const fascia = ctx.createLinearGradient(x0, 0, x1, 0);
+  const { h: hc, s: sc, l: lc } = casa.colore;
+  const { h: ho, s: so, l: lo } = ospite.colore;
+  fascia.addColorStop(0, hsl(hc, sc, lc));
+  fascia.addColorStop((cx0 - x0) / (x1 - x0), hsl(hc, sc * 0.9, lc * 0.45));
+  fascia.addColorStop((cx1 - x0) / (x1 - x0), hsl(ho, so * 0.9, lo * 0.45));
+  fascia.addColorStop(1, hsl(ho, so, lo));
+  ctx.fillStyle = fascia;
+  ctx.fill();
+  ctx.shadowColor = "transparent";
+
+  const lucido = ctx.createLinearGradient(0, y, 0, y + altezza);
+  lucido.addColorStop(0, "rgba(255, 255, 255, 0.16)");
+  lucido.addColorStop(0.45, "rgba(255, 255, 255, 0.02)");
+  lucido.addColorStop(1, "rgba(0, 0, 0, 0.28)");
+  ctx.fillStyle = lucido;
+  ctx.fill();
+
+  parallelogramma(ctx, cx0, y, centroL, altezza, inclinazione);
+  ctx.fillStyle = "rgba(8, 8, 9, 0.94)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Loghi grandi ai lati
+  const diametro = 250;
+  const logoCasaX = x0 + 150;
+  const logoOspiteX = x1 - 150;
+  disegnaLogo(ctx, casa, logoCasaX, yCentro, diametro);
+  disegnaLogo(ctx, ospite, logoOspiteX, yCentro, diametro);
+
+  // Nomi sotto i loghi
+  ctx.fillStyle = "#ffffff";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+  ctx.shadowBlur = 8;
+  const larghezzaNome = 340;
+  const nomeCasa = adattaTesto(ctx, casa.nome.toUpperCase(), larghezzaNome, 2, 38, 22);
+  ctx.font = font(800, nomeCasa.dim, FONT_TESTO);
+  disegnaRighe(ctx, nomeCasa.righe, nomeCasa.dim, logoCasaX, 1052, "center");
+  const nomeOspite = adattaTesto(ctx, ospite.nome.toUpperCase(), larghezzaNome, 2, 38, 22);
+  ctx.font = font(800, nomeOspite.dim, FONT_TESTO);
+  disegnaRighe(ctx, nomeOspite.righe, nomeOspite.dim, logoOspiteX, 1052, "center");
+  ctx.restore();
+}
+
+/*
+-----------------------------------
 STORIA DELLA SINGOLA PARTITA
 -----------------------------------
 */
@@ -436,70 +543,18 @@ export function disegnaMarcatore(ctx, marcatore, x, y, larghezza, dimMax, alline
 
 export function disegnaStoria(ctx, risorse, opzioni) {
   const { partita, squadre, giornata, division } = opzioni;
-  const casa = squadraDi(squadre, partita.casa);
-  const ospite = squadraDi(squadre, partita.ospite);
 
   disegnaSfondo(ctx, Number(giornata) * 31 + partita.casa.length * 7 + partita.ospite.length);
+  disegnaTestataStoria(ctx, risorse, "RISULTATO", 176, giornata);
+  disegnaSfidaStoria(ctx, squadraDi(squadre, partita.casa), squadraDi(squadre, partita.ospite));
 
-  // Logo COFTA centrato, sotto la zona coperta dall'interfaccia di Instagram
-  if (risorse.logoCofta) {
-    const altezza = 118;
-    const larghezza =
-      (risorse.logoCofta.naturalWidth / risorse.logoCofta.naturalHeight) * altezza || altezza * 2.575;
-    ctx.drawImage(risorse.logoCofta, W / 2 - larghezza / 2, 250, larghezza, altezza);
-  }
-
-  ctx.save();
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.fillStyle = "#ffffff";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-  ctx.shadowBlur = 30;
-  ctx.font = font(400, 176, FONT_TITOLI);
-  ctx.fillText("RISULTATO", W / 2, 560);
-  ctx.restore();
-  disegnaGiornata(ctx, giornata, "", W / 2, 640, 80, GIALLO);
-
-  // Fascia con i colori delle squadre e punteggio al centro
-  const yCentro = 850;
-  const altezza = 210;
-  const x0 = 36;
-  const x1 = W - 36;
-  const inclinazione = 46;
-  const centroL = 330;
-  const cx0 = W / 2 - centroL / 2;
-  const cx1 = W / 2 + centroL / 2;
+  // Punteggio al centro della fascia
+  const yCentro = SFIDA_Y;
+  const altezza = SFIDA_ALTEZZA;
+  const centroL = SFIDA_CENTRO_L;
   const y = yCentro - altezza / 2;
 
   ctx.save();
-  ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
-  ctx.shadowBlur = 40;
-  ctx.shadowOffsetY = 14;
-  parallelogramma(ctx, x0, y, x1 - x0, altezza, inclinazione);
-  const fascia = ctx.createLinearGradient(x0, 0, x1, 0);
-  const { h: hc, s: sc, l: lc } = casa.colore;
-  const { h: ho, s: so, l: lo } = ospite.colore;
-  fascia.addColorStop(0, hsl(hc, sc, lc));
-  fascia.addColorStop((cx0 - x0) / (x1 - x0), hsl(hc, sc * 0.9, lc * 0.45));
-  fascia.addColorStop((cx1 - x0) / (x1 - x0), hsl(ho, so * 0.9, lo * 0.45));
-  fascia.addColorStop(1, hsl(ho, so, lo));
-  ctx.fillStyle = fascia;
-  ctx.fill();
-  ctx.shadowColor = "transparent";
-
-  const lucido = ctx.createLinearGradient(0, y, 0, y + altezza);
-  lucido.addColorStop(0, "rgba(255, 255, 255, 0.16)");
-  lucido.addColorStop(0.45, "rgba(255, 255, 255, 0.02)");
-  lucido.addColorStop(1, "rgba(0, 0, 0, 0.28)");
-  ctx.fillStyle = lucido;
-  ctx.fill();
-
-  parallelogramma(ctx, cx0, y, centroL, altezza, inclinazione);
-  ctx.fillStyle = "rgba(8, 8, 9, 0.94)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
 
   const vinceCasa = partita.golCasa > partita.golOspite;
   const vinceOspite = partita.golOspite > partita.golCasa;
@@ -530,26 +585,6 @@ export function disegnaStoria(ctx, risorse, opzioni) {
   ctx.moveTo(W / 2 + 18, y + altezza * 0.2);
   ctx.lineTo(W / 2 - 18, y + altezza * 0.8);
   ctx.stroke();
-
-  // Loghi grandi ai lati
-  const diametro = 250;
-  const logoCasaX = x0 + 150;
-  const logoOspiteX = x1 - 150;
-  disegnaLogo(ctx, casa, logoCasaX, yCentro, diametro);
-  disegnaLogo(ctx, ospite, logoOspiteX, yCentro, diametro);
-
-  // Nomi sotto i loghi
-  ctx.fillStyle = "#ffffff";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-  ctx.shadowBlur = 8;
-  const larghezzaNome = 340;
-  const nomeCasa = adattaTesto(ctx, casa.nome.toUpperCase(), larghezzaNome, 2, 38, 22);
-  ctx.font = font(800, nomeCasa.dim, FONT_TESTO);
-  disegnaRighe(ctx, nomeCasa.righe, nomeCasa.dim, logoCasaX, 1052, "center");
-  const nomeOspite = adattaTesto(ctx, ospite.nome.toUpperCase(), larghezzaNome, 2, 38, 22);
-  ctx.font = font(800, nomeOspite.dim, FONT_TESTO);
-  disegnaRighe(ctx, nomeOspite.righe, nomeOspite.dim, logoOspiteX, 1052, "center");
-  ctx.shadowColor = "transparent";
 
   // Data e campo
   const parti = [formattaData(partita.data), partita.luogo.toUpperCase()].filter(Boolean);
@@ -622,6 +657,83 @@ export function disegnaStoria(ctx, risorse, opzioni) {
     ctx.lineTo(W / 2, alto + passo * righe);
     ctx.stroke();
   }
+  ctx.restore();
+
+  disegnaPiePagina(ctx, division, 1630);
+}
+
+/*
+-----------------------------------
+STORIA MATCHDAY
+-----------------------------------
+*/
+
+// Segnaposto da mappa: (cx, cy) è il centro della parte tonda
+export function disegnaSegnaposto(ctx, cx, cy, r, colore) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI * 0.8, Math.PI * 0.2);
+  ctx.lineTo(cx, cy + r * 2.1);
+  ctx.closePath();
+  ctx.moveTo(cx + r * 0.38, cy);
+  ctx.arc(cx, cy, r * 0.38, 0, Math.PI * 2);
+  ctx.fillStyle = colore;
+  ctx.fill("evenodd");
+  ctx.restore();
+}
+
+export function disegnaMatchday(ctx, risorse, opzioni) {
+  const { partita, squadre, giornata, division } = opzioni;
+
+  disegnaSfondo(ctx, Number(giornata) * 43 + partita.casa.length * 7 + partita.ospite.length);
+  disegnaTestataStoria(ctx, risorse, "MATCHDAY", 210, giornata);
+  disegnaSfidaStoria(ctx, squadraDi(squadre, partita.casa), squadraDi(squadre, partita.ospite));
+
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  ctx.fillStyle = GIALLO;
+  ctx.font = font(400, 150, FONT_TITOLI);
+  ctx.fillText("VS", W / 2, SFIDA_Y + 6);
+
+  // Orario su un'etichetta gialla: è l'informazione più importante
+  const orario = partita.orario ? `ORE ${partita.orario}` : "ORARIO DA DEFINIRE";
+  let dimOrario = 170;
+  ctx.font = font(400, dimOrario, FONT_TITOLI);
+  while (ctx.measureText(orario).width > W - 260 && dimOrario > 60) {
+    dimOrario -= 2;
+    ctx.font = font(400, dimOrario, FONT_TITOLI);
+  }
+  const le = ctx.measureText(orario).width + 120;
+  const ae = 180;
+  const ye = 1140;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+  ctx.shadowBlur = 30;
+  parallelogramma(ctx, W / 2 - le / 2, ye, le, ae, 44);
+  ctx.fillStyle = GIALLO;
+  ctx.fill();
+  ctx.shadowColor = "transparent";
+  ctx.fillStyle = NERO;
+  ctx.fillText(orario, W / 2, ye + ae / 2 + dimOrario * 0.04);
+
+  // Data
+  ctx.fillStyle = "#ffffff";
+  ctx.font = font(400, 84, FONT_TITOLI);
+  ctx.fillText(formattaDataEstesa(partita.data) || "DATA DA DEFINIRE", W / 2, 1396);
+
+  // Luogo, con il segnaposto a sinistra del testo
+  const yLuogo = 1505;
+  const raggio = 24;
+  const spazioIcona = raggio * 2 + 22;
+  const luogo = adattaTesto(ctx, partita.luogo.toUpperCase() || "LUOGO DA DEFINIRE", 840, 3, 44, 26);
+  ctx.font = font(800, luogo.dim, FONT_TESTO);
+  const lLuogo = Math.max(...luogo.righe.map((riga) => ctx.measureText(riga).width));
+  const xLuogo = W / 2 - (spazioIcona + lLuogo) / 2;
+  disegnaSegnaposto(ctx, xLuogo + raggio, yLuogo - raggio * 0.55, raggio, GIALLO);
+  ctx.fillStyle = "#ffffff";
+  disegnaRighe(ctx, luogo.righe, luogo.dim, xLuogo + spazioIcona, yLuogo, "left");
+
   ctx.restore();
 
   disegnaPiePagina(ctx, division, 1630);

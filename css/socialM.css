@@ -216,10 +216,6 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .social-buttons .social-tutte {
-    grid-column: 1 / -1;
-  }
-
   .social-buttons .custom-button,
   .social-azioni .custom-button {
     justify-content: center;

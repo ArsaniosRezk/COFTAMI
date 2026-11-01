@@ -1,6 +1,6 @@
 import { edition, nomeDivisione } from "../divisione.js";
 
-import { partiteGiornata, calcolaClassifiche } from "./social/dati.js";
+import { partiteGiornata, calcolaClassifiche, nomeSquadra } from "./social/dati.js";
 import {
   W,
   H,
@@ -13,7 +13,12 @@ import {
   preparaSquadre,
   font,
 } from "./social/disegno.js";
-import { disegnaPaginaPartite, disegnaPaginaClassifica, disegnaStoria } from "./social/pagine.js";
+import {
+  disegnaPaginaPartite,
+  disegnaPaginaClassifica,
+  disegnaStoria,
+  disegnaMatchday,
+} from "./social/pagine.js";
 
 // I dati per le grafiche si leggono da qui (management/social.js)
 export { caricaDatiSocial } from "./social/dati.js";
@@ -24,8 +29,9 @@ GRAFICHE SOCIAL
 ===================================
 
 Disegna su canvas i post Instagram (1080x1350, formato 4:5) di calendario,
-risultati e classifica di una divisione, più una storia (1080x1920) per ogni
-partita giocata con i marcatori, e li restituisce come PNG.
+risultati e classifica di una divisione, più le storie (1080x1920) di ogni
+partita: il matchday con orario e luogo da pubblicare il giorno della gara e,
+a partita giocata, il risultato con i marcatori. Restituisce tutto come PNG.
 
 I loghi delle squadre stanno su Firebase Storage: per poterli disegnare ed
 esportare il bucket deve avere il CORS abilitato. Se un logo non si carica
@@ -78,8 +84,8 @@ function nomeFile(division, tipo, suffisso = "") {
 /**
  * Genera le grafiche richieste per una divisione.
  * @param {object} dati - risultato di caricaDatiSocial()
- * @param {string[]} tipi - "calendario", "risultati", "classifica", "storie"
- * @param {string} giornata - giornata per calendario, risultati e storie
+ * @param {string[]} tipi - "calendario", "matchday", "risultati", "classifica", "storie"
+ * @param {string} giornata - giornata per tutto tranne la classifica
  * @returns {Promise<{immagini: {nome, blob}[], messaggi: string[], loghiMancanti: string[]}>}
  */
 export async function generaGrafiche(dati, tipi, giornata) {
@@ -97,22 +103,35 @@ export async function generaGrafiche(dati, tipi, giornata) {
         continue;
       }
 
+      const soloGiocate = tipo === "risultati" || tipo === "storie";
       let partite = partiteGiornata(dati, giornata);
-      if (tipo !== "calendario") partite = partite.filter((p) => p.giocata);
+      if (soloGiocate) partite = partite.filter((p) => p.giocata);
 
       if (partite.length === 0) {
         messaggi.push(
-          tipo === "calendario"
-            ? `Nessuna partita in calendario per la giornata ${giornata}.`
-            : `Nessun risultato inserito per la giornata ${giornata}.`
+          soloGiocate
+            ? `Nessun risultato inserito per la giornata ${giornata}.`
+            : `Nessuna partita in calendario per la giornata ${giornata}.`
         );
         continue;
       }
 
-      if (tipo === "storie") {
+      if (tipo === "matchday") {
+        const incomplete = partite.filter((p) => !p.data || !p.orario || !p.luogo);
+        if (incomplete.length) {
+          const elenco = incomplete.map((p) => `${nomeSquadra(p.casa)} - ${nomeSquadra(p.ospite)}`);
+          messaggi.push(
+            `Data, orario o luogo mancanti, sulla grafica compare "da definire": <b>${elenco.join(", ")}</b>.`
+          );
+        }
+      }
+
+      if (tipo === "storie" || tipo === "matchday") {
+        const disegna = tipo === "storie" ? disegnaStoria : disegnaMatchday;
+        const titolo = tipo === "storie" ? "Storia" : "Matchday";
         for (const partita of partite) {
           const canvas = nuovaTela(H_STORIA);
-          disegnaStoria(canvas.getContext("2d"), risorse, {
+          disegna(canvas.getContext("2d"), risorse, {
             partita,
             squadre,
             giornata,
@@ -120,7 +139,7 @@ export async function generaGrafiche(dati, tipi, giornata) {
           });
           const sigla = (chiave) => chiave.replace(/[^A-Za-z0-9]+/g, "");
           const suffisso = `-G${giornata}-${sigla(partita.casa)}-${sigla(partita.ospite)}`;
-          immagini.push(await esporta(canvas, nomeFile(dati.division, "Storia", suffisso)));
+          immagini.push(await esporta(canvas, nomeFile(dati.division, titolo, suffisso)));
         }
         continue;
       }
