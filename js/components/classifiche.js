@@ -21,6 +21,9 @@ import { mostraAvvisoVuoto } from "./pre-torneo.js";
 // Nel gestionale i nomi delle squadre non portano alla pagina pubblica
 const conLinkSquadre = () => paginaCorrente() !== "gestionale";
 
+// Sotto la classifica, se almeno una squadra ha punti extra
+const NOTA_PUNTI_EXTRA = "Le squadre delle superiori partono con 6 punti extra.";
+
 /*
 ===================================
 CLASSIFICA SQUADRE
@@ -204,6 +207,14 @@ export function rappresentaClassifica(containerId, rankingArray, target = null, 
     });
 
     rankingDiv.appendChild(penaltyDiv);
+  }
+
+  // I punti extra si danno dal gestionale con una penalità negativa (es. -6)
+  if (rankingArray.some(([_, data]) => data.penaltyPoints < 0)) {
+    const notaDiv = document.createElement("div");
+    notaDiv.classList.add("penalty-message");
+    notaDiv.textContent = NOTA_PUNTI_EXTRA;
+    rankingDiv.appendChild(notaDiv);
   }
 }
 
