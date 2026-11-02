@@ -22,7 +22,7 @@ import { mostraAvvisoVuoto } from "./pre-torneo.js";
 const conLinkSquadre = () => paginaCorrente() !== "gestionale";
 
 // Sotto la classifica, se almeno una squadra ha punti extra
-const NOTA_PUNTI_EXTRA = "Le squadre delle superiori partono con 6 punti extra.";
+const NOTA_PUNTI_EXTRA = "Le squadre delle superiori partono con 6 punti extra";
 
 /*
 ===================================
