@@ -54,17 +54,81 @@ table tbody tr:last-child {
   ===================================
 */
 
+/* La classifica occupa tutta la larghezza disponibile: così ogni girone
+   ha la stessa tabella, con le stesse colonne nella stessa posizione */
+#classifica-squadre {
+  width: 100%;
+  max-width: 860px;
+}
+
+.girone-section {
+  width: 100%;
+}
+
+/* Larghezze fisse delle colonne (vedi il <colgroup> in classifiche.js):
+   non dipendono più dalla lunghezza dei nomi delle squadre */
+.ranking-table {
+  width: 100%;
+  table-layout: fixed;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Su smartphone le colonne sono strette quanto il loro contenuto
+   (PG V N S: una cifra; GF GS: due; DR: fino a tre caratteri)
+   per lasciare più spazio possibile al nome della squadra */
+.ranking-table .col-pos {
+  width: 20px;
+}
+
+.ranking-table .col-num {
+  width: 17px;
+}
+
+.ranking-table .col-gol {
+  width: 23px;
+}
+
+/* Telefoni stretti: la classifica si allarga un po' nel margine del riquadro */
+@media (max-width: 399px) {
+  #classifica-squadre {
+    width: calc(100% + 20px);
+    margin-inline: -10px;
+  }
+}
+
+.ranking-table .col-dr {
+  width: 27px;
+}
+
+.ranking-table .col-punti {
+  width: 23px;
+}
+
+.ranking-table th,
+.ranking-table td {
+  width: auto;
+  padding: 9px 0;
+}
+
+/* Nome squadra: va a capo invece di essere tagliato
+   (il "Sup" finale serve a distinguere le squadre) */
 .ranking-table th:nth-child(2),
 .ranking-table td:nth-child(2) {
   text-align: left;
-  width: 40%;
-  /* Liquid width instead of fixed 135px */
-  min-width: 120px;
-  /* Minimum readable width */
-  max-width: 200px;
-  /* overflow: hidden; */
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 9px 4px 9px 6px;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+/* Sottile divisione tra risultati (PG V N S) e gol (GF GS DR) */
+.ranking-table th:nth-child(7),
+.ranking-table td:nth-child(7) {
+  box-shadow: inset 1px 0 0 var(--white-20);
+}
+
+/* Punti in evidenza */
+.ranking-table td:nth-child(10) {
+  font-weight: 700;
 }
 
 .ranking-table td:nth-child(3),
@@ -89,20 +153,6 @@ table tbody tr:last-child {
 .ranking-table tr:nth-child(3) td:nth-child(1),
 .ranking-table tr:nth-child(4) td:nth-child(1) {
   /* background-color: var(--finalsTeams); */
-}
-
-/* Su smartphone ci sono tutte e 10 le colonne (anche GF, GS, DR):
-   celle più strette e nome squadra troncato con i puntini */
-.ranking-table th,
-.ranking-table td {
-  padding: 10px 3px;
-}
-
-.ranking-table th:nth-child(2),
-.ranking-table td:nth-child(2) {
-  padding-left: 8px;
-  min-width: 90px;
-  overflow: hidden;
 }
 
 .girone-section {
@@ -161,6 +211,30 @@ table tbody tr:last-child {
 */
 
 @media (min-width: 576px) {
+  .ranking-table {
+    font-size: 0.9rem;
+  }
+
+  .ranking-table .col-pos,
+  .ranking-table .col-num,
+  .ranking-table .col-gol {
+    width: 34px;
+  }
+
+  .ranking-table .col-dr,
+  .ranking-table .col-punti {
+    width: 42px;
+  }
+
+  .ranking-table th,
+  .ranking-table td {
+    padding: 12px 0;
+  }
+
+  .ranking-table th:nth-child(2),
+  .ranking-table td:nth-child(2) {
+    padding: 12px 10px 12px 12px;
+  }
 }
 
 @media (min-width: 992px) {
@@ -180,15 +254,33 @@ table tbody tr:last-child {
 
   /* Classifica Squadre  */
 
+  .ranking-table {
+    font-size: 0.95rem;
+  }
+
+  .ranking-table .col-pos {
+    width: 52px;
+  }
+
+  .ranking-table .col-num,
+  .ranking-table .col-gol {
+    width: 54px;
+  }
+
+  .ranking-table .col-dr,
+  .ranking-table .col-punti {
+    width: 62px;
+  }
+
   .ranking-table th,
   .ranking-table td {
-    padding: 20px;
+    width: auto;
+    padding: 16px 0;
   }
 
   .ranking-table th:nth-child(2),
   .ranking-table td:nth-child(2) {
-    width: 200px;
-    max-width: 200px;
+    padding: 16px 16px 16px 20px;
   }
 
   .ranking-table td:nth-child(1),

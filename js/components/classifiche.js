@@ -112,19 +112,29 @@ export function rappresentaClassifica(containerId, rankingArray, target = null, 
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
 
-  // Intestazioni abbreviate con il significato per gli screen reader
+  // Intestazioni abbreviate con il significato per gli screen reader.
+  // La terza voce è la classe della colonna: le larghezze stanno in tabelle.css,
+  // così tutti i gironi hanno le colonne allineate a prescindere dai nomi.
   const intestazioni = [
-    ["#", "Posizione"],
-    ["Squadra", "Squadra"],
-    ["PG", "Partite giocate"],
-    ["V", "Vinte"],
-    ["N", "Pareggiate"],
-    ["S", "Perse"],
-    ["GF", "Gol fatti"],
-    ["GS", "Gol subiti"],
-    ["DR", "Differenza reti"],
-    ["P", "Punti"],
+    ["#", "Posizione", "col-pos"],
+    ["Squadra", "Squadra", "col-squadra"],
+    ["PG", "Partite giocate", "col-num"],
+    ["V", "Vinte", "col-num"],
+    ["N", "Pareggiate", "col-num"],
+    ["S", "Perse", "col-num"],
+    ["GF", "Gol fatti", "col-gol"],
+    ["GS", "Gol subiti", "col-gol"],
+    ["DR", "Differenza reti", "col-dr"],
+    ["P", "Punti", "col-punti"],
   ];
+  const colgroup = document.createElement("colgroup");
+  for (const [, , classe] of intestazioni) {
+    const col = document.createElement("col");
+    col.className = classe;
+    colgroup.appendChild(col);
+  }
+  table.appendChild(colgroup);
+
   const headerRow = document.createElement("tr");
   for (const [sigla, significato] of intestazioni) {
     const th = document.createElement("th");
@@ -153,7 +163,7 @@ export function rappresentaClassifica(containerId, rankingArray, target = null, 
       data.lostMatches,
       data.scoredGoals,
       data.concededGoals,
-      data.goalsDifference,
+      data.goalsDifference > 0 ? `+${data.goalsDifference}` : data.goalsDifference,
       pointsWithoutPenalty,
     ];
 
