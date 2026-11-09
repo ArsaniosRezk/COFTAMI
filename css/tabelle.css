@@ -73,19 +73,14 @@ table tbody tr:last-child {
   font-variant-numeric: tabular-nums;
 }
 
-/* Su smartphone le colonne sono strette quanto il loro contenuto
-   (PG V N S: una cifra; GF GS: due; DR: fino a tre caratteri)
-   per lasciare più spazio possibile al nome della squadra */
+/* Tutte le colonne dei dati hanno la stessa larghezza (ci stanno due cifre,
+   o tre caratteri come "-19"); il resto va al nome della squadra */
 .ranking-table .col-pos {
-  width: 20px;
+  width: 22px;
 }
 
 .ranking-table .col-num {
-  width: 17px;
-}
-
-.ranking-table .col-gol {
-  width: 23px;
+  width: 24px;
 }
 
 /* Telefoni stretti: la classifica si allarga un po' nel margine del riquadro */
@@ -96,34 +91,64 @@ table tbody tr:last-child {
   }
 }
 
-.ranking-table .col-dr {
-  width: 27px;
-}
-
-.ranking-table .col-punti {
-  width: 23px;
-}
-
 .ranking-table th,
 .ranking-table td {
   width: auto;
-  padding: 9px 0;
+  padding: 10px 0;
 }
 
-/* Nome squadra: va a capo invece di essere tagliato
-   (il "Sup" finale serve a distinguere le squadre) */
+/* Nome squadra su una riga sola, tagliato con i puntini se è lungo */
 .ranking-table th:nth-child(2),
 .ranking-table td:nth-child(2) {
   text-align: left;
-  padding: 9px 4px 9px 6px;
-  line-height: 1.25;
-  overflow-wrap: break-word;
+  padding: 10px 6px 10px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Sottile divisione tra risultati (PG V N S) e gol (GF GS DR) */
-.ranking-table th:nth-child(7),
-.ranking-table td:nth-child(7) {
-  box-shadow: inset 1px 0 0 var(--white-20);
+/* Vista compatta: senza GF, GS e DR (solo su smartphone e tablet) */
+@media (max-width: 991px) {
+  .classifica-compatta .ranking-table .col-gol,
+  .classifica-compatta .ranking-table th:nth-child(n + 7):nth-child(-n + 9),
+  .classifica-compatta .ranking-table td:nth-child(n + 7):nth-child(-n + 9) {
+    display: none;
+  }
+}
+
+/* Selettore Compatta / Completa sopra la classifica */
+.classifica-vista {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 14px;
+  padding: 3px;
+  border-radius: 999px;
+  background-color: var(--superficie-forte);
+}
+
+.classifica-vista button {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--testo-tenue);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.classifica-vista button.selected {
+  background-color: var(--accento);
+  color: var(--inchiostro);
+}
+
+.classifica-vista button:focus-visible {
+  outline: 2px solid var(--accento);
+  outline-offset: 2px;
 }
 
 /* Punti in evidenza */
@@ -215,15 +240,12 @@ table tbody tr:last-child {
     font-size: 0.9rem;
   }
 
-  .ranking-table .col-pos,
-  .ranking-table .col-num,
-  .ranking-table .col-gol {
+  .ranking-table .col-pos {
     width: 34px;
   }
 
-  .ranking-table .col-dr,
-  .ranking-table .col-punti {
-    width: 42px;
+  .ranking-table .col-num {
+    width: 40px;
   }
 
   .ranking-table th,
@@ -262,20 +284,19 @@ table tbody tr:last-child {
     width: 52px;
   }
 
-  .ranking-table .col-num,
-  .ranking-table .col-gol {
-    width: 54px;
-  }
-
-  .ranking-table .col-dr,
-  .ranking-table .col-punti {
-    width: 62px;
+  .ranking-table .col-num {
+    width: 58px;
   }
 
   .ranking-table th,
   .ranking-table td {
     width: auto;
     padding: 16px 0;
+  }
+
+  /* Su desktop c'è spazio per tutte le colonne: il selettore non serve */
+  .classifica-vista {
+    display: none;
   }
 
   .ranking-table th:nth-child(2),

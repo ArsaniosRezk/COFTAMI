@@ -30,6 +30,62 @@ CLASSIFICA SQUADRE
 ===================================
 */
 
+/*
+ Vista della classifica su smartphone: "completa" (tutte le colonne) o
+ "compatta" (senza GF, GS e DR, come prima). La scelta resta salvata nel browser.
+ Su desktop si vedono sempre tutte le colonne (vedi tabelle.css).
+*/
+const CHIAVE_VISTA = "cofta-classifica-vista";
+const VISTE = [
+  ["compatta", "Compatta"],
+  ["completa", "Completa"],
+];
+
+function leggiVista() {
+  try {
+    return localStorage.getItem(CHIAVE_VISTA) === "compatta" ? "compatta" : "completa";
+  } catch {
+    return "completa";
+  }
+}
+
+function applicaVista(container, vista) {
+  container.classList.toggle("classifica-compatta", vista === "compatta");
+  container.querySelectorAll(".classifica-vista button").forEach((pulsante) => {
+    const scelto = pulsante.dataset.vista === vista;
+    pulsante.classList.toggle("selected", scelto);
+    pulsante.setAttribute("aria-pressed", String(scelto));
+  });
+}
+
+function selettoreVista(container) {
+  const gruppo = document.createElement("div");
+  gruppo.className = "classifica-vista";
+  gruppo.setAttribute("role", "group");
+  gruppo.setAttribute("aria-label", "Colonne della classifica");
+
+  for (const [vista, etichetta] of VISTE) {
+    const pulsante = document.createElement("button");
+    pulsante.type = "button";
+    pulsante.dataset.vista = vista;
+    pulsante.textContent = etichetta;
+    gruppo.appendChild(pulsante);
+  }
+
+  gruppo.addEventListener("click", (evento) => {
+    const pulsante = evento.target.closest("button[data-vista]");
+    if (!pulsante) return;
+    try {
+      localStorage.setItem(CHIAVE_VISTA, pulsante.dataset.vista);
+    } catch {
+      // Senza localStorage la scelta vale solo fino al prossimo aggiornamento
+    }
+    applicaVista(container, pulsante.dataset.vista);
+  });
+
+  return gruppo;
+}
+
 export function scheletroClassifica(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -78,6 +134,12 @@ export async function classificaGirone(targetDiv, showGenericTitle = false, dati
   const classifiche = calcolaClassifiche(teams, dati.partite || {});
   const divisione = dati.divisione || getSelectedDivision();
 
+  // Selettore compatta/completa solo sul sito pubblico (home e campionato)
+  if (containerId === "classifica-squadre" && conLinkSquadre()) {
+    container.appendChild(selettoreVista(container));
+    applicaVista(container, leggiVista());
+  }
+
   for (const { girone, ranking } of classifiche) {
     const gironeSection = document.createElement("div");
     gironeSection.classList.add("girone-section");
@@ -115,6 +177,7 @@ export function rappresentaClassifica(containerId, rankingArray, target = null, 
   // Intestazioni abbreviate con il significato per gli screen reader.
   // La terza voce è la classe della colonna: le larghezze stanno in tabelle.css,
   // così tutti i gironi hanno le colonne allineate a prescindere dai nomi.
+  // col-gol = colonne nascoste nella vista compatta
   const intestazioni = [
     ["#", "Posizione", "col-pos"],
     ["Squadra", "Squadra", "col-squadra"],
@@ -122,10 +185,10 @@ export function rappresentaClassifica(containerId, rankingArray, target = null, 
     ["V", "Vinte", "col-num"],
     ["N", "Pareggiate", "col-num"],
     ["S", "Perse", "col-num"],
-    ["GF", "Gol fatti", "col-gol"],
-    ["GS", "Gol subiti", "col-gol"],
-    ["DR", "Differenza reti", "col-dr"],
-    ["P", "Punti", "col-punti"],
+    ["GF", "Gol fatti", "col-num col-gol"],
+    ["GS", "Gol subiti", "col-num col-gol"],
+    ["DR", "Differenza reti", "col-num col-gol"],
+    ["P", "Punti", "col-num"],
   ];
   const colgroup = document.createElement("colgroup");
   for (const [, , classe] of intestazioni) {
