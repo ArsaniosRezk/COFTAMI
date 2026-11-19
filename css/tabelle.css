@@ -151,6 +151,43 @@ table tbody tr:last-child {
   outline-offset: 2px;
 }
 
+.classifica-azioni {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.classifica-condividi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--accento);
+  border-radius: 999px;
+  background: var(--accento);
+  color: var(--inchiostro);
+  font:
+    700 0.8rem "Montserrat",
+    sans-serif;
+  cursor: pointer;
+}
+
+.classifica-condividi:hover {
+  background: var(--accento-hover);
+}
+
+.classifica-condividi:focus-visible {
+  outline: 2px solid var(--accento);
+  outline-offset: 3px;
+}
+
+.classifica-condividi:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 /* Punti in evidenza */
 .ranking-table td:nth-child(10) {
   font-weight: 700;

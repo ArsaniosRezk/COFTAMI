@@ -214,6 +214,29 @@ export async function condividi({ titolo, testo, url = location.href }) {
   }
 }
 
+// Il file deve essere già pronto al clic: la condivisione nativa richiede
+// l'attivazione dell'utente, che si può perdere aspettando la generazione.
+export async function condividiImmagine(file, titolo) {
+  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: titolo });
+      return;
+    } catch (errore) {
+      if (errore.name === "AbortError") return;
+    }
+  }
+
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = file.name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  mostraToast("Immagine scaricata: puoi condividerla dalla galleria o dai download");
+}
+
 /*
 -----------------------------------
 ACCESSIBILITÀ

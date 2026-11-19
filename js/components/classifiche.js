@@ -1,5 +1,6 @@
 import { getData, getPaths } from "../firebase.js";
-import { getSelectedDivision } from "../divisione.js";
+import { getSelectedDivision, edition, nomeDivisione } from "../divisione.js";
+import { pulsanteCondivisioneClassifica } from "./condivisione-classifica.js";
 import { paginaCorrente } from "../utils/percorso.js";
 import { nomeSquadra, linkSquadra, eSquadraPreferita } from "../utils/torneo.js";
 import {
@@ -160,6 +161,22 @@ export async function classificaGirone(targetDiv, showGenericTitle = false, dati
 
     rappresentaClassifica(containerId, ranking, gironeSection, divisione);
     container.appendChild(gironeSection);
+  }
+
+  if (
+    containerId === "classifica-squadre" &&
+    conLinkSquadre() &&
+    classifiche.some(({ ranking }) => ranking.length > 0)
+  ) {
+    const azioni = document.createElement("div");
+    azioni.className = "classifica-azioni";
+    azioni.appendChild(
+      pulsanteCondivisioneClassifica(container, {
+        divisione: nomeDivisione(divisione),
+        edizione: edition,
+      })
+    );
+    container.appendChild(azioni);
   }
 }
 

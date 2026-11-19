@@ -60,6 +60,7 @@ const ASSETS_TO_CACHE = [
   "/js/utils/torneo.js",
   "/js/utils/interfaccia.js",
   "/js/components/classifiche.js",
+  "/js/components/condivisione-classifica.js",
   "/js/components/calendario.js",
   "/js/components/pre-torneo.js",
   "/js/components/manutenzione.js",
