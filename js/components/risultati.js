@@ -4,6 +4,7 @@ import { giornateNumerate, giornataCorrente, haRisultato, nomeSquadra } from "..
 import { mostraToast, conferma } from "../utils/interfaccia.js";
 import { aggiornaConteggi } from "../utils/gestionale-eventi.js";
 import { creaLogo } from "../utils/logo.js";
+import { creaAnnullaPubblicazione } from "./annulla-pubblicazione.js";
 
 /*
 ===================================
@@ -197,7 +198,7 @@ function rigaPartita(giornata, chiave, calendario, dati, ridisegna) {
   riga.append(squadre, info, apri);
   voce.appendChild(riga);
 
-  if (aperta) voce.appendChild(editorRisultato(giornata, chiave, partita, dati.squadre, ridisegna));
+  if (aperta) voce.appendChild(editorRisultato(giornata, chiave, partita, dati.squadre, ridisegna, giocata));
   return voce;
 }
 
@@ -277,7 +278,7 @@ function leggiCampi(campi) {
   return { marcatori, totale };
 }
 
-function editorRisultato(giornata, chiave, partita, squadre, ridisegna) {
+function editorRisultato(giornata, chiave, partita, squadre, ridisegna, pubblicata) {
   const [casa, ospite] = chiave.split(":");
   const editor = crea("form", "editor-risultato");
   editor.noValidate = true;
@@ -348,21 +349,8 @@ function editorRisultato(giornata, chiave, partita, squadre, ridisegna) {
   salva.append(icona("floppy-disk"), " Salva e pubblica");
   azioni.appendChild(salva);
 
-  if (partita) {
-    const cancella = crea("button", "btn btn-testo btn-elimina", "Cancella risultato");
-    cancella.type = "button";
-    cancella.addEventListener("click", async () => {
-      const ok = await conferma(
-        'Risultato e marcatori spariranno dal sito: la partita tornerà "da giocare".',
-        {
-          titolo: "Cancellare il risultato?",
-          ok: "Cancella",
-          pericolosa: true,
-        }
-      );
-      if (ok) await scrivi(giornata, chiave, null, "Risultato cancellato", ridisegna);
-    });
-    azioni.appendChild(cancella);
+  if (pubblicata) {
+    azioni.appendChild(creaAnnullaPubblicazione({ giornata, chiave, ridisegna }));
   }
   editor.appendChild(azioni);
 

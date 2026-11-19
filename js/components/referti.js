@@ -6,6 +6,7 @@ import { mostraToast, conferma } from "../utils/interfaccia.js";
 import { aggiornaConteggi } from "../utils/gestionale-eventi.js";
 import { creaLogo } from "../utils/logo.js";
 import { leggiReferti, refertoConfermato } from "./da-fare.js";
+import { creaAnnullaPubblicazione } from "./annulla-pubblicazione.js";
 
 /*
 ===================================
@@ -207,7 +208,11 @@ function pulsantiAzione(voce, ridisegna) {
     }
   });
 
-  riga.append(principale, elimina);
+  riga.appendChild(principale);
+  if (partita) {
+    riga.appendChild(creaAnnullaPubblicazione({ divisione, giornata, chiave, ridisegna }));
+  }
+  riga.appendChild(elimina);
   return riga;
 }
 

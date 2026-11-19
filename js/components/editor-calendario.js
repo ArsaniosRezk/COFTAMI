@@ -1,6 +1,7 @@
 import { db, ref, update, set, getData, getPaths } from "../firebase.js";
 import * as G from "../utils/generatore-calendario.js";
 import { avviso, conferma, mostraToast } from "../utils/interfaccia.js";
+import { attivaSeparatore } from "../utils/campi-data-ora.js";
 import * as M from "./editor-calendario/modello.js";
 import { el, icona, pulsanteIcona, dialogo, voceAzione } from "./editor-calendario/dom.js";
 
@@ -720,6 +721,7 @@ function disegnaPartita(partita, lista, doppie) {
       inputMode: modalita,
       class: `cal-campo cal-campo-${chiaveCampo.toLowerCase()}`,
     });
+    if (chiaveCampo === "Data" || chiaveCampo === "Orario") attivaSeparatore(input, chiaveCampo);
     const controlla = () => input.classList.toggle("non-valido", !!input.value && !verifica(input.value));
     controlla();
     input.addEventListener("input", controlla);
@@ -830,7 +832,7 @@ function normalizzaCampo(campo, valore) {
     return m ? `${m[1].padStart(2, "0")}/${m[2].padStart(2, "0")}` : testo;
   }
   if (campo === "Orario") {
-    const m = testo.match(/^(\d{1,2})(?:[:.](\d{2}))?$/);
+    const m = testo.match(/^(\d{1,2})(?:[:.](\d{2})?)?$/);
     return m ? `${m[1].padStart(2, "0")}:${m[2] || "00"}` : testo;
   }
   return testo;
@@ -1274,6 +1276,8 @@ function apriAzioniGiornata(id) {
     inputMode: "numeric",
   });
   const luogo = el("input", { type: "text", placeholder: "Luogo", class: "cal-campo" });
+  attivaSeparatore(data, "Data");
+  attivaSeparatore(orario, "Orario");
   const soloVuoti = el("input", { type: "checkbox", id: "cal-solo-vuoti" });
 
   const corpo = el(
