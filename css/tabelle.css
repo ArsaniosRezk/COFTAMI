@@ -151,23 +151,44 @@ table tbody tr:last-child {
   outline-offset: 2px;
 }
 
-.classifica-azioni {
+.classifica-caption {
+  padding: 6px 10px 6px 12px;
+  border-radius: 10px 10px 0 0;
+  background: var(--tertiary);
+  border-bottom: 1px solid var(--white-20);
+}
+
+.classifica-intestazione {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.classifica-intestazione .titolo-girone {
+  margin: 0;
+  color: var(--testo);
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.ranking-table-condivisione thead th:first-child,
+.ranking-table-condivisione thead th:last-child {
+  border-radius: 0;
 }
 
 .classifica-condividi {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
   padding: 0;
-  border: 1px solid var(--accento);
-  border-radius: 999px;
-  background: var(--accento);
-  color: var(--inchiostro);
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--testo-tenue);
   font:
     700 0.8rem "Montserrat",
     sans-serif;
@@ -175,7 +196,8 @@ table tbody tr:last-child {
 }
 
 .classifica-condividi:hover {
-  background: var(--accento-hover);
+  background: var(--white-20);
+  color: var(--accento);
 }
 
 .classifica-condividi:focus-visible {

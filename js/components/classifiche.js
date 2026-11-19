@@ -163,15 +163,23 @@ export async function classificaGirone(targetDiv, showGenericTitle = false, dati
     container.appendChild(gironeSection);
 
     if (containerId === "classifica-squadre" && conLinkSquadre() && ranking.length > 0) {
-      const azioni = document.createElement("div");
-      azioni.className = "classifica-azioni";
-      azioni.appendChild(
+      const tabella = gironeSection.querySelector(".ranking-table");
+      tabella.classList.add("ranking-table-condivisione");
+      const caption = tabella.createCaption();
+      caption.className = "classifica-caption";
+      const intestazione = document.createElement("div");
+      intestazione.className = "classifica-intestazione";
+      const titolo = gironeSection.querySelector(".titolo-girone") || document.createElement("h3");
+      titolo.className = "titolo-girone";
+      titolo.textContent = girone === "unico" ? "Classifica squadre" : `Girone ${girone}`;
+      intestazione.appendChild(titolo);
+      caption.appendChild(intestazione);
+      intestazione.appendChild(
         pulsanteCondivisioneClassifica(gironeSection, {
           divisione: nomeDivisione(divisione),
           girone: girone === "unico" ? "" : `Girone ${girone}`,
         })
       );
-      gironeSection.appendChild(azioni);
     }
   }
 }

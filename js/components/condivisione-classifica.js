@@ -32,7 +32,7 @@ export async function generaImmagineClassifica(container, { divisione, girone = 
   // La fotografia dei dati precede le attese per i font e resta coerente
   // anche se nel frattempo arriva una nuova classifica in tempo reale.
   const gironi = [container].map((sezione) => ({
-    titolo: girone || sezione.querySelector(".titolo-girone")?.textContent || "",
+    titolo: girone,
     intestazioni: [...sezione.querySelectorAll("thead th")].map((th) => th.textContent),
     righe: [...sezione.querySelectorAll("tbody tr")].map((tr) => [...tr.cells].map((td) => td.textContent)),
     note: [...sezione.querySelectorAll(".penalty-message")].flatMap((nota) =>
@@ -75,16 +75,17 @@ export async function generaImmagineClassifica(container, { divisione, girone = 
     ctx.font = `700 24px ${FONT_TESTO}`;
   }
 
+  const inizioClassifica = divisione ? 170 : 134;
   const altezza =
-    280 +
+    inizioClassifica +
+    MARGINE +
     gironi.reduce(
       (totale, girone) =>
         totale +
-        (girone.titolo ? 52 : 0) +
+        (girone.titolo ? 44 : 0) +
         56 +
         girone.righe.reduce((somma, riga) => somma + riga.altezza, 0) +
-        girone.note.length * 28 +
-        40,
+        girone.note.length * 28,
       0
     );
   // Limita dimensioni e memoria anche con molti gironi su Safari mobile.
@@ -103,15 +104,15 @@ export async function generaImmagineClassifica(container, { divisione, girone = 
     ctx.fillText(valore, x, y);
   }
 
-  testo("COFTA MILANO", MARGINE, 52, `400 38px ${FONT_TITOLI}`, colori.accento);
-  testo("CLASSIFICA SQUADRE", MARGINE, 113, `400 64px ${FONT_TITOLI}`, colori.testo);
-  testo(divisione, MARGINE, 169, `700 24px ${FONT_TESTO}`, colori.accento);
+  testo("COFTA MILANO", MARGINE, 42, `400 34px ${FONT_TITOLI}`, colori.accento);
+  testo("CLASSIFICA SQUADRE", MARGINE, 94, `400 60px ${FONT_TITOLI}`, colori.testo);
+  if (divisione) testo(divisione, MARGINE, 142, `700 22px ${FONT_TESTO}`, colori.accento);
 
-  let y = 212;
+  let y = inizioClassifica;
   for (const girone of gironi) {
     if (girone.titolo) {
-      testo(girone.titolo, MARGINE, y + 18, `400 34px ${FONT_TITOLI}`, colori.testo);
-      y += 52;
+      testo(girone.titolo, MARGINE, y + 16, `400 34px ${FONT_TITOLI}`, colori.testo);
+      y += 44;
     }
     const larghezzaTabella = LARGHEZZA - MARGINE * 2;
     const altezzaTabella = 56 + girone.righe.reduce((totale, riga) => totale + riga.altezza, 0);
@@ -176,9 +177,7 @@ export async function generaImmagineClassifica(container, { divisione, girone = 
       y += 28;
       testo(nota, MARGINE, y, `500 20px ${FONT_TESTO}`, colori.tenue);
     });
-    y += 40;
   }
-  testo("coftamilano.com", MARGINE, altezza - 36, `500 20px ${FONT_TESTO}`, colori.tenue);
 
   try {
     const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
