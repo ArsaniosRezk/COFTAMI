@@ -27,12 +27,12 @@ function righeTesto(ctx, testo, larghezza) {
   return righe;
 }
 
-export async function generaImmagineClassifica(container, { divisione, edizione }) {
+export async function generaImmagineClassifica(container, { divisione, girone = "" }) {
   // Legge tutte le celle, comprese quelle nascoste dalla vista compatta.
   // La fotografia dei dati precede le attese per i font e resta coerente
   // anche se nel frattempo arriva una nuova classifica in tempo reale.
-  const gironi = [...container.querySelectorAll(".girone-section")].map((sezione) => ({
-    titolo: sezione.querySelector(".titolo-girone")?.textContent || "",
+  const gironi = [container].map((sezione) => ({
+    titolo: girone || sezione.querySelector(".titolo-girone")?.textContent || "",
     intestazioni: [...sezione.querySelectorAll("thead th")].map((th) => th.textContent),
     righe: [...sezione.querySelectorAll("tbody tr")].map((tr) => [...tr.cells].map((td) => td.textContent)),
     note: [...sezione.querySelectorAll(".penalty-message")].flatMap((nota) =>
@@ -53,10 +53,6 @@ export async function generaImmagineClassifica(container, { divisione, edizione 
     tenue: colore("--testo-tenue"),
     accento: colore("--accento"),
   };
-  const aggiornamento = new Date().toLocaleString("it-IT", {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
 
   // Se un font non è disponibile (per esempio offline), usa il fallback del sito.
   await Promise.allSettled([
@@ -109,13 +105,7 @@ export async function generaImmagineClassifica(container, { divisione, edizione 
 
   testo("COFTA MILANO", MARGINE, 52, `400 38px ${FONT_TITOLI}`, colori.accento);
   testo("CLASSIFICA SQUADRE", MARGINE, 113, `400 64px ${FONT_TITOLI}`, colori.testo);
-  testo(
-    [divisione, edizione].filter(Boolean).join(" · "),
-    MARGINE,
-    169,
-    `700 24px ${FONT_TESTO}`,
-    colori.accento
-  );
+  testo(divisione, MARGINE, 169, `700 24px ${FONT_TESTO}`, colori.accento);
 
   let y = 212;
   for (const girone of gironi) {
@@ -188,18 +178,12 @@ export async function generaImmagineClassifica(container, { divisione, edizione 
     });
     y += 40;
   }
-  testo(
-    `coftamilano.com · Aggiornata al ${aggiornamento}`,
-    MARGINE,
-    altezza - 36,
-    `500 20px ${FONT_TESTO}`,
-    colori.tenue
-  );
+  testo("coftamilano.com", MARGINE, altezza - 36, `500 20px ${FONT_TESTO}`, colori.tenue);
 
   try {
     const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
     if (!blob) throw new Error("Impossibile esportare la classifica");
-    const nome = ["COFTA", edizione, divisione, "Classifica"].filter(Boolean).join("-");
+    const nome = ["COFTA", divisione, "Classifica", girone.replaceAll(" ", "-")].filter(Boolean).join("-");
     return new File([blob], `${nome}.png`, { type: "image/png" });
   } finally {
     canvas.width = canvas.height = 0;
@@ -210,18 +194,24 @@ export function pulsanteCondivisioneClassifica(container, opzioni) {
   const pulsante = document.createElement("button");
   pulsante.type = "button";
   pulsante.className = "classifica-condividi";
+  pulsante.innerHTML = '<i class="icona icona-share" aria-hidden="true"></i>';
+  const etichetta = ["Condividi classifica", opzioni.girone].filter(Boolean).join(" · ");
+  function etichettaPulsante(testo) {
+    pulsante.setAttribute("aria-label", testo);
+    pulsante.title = testo;
+  }
   let file = null;
 
   async function prepara() {
     pulsante.disabled = true;
     pulsante.setAttribute("aria-busy", "true");
-    pulsante.textContent = "Preparo immagine…";
+    etichettaPulsante("Preparo immagine…");
     try {
       file = await generaImmagineClassifica(container, opzioni);
-      pulsante.innerHTML = '<i class="icona icona-share" aria-hidden="true"></i> Condividi classifica';
+      etichettaPulsante(etichetta);
     } catch (errore) {
       console.error("Errore nella creazione della classifica da condividere:", errore);
-      pulsante.textContent = "Riprova a preparare l’immagine";
+      etichettaPulsante("Riprova a preparare l’immagine");
     } finally {
       pulsante.disabled = false;
       pulsante.removeAttribute("aria-busy");
